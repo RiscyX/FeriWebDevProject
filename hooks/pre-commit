@@ -1,0 +1,18 @@
+#!/bin/sh
+
+echo "🔍 Running PHP CodeSniffer (phpcs)..."
+echo "-----------------------------"
+
+./vendor/bin/phpcs --standard=PSR12 src/
+
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "❌ Code style violations found. Commit aborted."
+  echo ""
+  echo "💡 To automatically fix fixable issues, run:"
+  echo "   ./vendor/bin/phpcbf --standard=PSR12 src/"
+  echo ""
+  exit 1
+fi
+
+echo "✅ Code style check passed. Proceeding with commit."

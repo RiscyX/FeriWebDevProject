@@ -1,0 +1,13 @@
+{
+    "name": "feri/feri-web-dev-project",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Feri\\FeriWebDevProject\\": "src/"
+        }
+    },
+    "require": {
+        "squizlabs/php_codesniffer": "^3.13",
+        "phpmailer/phpmailer": "^6.10"
+    }
+}
