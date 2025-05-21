@@ -6,7 +6,7 @@
   "require": {
     "squizlabs/php_codesniffer": "^3.13",
     "phpmailer/phpmailer": "^6.10",
-    "twbs/bootstrap": "5.3.6"
+    "twbs/bootstrap": "^5.3.6"
   },
   "autoload": {
     "psr-4": {
