@@ -369,6 +369,11 @@ ALTER TABLE `recipes`
 ALTER TABLE `recipe_ingredients`
     ADD CONSTRAINT `recipe_ingredients_ibfk_1` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `recipe_ingredients_ibfk_2` FOREIGN KEY (`ingredient_id`) REFERENCES `ingredients` (`id`) ON
+
+
+ALTER TABLE `users`
+    ADD COLUMN `email_verified_at` DATETIME NULL AFTER `created_at`;
+
 DELETE
 CASCADE;
 COMMIT;
