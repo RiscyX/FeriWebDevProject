@@ -1,17 +1,23 @@
 <!DOCTYPE html>
-<html lang="hu">
+<html lang="hu" data-bs-theme="<?= htmlspecialchars($_COOKIE['theme'] ?? 'light') ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Regisztráció</title>
-    <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../vendor/twbs/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/global.css">
+    <link rel="icon" href="favicon.png" type="image/png">
 </head>
-<body class="bg-light">
+<body>
 
 <?php require_once "../src/View/partials/nav.php"; ?>
 
-<div class="form container py-5">
-    <?php echo $formHtml; ?>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+            <?= $formHtml ?>
+        </div>
+    </div>
 </div>
 
 
@@ -33,7 +39,8 @@
     </div>
 </div>
 
-<script src="./bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="../vendor/twbs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="./js/theme-toggle.js"></script>
 <?php if (isset($_SESSION['success'])) :
     unset($_SESSION['success']);
     ?>

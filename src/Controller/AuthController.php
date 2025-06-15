@@ -49,6 +49,57 @@ class AuthController
         include __DIR__ . '/../View/pages/auth/register.php';
     }
 
+    // src/Controller/AuthController.php
+
+    public function login(): void
+    {
+        $form = new \WebDevProject\Form\LoginForm($this->pdo);
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $form->load($_POST);
+            if ($form->validate()) {
+                $user = $form->login();
+                if ($user) {
+                    // sikeres belépés: session-be
+                    $_SESSION['user_id']  = $user['id'];
+                    $_SESSION['username'] = $user['username'];
+                    header('Location: dashboard');
+                    exit;
+                } else {
+                    $form->getErrors()[] = 'Hibás e-mail vagy jelszó.';
+                }
+            }
+        }
+
+        $formHtml = $form->render();
+        include __DIR__ . '/../View/pages/auth/login.php';
+    }
+
+    public function logout(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $_SESSION = [];
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(
+                session_name(),
+                '',
+                time() - 42000,
+                $params["path"],
+                $params["domain"],
+                $params["secure"],
+                $params["httponly"]
+            );
+        }
+        session_destroy();
+
+        header('Location: /FeriWebDevProject/public_html/');
+        exit;
+    }
+
+
     public function verify(): void
     {
         $message = '';

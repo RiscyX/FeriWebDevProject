@@ -1,6 +1,5 @@
 <?php
 
-// src/Model/User.php
 namespace WebDevProject\Model;
 
 use Exception;
@@ -16,9 +15,6 @@ class User
         $this->pdo = $pdo;
     }
 
-    /**
-     * Ellenőrzi, létezik-e már user a megadott felhasználónévvel vagy e-maillel.
-     */
     public function exists(string $username, string $email): bool
     {
         $stmt = $this->pdo->prepare("
@@ -34,10 +30,6 @@ class User
         return (bool) $stmt->fetch();
     }
 
-    /**
-     * Regisztrál egy új felhasználót:
-     * a jelszót bcrypt-tel hash-eli, és a 'password_hash' oszlopba menti.
-     */
     public function register(string $username, string $email, string $plainPassword): ?int
     {
         $hash = password_hash($plainPassword, PASSWORD_DEFAULT);
@@ -56,14 +48,10 @@ class User
             return null;
         }
 
-        // Ha sikerült az INSERT, kapjuk meg a beszúrt sor ID-ját:
         return (int)$this->pdo->lastInsertId();
     }
 
-    /**
-     * Bejelentkezéshez: lekéri a password_hash-et, és ellenőrzi a jelszó egyezését.
-     */
-    public function login(string $emailOrUsername, string $plainPassword): ?array
+    public function login(string $email, string $plainPassword): ?array
     {
         $stmt = $this->pdo->prepare("
             SELECT id, username, email, password_hash 
@@ -71,7 +59,7 @@ class User
             WHERE email = :x OR username = :x 
             LIMIT 1
         ");
-        $stmt->execute([':x' => $emailOrUsername]);
+        $stmt->execute([':x' => $email]);
         $user = $stmt->fetch();
 
         if ($user && password_verify($plainPassword, $user['password_hash'])) {
@@ -84,24 +72,19 @@ class User
         return null;
     }
 
-    /**
-     * sendVerification: generál egy tokent, elmenti az email_verifications táblába,
-     * majd PHPMailer-rel (Mailtrap-en keresztül) elküldi a megerősítő linket.
-     *
+     /**
      * @param int    $userId
      * @param string $email
      * @return bool
      */
     public function sendVerification(int $userId, string $email): bool
     {
-        // 1) Token generálása
         try {
             $token = bin2hex(random_bytes(32));
         } catch (\Exception $e) {
             return false;
         }
 
-        // 2) Mentés az email_verifications táblába
         $insert = $this->pdo->prepare("
             INSERT INTO email_verifications (user_id, token, created_at)
             VALUES (:u, :t, NOW())
@@ -115,20 +98,17 @@ class User
             return false;
         }
 
-        // 3) Verification link összeállítása
         $verificationLink = sprintf(
             'https://localhost/FeriWebDevProject/public_html/verify.php?token=%s',
             urlencode($token)
         );
 
-        // 4) PHPMailer példány kérése a Mailtrap-konfigurációval
         try {
             $mail = EmailConfig::createMailer();
         } catch (Exception $e) {
             return false;
         }
 
-        // 5) E-mail beállítása és elküldése
         $mail->addAddress($email);
         $mail->Subject = 'FeriWebDev – E-mail cím megerősítése';
         $mail->Body = "
@@ -148,7 +128,6 @@ class User
             $mail->send();
             return true;
         } catch (Exception $e) {
-            // Hibakezelés: $mail->ErrorInfo tartalmazza a részletes hibaüzenetet
             return false;
         }
     }

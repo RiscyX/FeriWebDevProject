@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="hu">
+<html lang="hu" data-bs-theme="<?= htmlspecialchars($_COOKIE['theme'] ?? 'light') ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>E-mail megerősítése</title>
-    <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../vendor/twbs/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="icon" href="favicon.png" type="image/png">
 </head>
-<body class="bg-light">
+<body>
 
 <?php require __DIR__ . '/../../partials/nav.php'; ?>
 
@@ -23,6 +24,7 @@
     </div>
 </div>
 
-<script src="./bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="../vendor/twbs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="./js/theme-toggle.js"></script>
 </body>
 </html>

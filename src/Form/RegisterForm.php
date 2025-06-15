@@ -9,10 +9,11 @@ class RegisterForm
 {
     /** @var \PDO */
     private $pdo;
-/** @var string[] data from $_POST */
+    /** @var string[] data from $_POST */
     private $data = [];
-/** @var string[] validation errors array */
+    /** @var string[] validation errors array */
     private $errors = [];
+
     public function __construct(\PDO $pdo)
     {
         $this->pdo = $pdo;
@@ -20,18 +21,18 @@ class RegisterForm
 
     public function load(array $postData): void
     {
-        $this->data['username']        = trim($postData['username']        ?? '');
-        $this->data['email']           = trim($postData['email']           ?? '');
-        $this->data['password']        = trim($postData['password']        ?? '');
+        $this->data['username'] = trim($postData['username'] ?? '');
+        $this->data['email'] = trim($postData['email'] ?? '');
+        $this->data['password'] = trim($postData['password'] ?? '');
         $this->data['password_confirm'] = trim($postData['password_confirm'] ?? '');
     }
 
     public function validate(): bool
     {
         $username = $this->data['username'] ?? '';
-        $email    = $this->data['email'] ?? '';
-        $pass     = $this->data['password'] ?? '';
-        $pass2    = $this->data['password_confirm'] ?? '';
+        $email = $this->data['email'] ?? '';
+        $pass = $this->data['password'] ?? '';
+        $pass2 = $this->data['password_confirm'] ?? '';
         if ($username === '' || strlen($username) < 3 || strlen($username) > 50) {
             $this->errors[] = 'A felhasználónév 3 és 50 karakter között kell legyen.';
         }
@@ -63,15 +64,10 @@ class RegisterForm
     public function register(): ?int
     {
         $username = $this->data['username'];
-        $email    = $this->data['email'];
-        $pass     = $this->data['password'];
+        $email = $this->data['email'];
+        $pass = $this->data['password'];
         $userModel = new User($this->pdo);
         return $userModel->register($username, $email, $pass);
-    }
-
-    public function getValue(string $field): string
-    {
-        return $this->data[$field] ?? '';
     }
 
     public function render(): string
@@ -96,50 +92,54 @@ class RegisterForm
         }
 
         $html .= '<form action="register.php" method="post" novalidate class="d-grid gap-3">';
-        $html .= '<div class="form-group">';
-        $html .= '  <label for="username">Felhasználónév</label>';
+        $html .= '<div class="form-floating">';
         $html .= '  <input'
             . ' type="text"'
-            . ' class="form-control"'
+            . ' class="form-control fs-5"'
             . ' id="username"'
             . ' name="username"'
-            . ' placeholder="3–50 karakter"'
+            . ' placeholder="Felhasználónév"'    // szükséges a lebegő labelhez
             . ' required minlength="3" maxlength="50"'
             . ' value="' . htmlspecialchars($this->getValue('username'), ENT_QUOTES) . '">';
+        $html .= '  <label for="username">Felhasználónév (3-50 karakter)</label>';
         $html .= '</div>';
-        $html .= '<div class="form-group">';
-        $html .= '  <label for="email">E-mail cím</label>';
+        $html .= '<div class="form-floating">';
         $html .= '  <input'
             . ' type="email"'
-            . ' class="form-control"'
+            . ' class="form-control fs-5"'
             . ' id="email"'
             . ' name="email"'
-            . ' placeholder="valaki@pelda.hu"'
+            . ' placeholder="E-mail cím"'
             . ' required'
             . ' value="' . htmlspecialchars($this->getValue('email'), ENT_QUOTES) . '">';
+        $html .= '  <label for="email">E-mail cím</label>';
         $html .= '</div>';
-        $html .= '<div class="form-group">';
-        $html .= '  <label for="password">Jelszó</label>';
+
+// Jelszó
+        $html .= '<div class="form-floating">';
         $html .= '  <input'
             . ' type="password"'
-            . ' class="form-control"'
+            . ' class="form-control fs-5"'
             . ' id="password"'
             . ' name="password"'
-            . ' placeholder="Legalább 6 karakter"'
+            . ' placeholder="Jelszó"'
             . ' required minlength="6">';
+        $html .= '  <label for="password">Jelszó (minimum 6 karakter)</label>';
         $html .= '</div>';
-        $html .= '<div class="form-group">';
-        $html .= '  <label for="password_confirm">Jelszó megerősítése</label>';
+
+// Jelszó megerősítése
+        $html .= '<div class="form-floating">';
         $html .= '  <input'
             . ' type="password"'
-            . ' class="form-control"'
+            . ' class="form-control fs-5"'
             . ' id="password_confirm"'
             . ' name="password_confirm"'
-            . ' placeholder="Írd be újra a jelszót"'
+            . ' placeholder="Jelszó megerősítése"'
             . ' required minlength="6">';
+        $html .= '  <label for="password_confirm">Jelszó megerősítése</label>';
         $html .= '</div>';
         $html .= '<div class="d-grid mb-3">';
-        $html .= '  <button type="submit" class="btn btn-primary">';
+        $html .= '  <button type="submit" class="btn btn-primary fs-5">';
         $html .= '    Regisztráció';
         $html .= '  </button>';
         $html .= '</div>';
@@ -149,5 +149,10 @@ class RegisterForm
         $html .= '</p>';
         $html .= '</form>';
         return $html;
+    }
+
+    public function getValue(string $field): string
+    {
+        return $this->data[$field] ?? '';
     }
 }

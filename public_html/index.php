@@ -1,48 +1,24 @@
 <!DOCTYPE html>
-<html lang="hu">
+<html lang="hu" data-bs-theme="<?= htmlspecialchars($_COOKIE['theme'] ?? 'light') ?>">
 <head>
     <meta charset="UTF-8">
-    <title>Bootstrap Test</title>
-    <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css">
+    <title>Hűtőszekrényem</title>
+    <link rel="stylesheet" href="../vendor/twbs/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/global.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="favicon.png" type="image/png">
 </head>
-<body class="bg-light">
+<body>
 
-<?php require_once "../src/View/partials/nav.php"; ?>
+ <?php require_once "../src/View/partials/nav.php"; ?>
 
-<div class="container mt-5">
-    <h1 class="text-center">Hello, Bootstrap!</h1>
-    <button class="btn btn-primary">Klikk ide</button>
-    <?php
-    require_once __DIR__ . '/../vendor/autoload.php';
+<main class="container py-3">
+    <?php require_once '../src/View/partials/carousel.php'; ?>
 
-    use WebDevProject\config\Config;
+</main>
 
-    try {
-        $connection = new PDO(
-            "mysql:host=" . Config::DB_HOST . ";dbname=" . Config::DB_NAME . ";charset=utf8mb4",
-            Config::DB_USER,
-            Config::DB_PASSWORD
-        );
-        $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        $stmt = $connection->query('SELECT NOW() AS currentTime');
-        $row = $stmt->fetch();
-
-        echo "<h1>Database connection successful!</h1>";
-        echo "<p>Current DB time: " . htmlspecialchars($row['currentTime']) . "</p>";
-
-    } catch (PDOException $e) {
-        echo "<h1>Database connection error</h1>";
-        echo "<p>" . htmlspecialchars($e->getMessage()) . "</p>";
-        exit;
-    }
-
-    ?>
-</div>
-
-<!-- Bootstrap JS és Popper (Bootstrap 5 esetén a bundle tartalmazza) -->
-<script src="./bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="../vendor/twbs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="./js/theme-toggle.js"></script>
 </body>
 </html>
 <?php
