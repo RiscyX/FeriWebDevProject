@@ -1,12 +1,8 @@
-# Bekapcsoljuk a rewrite-et
 RewriteEngine On
 
-# Ha a kért URL nem létezik fizikai fájlként vagy könyvtárként…
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
+# statikus fájlok (css, js, képek) → NEM rewrite
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
 
-# …és ha hozzáadva .php-vel létezik…
-RewriteCond %{REQUEST_FILENAME}\.php -f
-
-# akkor belső átirányítást csinálunk: /index → /index.php
-RewriteRule ^(.+)$ $1.php [L,QSA]
+# minden más -> index.php
+RewriteRule ^ index.php [L]

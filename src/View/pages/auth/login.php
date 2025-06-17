@@ -1,3 +1,4 @@
+<?php
 <!DOCTYPE html>
 <html lang="hu" data-bs-theme="<?= htmlspecialchars($_COOKIE['theme'] ?? 'light') ?>">
 <head>
@@ -11,8 +12,15 @@
 </head>
 <body>
 
-<?php include __DIR__ . '/../../partials/nav.php'; ?>
+// -------------------------------------------------
+// 1) Oldalcím — a layout ezt használja a <title>-hez
+// -------------------------------------------------
+$title = 'Bejelentkezés';
 
+// -------------------------------------------------
+// 2) Tartalom — innen lefelé kizárólag a fő rész
+// -------------------------------------------------
+?>
 <div class="container py-5">
     <section class="hero mb-4" style="padding:2.5rem 2rem 2rem 2rem;">
         <h1 class="hero-title">Bejelentkezés</h1>

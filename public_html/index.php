@@ -43,3 +43,42 @@
 </body>
 </html>
 <?php
+declare(strict_types=1);
+session_start();
+
+require_once __DIR__.'/../vendor/autoload.php';
+require_once __DIR__.'/../src/config/db_config.php';
+
+use WebDevProject\Controller\AuthController;
+use WebDevProject\Controller\HomeController;
+
+$base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');   //  pl.  "/FeriWebDevProject"
+$request = rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+$path = ($base && str_starts_with($request, $base))
+    ? substr($request, strlen($base)) ?: '/'
+    : ($request ?: '/');
+
+
+$home = new HomeController($pdo);
+$auth = new AuthController($pdo);
+
+switch ($path) {
+    case '/':
+        $home->index();        // betölti a home view-t
+        break;
+    case '/login':
+        $auth->authLogin();
+        break;
+    case '/register':
+        $auth->authRegister();
+        break;
+    case '/verify':
+        $auth->authVerify();
+        break;
+    case '/logout':
+        $auth->authLogout();
+        break;
+    default:
+        http_response_code(404);
+        echo '404 – oldal nem található';
+}
