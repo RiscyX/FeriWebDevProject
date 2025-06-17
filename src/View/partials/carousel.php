@@ -1,14 +1,5 @@
 <?php
 
-// src/View/partials/carousel.php
-
-// Ha dinamikusan töltenéd a slide-okat, ide betöltheted egy tömbből:
-// $slides = [
-//   ['img'=>'/assets/slide1.jpg','title'=>'Slide 1','caption'=>'First caption'],
-//   …
-// ];
-// Most statikus példaként:
-
 ?>
 <div id="homeCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
     <div class="carousel-indicators">

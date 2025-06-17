@@ -6,6 +6,5 @@ require_once __DIR__ . '/../src/config/db_config.php';
 
 use WebDevProject\Controller\AuthController;
 
-$auth = new AuthController($pdo);
-$auth->logout();
+(new AuthController($pdo))->authLogout();
 

@@ -6,22 +6,21 @@ use WebDevProject\Model\User;
 
 class LoginForm
 {
-    private \PDO $pdo;
     private array $data  = [];
     private array $errors = [];
 
-    public function __construct(\PDO $pdo)
-    {
-        $this->pdo = $pdo;
+    public function __construct(
+        private \PDO $pdo
+    ) {
     }
 
-    public function load(array $post): void
+    public function formLoad(array $post): void
     {
         $this->data['email']    = trim($post['email']    ?? '');
         $this->data['password'] = trim($post['password'] ?? '');
     }
 
-    public function validate(): bool
+    public function formValidate(): bool
     {
         if ($this->data['email'] === '' || !filter_var($this->data['email'], FILTER_VALIDATE_EMAIL)) {
             $this->errors[] = 'Érvénytelen vagy hiányzó e-mail cím.';
@@ -32,18 +31,18 @@ class LoginForm
         return empty($this->errors);
     }
 
-    public function login(): ?array
+    public function formLogin(): ?array
     {
         $user = new User($this->pdo);
-        return $user->login($this->data['email'], $this->data['password']);
+        return $user->userLogin($this->data['email'], $this->data['password']);
     }
 
-    public function getErrors(): array
+    public function &getErrors(): array
     {
         return $this->errors;
     }
 
-    public function render(): string
+    public function formRender(): string
     {
         $html = '';
         if ($this->errors) {

@@ -11,8 +11,8 @@ class Config
     public const DB_NAME = 'recipe';
 
     //MailTrap
-    public const MAILTRAP_HOST     = 'sandbox.smtp.mailtrap.io';
-    public const MAILTRAP_PORT     = 2525;
-    public const MAILTRAP_USERNAME = '';
-    public const MAILTRAP_PASSWORD = '';
+    public const MAILTRAP_HOST     = 'smtp.gmail.com';
+    public const MAILTRAP_PORT     = 465;
+    public const MAILTRAP_USERNAME = 'vassrichard31@gmail.com';
+    public const MAILTRAP_PASSWORD = 'itqc tbnx zlup ynpj ';
 }

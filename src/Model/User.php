@@ -3,19 +3,17 @@
 namespace WebDevProject\Model;
 
 use Exception;
-use WebDevProject\Config\EmailConfig;
+use Random\RandomException;
+use WebDevProject\config\EmailConfig;
 
 class User
 {
-    /** @var \PDO */
-    protected $pdo;
-
-    public function __construct(\PDO $pdo)
-    {
-        $this->pdo = $pdo;
+    public function __construct(
+        protected \PDO $pdo
+    ) {
     }
 
-    public function exists(string $username, string $email): bool
+    public function userExists(string $username, string $email): bool
     {
         $stmt = $this->pdo->prepare("
             SELECT id 
@@ -30,7 +28,7 @@ class User
         return (bool) $stmt->fetch();
     }
 
-    public function register(string $username, string $email, string $plainPassword): ?int
+    public function userRegister(string $username, string $email, string $plainPassword): ?int
     {
         $hash = password_hash($plainPassword, PASSWORD_DEFAULT);
 
@@ -51,7 +49,7 @@ class User
         return (int)$this->pdo->lastInsertId();
     }
 
-    public function login(string $email, string $plainPassword): ?array
+    public function userLogin(string $email, string $plainPassword): ?array
     {
         $stmt = $this->pdo->prepare("
             SELECT id, username, email, password_hash 
@@ -125,6 +123,59 @@ class User
             . "Ha nem Te regisztráltál, hagyd figyelmen kívül ezt az üzenetet.\n";
 
         try {
+            $mail->send();
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public function getUserByEmail(string $email): int
+    {
+        $stmt = $this->pdo->prepare("
+        SELECT id FROM users WHERE email = :e OR username = :e LIMIT 1
+    ");
+        $stmt->execute([':e' => $email]);
+        return ($row = $stmt->fetch()) ? (int)$row['id'] : -1;
+    }
+
+    /**
+     * @throws RandomException
+     */
+    public function sendPasswordReset(string $email): bool
+    {
+        $user =  $this->getUserByEmail($email);
+
+        if (! $user) {
+            return true;
+        }
+        $token = bin2hex(random_bytes(32));
+
+        $ins = $this->pdo->prepare("
+        INSERT INTO password_resets (user_id, token, created_at)
+        VALUES (:u, :t, NOW())
+    ");
+        if (! $ins->execute([':u' => $user, ':t' => $token])) {
+            return false;
+        }
+
+        // 4) E-mail küldés
+        $resetLink = sprintf(
+            'https://localhost/FeriWebDevProject/public_html/reset.php?token=%s',
+            urlencode($token)
+        );
+
+        try {
+            $mail = EmailConfig::createMailer();
+            $mail->addAddress($email);
+            $mail->Subject = 'FeriWebDev – Jelszó-visszaállítás';
+            $mail->Body = "
+            <p>Szia!</p>
+            <p>A jelszó visszaállításához kattints az alábbi linkre:</p>
+            <p><a href=\"{$resetLink}\">{$resetLink}</a></p>
+            <p>Ha nem te kérted, hagyd figyelmen kívül.</p>
+        ";
+            $mail->AltBody = "Jelszó-visszaállítás: {$resetLink}";
             $mail->send();
             return true;
         } catch (Exception $e) {

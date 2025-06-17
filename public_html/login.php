@@ -7,4 +7,4 @@ require_once __DIR__ . '/../src/config/db_config.php';
 
 use WebDevProject\Controller\AuthController;
 
-(new AuthController($pdo))->login();
+(new AuthController($pdo))->authLogin();

@@ -7,19 +7,17 @@ use WebDevProject\Model\User;
 
 class RegisterForm
 {
-    /** @var \PDO */
-    private $pdo;
     /** @var string[] data from $_POST */
     private $data = [];
     /** @var string[] validation errors array */
     private $errors = [];
 
-    public function __construct(\PDO $pdo)
-    {
-        $this->pdo = $pdo;
+    public function __construct(
+        private \PDO $pdo
+    ) {
     }
 
-    public function load(array $postData): void
+    public function formLoad(array $postData): void
     {
         $this->data['username'] = trim($postData['username'] ?? '');
         $this->data['email'] = trim($postData['email'] ?? '');
@@ -27,7 +25,7 @@ class RegisterForm
         $this->data['password_confirm'] = trim($postData['password_confirm'] ?? '');
     }
 
-    public function validate(): bool
+    public function formValidate(): bool
     {
         $username = $this->data['username'] ?? '';
         $email = $this->data['email'] ?? '';
@@ -48,7 +46,7 @@ class RegisterForm
 
         if (empty($this->errors)) {
             $userModel = new User($this->pdo);
-            if ($userModel->exists($username, $email)) {
+            if ($userModel->userExists($username, $email)) {
                 $this->errors[] = 'Már létezik ilyen felhasználónév vagy e-mail.';
             }
         }
@@ -56,21 +54,21 @@ class RegisterForm
         return empty($this->errors);
     }
 
-    public function getErrors(): array
+    public function &formGetErrors(): array
     {
         return $this->errors;
     }
 
-    public function register(): ?int
+    public function formRegister(): ?int
     {
         $username = $this->data['username'];
         $email = $this->data['email'];
         $pass = $this->data['password'];
         $userModel = new User($this->pdo);
-        return $userModel->register($username, $email, $pass);
+        return $userModel->userRegister($username, $email, $pass);
     }
 
-    public function render(): string
+    public function formRender(): string
     {
         $html = '';
         if (!empty($this->errors)) {
@@ -100,7 +98,7 @@ class RegisterForm
             . ' name="username"'
             . ' placeholder="Felhasználónév"'    // szükséges a lebegő labelhez
             . ' required minlength="3" maxlength="50"'
-            . ' value="' . htmlspecialchars($this->getValue('username'), ENT_QUOTES) . '">';
+            . ' value="' . htmlspecialchars($this->formGetValue('username'), ENT_QUOTES) . '">';
         $html .= '  <label for="username">Felhasználónév (3-50 karakter)</label>';
         $html .= '</div>';
         $html .= '<div class="form-floating">';
@@ -111,7 +109,7 @@ class RegisterForm
             . ' name="email"'
             . ' placeholder="E-mail cím"'
             . ' required'
-            . ' value="' . htmlspecialchars($this->getValue('email'), ENT_QUOTES) . '">';
+            . ' value="' . htmlspecialchars($this->formGetValue('email'), ENT_QUOTES) . '">';
         $html .= '  <label for="email">E-mail cím</label>';
         $html .= '</div>';
 
@@ -151,7 +149,7 @@ class RegisterForm
         return $html;
     }
 
-    public function getValue(string $field): string
+    public function formGetValue(string $field): string
     {
         return $this->data[$field] ?? '';
     }

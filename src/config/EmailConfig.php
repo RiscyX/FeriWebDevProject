@@ -18,14 +18,13 @@ class EmailConfig
     {
         $mail = new PHPMailer(true);
         $mail->isSMTP();
-        $mail = new PHPMailer();
-        $mail->isSMTP();
         $mail->Host = Config::MAILTRAP_HOST;
         $mail->SMTPAuth = true;
         $mail->Port       = Config::MAILTRAP_PORT;
         $mail->Username   = Config::MAILTRAP_USERNAME;
         $mail->Password   = Config::MAILTRAP_PASSWORD;
-        $mail->setFrom('feri@noreply.com', 'FeriWebDevProject');
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->setFrom('feri@feri.com', 'FeriWebDevProject');
         $mail->CharSet = 'UTF-8';
         $mail->isHTML(true);
         return $mail;

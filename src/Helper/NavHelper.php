@@ -6,7 +6,7 @@ class NavHelper
 {
     public static function getNavItems(): array
     {
-        $prefix = "FeriWebDevProject/public_html";
+        $prefix = "/FeriWebDevProject/public_html";
 
         $common = [
             ['label' => 'Receptek', 'href' => $prefix . '/recipes'],

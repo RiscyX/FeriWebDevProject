@@ -2,6 +2,7 @@
 
 namespace WebDevProject\Controller;
 
+use JetBrains\PhpStorm\NoReturn;
 use WebDevProject\Form\RegisterForm;
 use WebDevProject\Model\User;
 use DateTime;
@@ -9,27 +10,25 @@ use PDOException;
 
 class AuthController
 {
-    private \PDO $pdo;
-
-    public function __construct(\PDO $pdo)
-    {
-        $this->pdo = $pdo;
+    public function __construct(
+        private \PDO $pdo
+    ) {
     }
 
-    public function register(): void
+    public function authRegister(): void
     {
         $form = new RegisterForm($this->pdo);
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $form->load($_POST);
+            $form->formLoad($_POST);
 
-            if ($form->validate()) {
-                $newUserId = $form->register();
+            if ($form->formValidate()) {
+                $newUserId = $form->formRegister();
                 if ($newUserId !== null) {
                     $userModel = new User($this->pdo);
                     $sent = $userModel->sendVerification(
                         $newUserId,
-                        $form->getValue('email')
+                        $form->formGetValue('email')
                     );
 
                     if ($sent) {
@@ -40,30 +39,30 @@ class AuthController
                             'Regisztráció rendben, de az e-mail küldése nem sikerült.';
                     }
                 } else {
-                    $form->getErrors()[] = 'Ismeretlen hiba a regisztráció során.';
+                    $form->formGetErrors()[] = 'Ismeretlen hiba a regisztráció során.';
                 }
             }
         }
 
-        $formHtml = $form->render();
+        $formHtml = $form->formRender();
         include __DIR__ . '/../View/pages/auth/register.php';
     }
 
     // src/Controller/AuthController.php
 
-    public function login(): void
+    public function authLogin(): void
     {
         $form = new \WebDevProject\Form\LoginForm($this->pdo);
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $form->load($_POST);
-            if ($form->validate()) {
-                $user = $form->login();
+            $form->formLoad($_POST);
+            if ($form->formValidate()) {
+                $user = $form->formLogin();
                 if ($user) {
                     // sikeres belépés: session-be
-                    $_SESSION['user_id']  = $user['id'];
+                    $_SESSION['user_id'] = $user['id'];
                     $_SESSION['username'] = $user['username'];
-                    header('Location: dashboard');
+                    header('Location: index');
                     exit;
                 } else {
                     $form->getErrors()[] = 'Hibás e-mail vagy jelszó.';
@@ -71,11 +70,11 @@ class AuthController
             }
         }
 
-        $formHtml = $form->render();
+        $formHtml = $form->formRender();
         include __DIR__ . '/../View/pages/auth/login.php';
     }
 
-    public function logout(): void
+    #[NoReturn] public function authLogout(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -100,15 +99,18 @@ class AuthController
     }
 
 
-    public function verify(): void
+    /**
+     * @throws \Exception
+     */
+    public function authVerify(): void
     {
         $message = '';
-        $type    = 'success';
+        $type = 'success';
 
         if (empty($_GET['token'])) {
             http_response_code(404);
             $message = 'Érvénytelen hivatkozás: hiányzó token.';
-            $type    = 'danger';
+            $type = 'danger';
             include __DIR__ . '/../View/pages/auth/verify.php';
             return;
         }
@@ -127,22 +129,22 @@ class AuthController
         } catch (PDOException $e) {
             http_response_code(500);
             $message = 'Adatbázis-hiba: ' . $e->getMessage();
-            $type    = 'danger';
+            $type = 'danger';
             include __DIR__ . '/../View/pages/auth/verify.php';
             return;
         }
 
-        if (! $row) {
+        if (!$row) {
             http_response_code(404);
             $message = 'Érvénytelen vagy már felhasznált token.';
-            $type    = 'warning';
+            $type = 'warning';
         } else {
             $created = new DateTime($row['created_at']);
-            $now     = new DateTime();
+            $now = new DateTime();
             if ($now->getTimestamp() - $created->getTimestamp() > 24 * 3600) {
                 http_response_code(410); // Gone
                 $message = 'A verifikációs link lejárt (több mint 24 óra).';
-                $type    = 'warning';
+                $type = 'warning';
             } else {
                 $upd = $this->pdo->prepare("
                 UPDATE users
@@ -158,7 +160,6 @@ class AuthController
                 $del->execute([':t' => $token]);
 
                 $message = 'Sikeres e-mail megerősítés! Most már bejelentkezhetsz.';
-                $type    = 'success';
             }
         }
 
