@@ -89,62 +89,68 @@ class RegisterForm
             $html .= '</div>';
         }
 
-        $html .= '<form action="register.php" method="post" novalidate class="d-grid gap-3">';
-        $html .= '<div class="form-floating">';
+        $html .= '<form action="register.php" method="post" novalidate class="register-form">';
+        $html .= '<div class="row g-3">';
+        // Felhasználónév
+        $html .= '<div class="col-12">';
+        $html .= '  <label for="username" class="form-label fw-semibold text-dark">
+  Felhasználónév (3-50 karakter)
+  </label>';
         $html .= '  <input'
             . ' type="text"'
-            . ' class="form-control fs-5"'
+            . ' class="form-control fs-5 rounded-3 bg-light"'
             . ' id="username"'
             . ' name="username"'
-            . ' placeholder="Felhasználónév"'    // szükséges a lebegő labelhez
+            . ' placeholder="Felhasználónév"'
             . ' required minlength="3" maxlength="50"'
             . ' value="' . htmlspecialchars($this->formGetValue('username'), ENT_QUOTES) . '">';
-        $html .= '  <label for="username">Felhasználónév (3-50 karakter)</label>';
         $html .= '</div>';
-        $html .= '<div class="form-floating">';
+        // Email
+        $html .= '<div class="col-12">';
+        $html .= '  <label for="email" class="form-label fw-semibold text-dark">E-mail cím</label>';
         $html .= '  <input'
             . ' type="email"'
-            . ' class="form-control fs-5"'
+            . ' class="form-control fs-5 rounded-3 bg-light"'
             . ' id="email"'
             . ' name="email"'
             . ' placeholder="E-mail cím"'
             . ' required'
             . ' value="' . htmlspecialchars($this->formGetValue('email'), ENT_QUOTES) . '">';
-        $html .= '  <label for="email">E-mail cím</label>';
         $html .= '</div>';
-
-// Jelszó
-        $html .= '<div class="form-floating">';
+        // Jelszó
+        $html .= '<div class="col-12">';
+        $html .= '  <label for="password" class="form-label fw-semibold text-dark">Jelszó (minimum 6 karakter)</label>';
         $html .= '  <input'
             . ' type="password"'
-            . ' class="form-control fs-5"'
+            . ' class="form-control fs-5 rounded-3 bg-light"'
             . ' id="password"'
             . ' name="password"'
             . ' placeholder="Jelszó"'
             . ' required minlength="6">';
-        $html .= '  <label for="password">Jelszó (minimum 6 karakter)</label>';
         $html .= '</div>';
-
-// Jelszó megerősítése
-        $html .= '<div class="form-floating">';
+        // Jelszó megerősítése
+        $html .= '<div class="col-12">';
+        $html .= '  <label for="password_confirm" class="form-label fw-semibold text-dark">Jelszó megerősítése</label>';
         $html .= '  <input'
             . ' type="password"'
-            . ' class="form-control fs-5"'
+            . ' class="form-control fs-5 rounded-3 bg-light"'
             . ' id="password_confirm"'
             . ' name="password_confirm"'
             . ' placeholder="Jelszó megerősítése"'
             . ' required minlength="6">';
-        $html .= '  <label for="password_confirm">Jelszó megerősítése</label>';
         $html .= '</div>';
-        $html .= '<div class="d-grid mb-3">';
-        $html .= '  <button type="submit" class="btn btn-primary fs-5">';
+        // Gomb
+        $html .= '<div class="col-12 d-grid mb-3">';
+        $html .= '  <button type="submit" class="btn btn-primary fs-5 py-2 rounded-pill shadow-sm">';
         $html .= '    Regisztráció';
         $html .= '  </button>';
         $html .= '</div>';
-        $html .= '<hr class="my-3">';
-        $html .= '<p class="text-center mb-0">';
-        $html .= '  Már van fiókod? <a href="login.php" class="link-info">Bejelentkezés</a>';
-        $html .= '</p>';
+        $html .= '<div class="col-12"><hr class="my-3"></div>';
+        $html .= '<div class="col-12">';
+        $html .= '<p class="text-center mb-0">Már van fiókod? 
+<a href="login.php" class="link-success fw-semibold">Bejelentkezés</a></p>';
+        $html .= '</div>';
+        $html .= '</div>';
         $html .= '</form>';
         return $html;
     }

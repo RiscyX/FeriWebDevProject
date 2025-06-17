@@ -1,0 +1,174 @@
+/* index.css – FeriWebDevProject főoldal design.md alapján */
+
+/* --- Navigation --- */
+.navbar {
+  background: var(--navbar-bg);
+  border-bottom: 1px solid #BDBDBD;
+  box-shadow: 0 2px 8px rgba(104, 159, 56, 0.04);
+}
+.navbar-brand, .nav-link {
+  color: var(--navbar-text) !important;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.nav-link.active, .nav-link:hover {
+  color: var(--navbar-hover) !important;
+}
+
+/* --- Hero section --- */
+.hero {
+  background: var(--hero-bg);
+  border-radius: 1.5rem;
+  padding: 3rem 2rem 2rem 2rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 4px 24px rgba(104, 159, 56, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+.hero-title {
+  color: var(--primary-text);
+  font-family: 'Roboto', 'Open Sans', Arial, sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.hero-desc {
+  color: var(--desc-text, #757575);
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.btn-primary {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: none;
+  border-radius: 2rem;
+  padding: 0.75rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.btn-primary:hover {
+  background: var(--navbar-hover);
+  color: var(--btn-text);
+}
+.btn-primary:active {
+  background: #cddc39; /* opcionális: külön változó, ha kell */
+  color: var(--primary-text);
+}
+
+/* --- Cards --- */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+}
+.card {
+  background: var(--primary-bg);
+  border-radius: 1rem;
+  box-shadow: 0 2px 12px rgba(104, 159, 56, 0.07);
+  border: 1px solid var(--card-border, #BDBDBD);
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: box-shadow 0.2s, background 0.3s, color 0.3s;
+  color: var(--primary-text);
+}
+.card:hover {
+  box-shadow: 0 6px 24px rgba(104, 159, 56, 0.13);
+}
+.card-title {
+  color: var(--primary-text);
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.card-desc {
+  color: var(--desc-text, #757575);
+  font-size: 1rem;
+}
+
+/* --- Links --- */
+a {
+  color: var(--navbar-hover);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+a:hover {
+  color: var(--navbar-text);
+}
+
+/* --- Divider --- */
+.divider {
+  border-top: 1px solid var(--divider, #BDBDBD);
+  margin: 2.5rem 0;
+}
+
+/* --- Container --- */
+.container {
+  background: var(--primary-bg);
+  color: var(--primary-text);
+  border-radius: 1.25rem;
+  box-shadow: 0 2px 16px rgba(104, 159, 56, 0.07);
+  padding: 2rem 1.5rem;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* --- Input és textarea mezők --- */
+input.form-control, textarea.form-control {
+  color: #212121;
+}
+[data-bs-theme="dark"] input.form-control,
+[data-bs-theme="dark"] textarea.form-control {
+  color: #212121;
+}
+[data-bs-theme="dark"] label.form-label {
+  color: #f1f1f1 !important;
+}
+[data-bs-theme="dark"] input.form-control::placeholder,
+[data-bs-theme="dark"] textarea.form-control::placeholder {
+  color: #23272b;
+  opacity: 1;
+}
+
+/* --- Responsive --- */
+@media (max-width: 600px) {
+  .hero {
+    padding: 2rem 1rem 1.5rem 1rem;
+  }
+  .cards {
+    gap: 1rem;
+  }
+  .card {
+    padding: 1.2rem 0.7rem;
+  }
+}
+
+/* --- Theme toggle (alap, sötét módhoz JS szükséges) --- */
+[data-theme="dark"] {
+  background: #212121;
+  color: #dcedc8;
+}
+[data-theme="dark"] .navbar {
+  background: #212121;
+  border-bottom: 1px solid #689f38;
+}
+[data-theme="dark"] .hero {
+  background: linear-gradient(90deg, #689f38 60%, #212121 100%);
+}
+[data-theme="dark"] .card {
+  background: var(--secondary-bg);
+  border: 1px solid var(--navbar-text);
+  color: var(--primary-text);
+}
+[data-theme="dark"] .card-title {
+  color: var(--primary-text);
+}
+[data-theme="dark"] .card-desc {
+  color: var(--navbar-hover);
+}
+[data-theme="dark"] .divider {
+  border-top: 1px solid var(--navbar-text);
+}

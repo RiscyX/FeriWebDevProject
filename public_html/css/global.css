@@ -1,3 +1,33 @@
+/* Téma színek változók */
+:root,
+[data-bs-theme="light"] {
+  --primary-bg: #fff;
+  --primary-text: #212121;
+  --secondary-bg: #dcedc8;
+  --navbar-bg: #fff;
+  --navbar-text: #689f38;
+  --navbar-hover: #8bc34a;
+  --hero-bg: linear-gradient(90deg, #dcedc8 60%, #fff 100%);
+  --btn-bg: #689f38;
+  --btn-text: #fff;
+}
+[data-bs-theme="dark"] {
+  --primary-bg: #181a1b;
+  --primary-text: #f1f1f1;
+  --secondary-bg: #263238;
+  --navbar-bg: #23272b;
+  --navbar-text: #aed581;
+  --navbar-hover: #dcedc8;
+  --hero-bg: linear-gradient(90deg, #263238 60%, #181a1b 100%);
+  --btn-bg: #8bc34a;
+  --btn-text: #23272b;
+}
+
+body {
+  background: var(--primary-bg);
+  color: var(--primary-text);
+}
+
 .carousel-item img {
     height: 85vh;
     object-fit: cover;

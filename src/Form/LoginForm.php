@@ -46,44 +46,55 @@ class LoginForm
     {
         $html = '';
         if ($this->errors) {
-            $html .= '<div class="alert alert-danger"><ul class="mb-0">';
+            $html .= '<div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm" role="alert">';
+            $html .= '<ul class="mb-0">';
             foreach ($this->errors as $e) {
                 $html .= '<li>' . htmlspecialchars($e, ENT_QUOTES) . '</li>';
             }
-            $html .= '</ul></div>';
+            $html .= '</ul>';
+            $html .= '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Bezárás"></button>';
+            $html .= '</div>';
         }
 
-        $html .= '<form method="post" class="d-grid gap-3">';
+        $html .= '<form method="post" class="login-form container" >';
+        $html .= '<div class="row g-3">';
         // E-mail
-        $html .= '<div class="form-floating">';
+        $html .= '<div class="col-12">';
+        $html .= '  <label for="email" class="form-label fw-semibold text-dark">E-mail cím</label>';
         $html .= '  <input'
             . ' type="email"'
             . ' name="email"'
-            . ' class="form-control fs-5"'
+            . ' class="form-control fs-5 rounded-3 bg-light"'
             . ' id="email"'
             . ' placeholder="E-mail cím"'
             . ' value="' . htmlspecialchars($this->data['email'] ?? '', ENT_QUOTES) . '"'
             . ' required>';
-        $html .= '  <label for="email">E-mail cím</label>';
         $html .= '</div>';
         // Jelszó
-        $html .= '<div class="form-floating">';
+        $html .= '<div class="col-12">';
+        $html .= '  <label for="password" class="form-label fw-semibold text-dark">Jelszó</label>';
         $html .= '  <input'
             . ' type="password"'
             . ' name="password"'
-            . ' class="form-control fs-5"'
+            . ' class="form-control fs-5 rounded-3 bg-light"'
             . ' id="password"'
             . ' placeholder="Jelszó"'
             . ' required>';
-        $html .= '  <label for="password">Jelszó</label>';
         $html .= '</div>';
         // Submit
-        $html .= '<div class="d-grid mb-3">';
-        $html .= '  <button type="submit" class="btn btn-primary fs-5">Bejelentkezés</button>';
+        $html .= '<div class="col-12 d-grid mb-3">';
+        $html .= '  <button type="submit" 
+  class="btn btn-primary fs-5 py-2 rounded-pill shadow-sm">
+  Bejelentkezés
+  </button>';
         $html .= '</div>';
-        $html .= '<p class="text-center mb-0">';
-        $html .= '  Még nincs fiókod? <a href="/register" class="link-info">Regisztráció</a>';
-        $html .= '</p>';
+        $html .= '<div class="col-12">';
+        $html .= '<p class="text-center mb-0">Még nincs fiókod? 
+<a href="register.php" class="link-success fw-semibold">
+Regisztráció
+</a></p>';
+        $html .= '</div>';
+        $html .= '</div>';
         $html .= '</form>';
 
         return $html;

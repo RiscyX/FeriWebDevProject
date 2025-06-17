@@ -6,6 +6,8 @@
     <title>Regisztráció</title>
     <link rel="stylesheet" href="../vendor/twbs/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="./css/global.css">
+    <link rel="stylesheet" href="./css/index.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
     <link rel="icon" href="favicon.png" type="image/png">
 </head>
 <body>
@@ -13,9 +15,18 @@
 <?php require_once "../src/View/partials/nav.php"; ?>
 
 <div class="container py-5">
+    <section class="hero mb-4" style="padding:2.5rem 2rem 2rem 2rem;">
+        <h1 class="hero-title">Regisztráció</h1>
+        <p class="hero-desc">
+            Regisztrálj, hogy a hűtőd tartalmát egy helyen áttekinthesd,
+            és könnyedén megtervezd a következő bevásárlást.
+        </p>
+    </section>
     <div class="row justify-content-center">
         <div class="col-12 col-md-10 col-lg-8 col-xl-6">
-            <?= $formHtml ?>
+            <div class="card p-4">
+                <?= $formHtml ?>
+            </div>
         </div>
     </div>
 </div>
