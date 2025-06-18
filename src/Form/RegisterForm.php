@@ -8,12 +8,12 @@ use WebDevProject\Model\User;
 class RegisterForm
 {
     /** @var string[] data from $_POST */
-    private $data = [];
+    private array $data = [];
     /** @var string[] validation errors array */
-    private $errors = [];
+    private array $errors = [];
 
     public function __construct(
-        private \PDO $pdo
+        protected \PDO $pdo
     ) {
     }
 
@@ -89,69 +89,53 @@ class RegisterForm
             $html .= '</div>';
         }
 
-        $html .= '<form action="register.php" method="post" novalidate class="d-grid gap-3">';
-        $html .= '<div class="form-floating">';
-        $html .= '  <input'
-            . ' type="text"'
-            . ' class="form-control fs-5"'
-            . ' id="username"'
-            . ' name="username"'
-            . ' placeholder="Felhasználónév"'    // szükséges a lebegő labelhez
-            . ' required minlength="3" maxlength="50"'
-            . ' value="' . htmlspecialchars($this->formGetValue('username'), ENT_QUOTES) . '">';
-        $html .= '  <label for="username">Felhasználónév (3-50 karakter)</label>';
-        $html .= '</div>';
-        $html .= '<div class="form-floating">';
-        $html .= '  <input'
-            . ' type="email"'
-            . ' class="form-control fs-5"'
-            . ' id="email"'
-            . ' name="email"'
-            . ' placeholder="E-mail cím"'
-            . ' required'
-            . ' value="' . htmlspecialchars($this->formGetValue('email'), ENT_QUOTES) . '">';
-        $html .= '  <label for="email">E-mail cím</label>';
-        $html .= '</div>';
+        $html .= '<form method="post" class="container">';
+        $html .= '<div class="row g-3">';
 
-// Jelszó
-        $html .= '<div class="form-floating">';
-        $html .= '  <input'
-            . ' type="password"'
-            . ' class="form-control fs-5"'
-            . ' id="password"'
-            . ' name="password"'
-            . ' placeholder="Jelszó"'
-            . ' required minlength="6">';
-        $html .= '  <label for="password">Jelszó (minimum 6 karakter)</label>';
-        $html .= '</div>';
-
-// Jelszó megerősítése
-        $html .= '<div class="form-floating">';
-        $html .= '  <input'
-            . ' type="password"'
-            . ' class="form-control fs-5"'
-            . ' id="password_confirm"'
-            . ' name="password_confirm"'
-            . ' placeholder="Jelszó megerősítése"'
-            . ' required minlength="6">';
-        $html .= '  <label for="password_confirm">Jelszó megerősítése</label>';
-        $html .= '</div>';
-        $html .= '<div class="d-grid mb-3">';
-        $html .= '  <button type="submit" class="btn btn-primary fs-5">';
-        $html .= '    Regisztráció';
-        $html .= '  </button>';
-        $html .= '</div>';
-        $html .= '<div class="col-12"><hr class="my-3"></div>';
+        /*─ Felhasználónév ─*/
         $html .= '<div class="col-12">';
-        $html .= '<p class="text-center mb-0">Már van fiókod? 
-<a href="login.php" class="link-success fw-semibold">Bejelentkezés</a></p>';
+        $html .= ' <label for="username" class="form-label fw-semibold text-dark">Felhasználónév</label>';
+        $html .= ' <input type="text" name="username" id="username" placeholder="Felhasználónév"'
+            . ' class="form-control fs-5 rounded-3 bg-light"'
+            . ' value="' . htmlspecialchars($this->formGetValue("username"), ENT_QUOTES) . '"'
+            . ' required minlength="3" maxlength="50">';
         $html .= '</div>';
+
+        /*─ E-mail ─*/
+        $html .= '<div class="col-12">';
+        $html .= ' <label for="email" class="form-label fw-semibold text-dark">E-mail cím</label>';
+        $html .= ' <input type="email" name="email" id="email" placeholder="E-mail cím"'
+            . ' class="form-control fs-5 rounded-3 bg-light"'
+            . ' value="' . htmlspecialchars($this->formGetValue("email"), ENT_QUOTES) . '"'
+            . ' required>';
         $html .= '</div>';
-        $html .= '<hr class="my-3">';
-        $html .= '<p class="text-center mb-0">';
-        $html .= '  Már van fiókod? <a href="/login" class="link-info">Bejelentkezés</a>';
-        $html .= '</p>';
-        $html .= '</form>';
+
+        /*─ Jelszó ─*/
+        $html .= '<div class="col-12">';
+        $html .= ' <label for="password" class="form-label fw-semibold text-dark">Jelszó</label>';
+        $html .= ' <input type="password" name="password" id="password" placeholder="Jelszó"'
+            . ' class="form-control fs-5 rounded-3 bg-light" required>';
+        $html .= '</div>';
+
+        /*─ Jelszó megerősítés ─*/
+        $html .= '<div class="col-12">';
+        $html .= ' <label for="password_confirm" class="form-label fw-semibold text-dark">Jelszó megerősítése</label>';
+        $html .= ' <input type="password" name="password_confirm"
+                id="password_confirm" placeholder="Jelszó megerősítése"'
+            . ' class="form-control fs-5 rounded-3 bg-light" required>';
+        $html .= '</div>';
+
+        /*─ Gomb + link ─*/
+        $html .= '<div class="col-12 d-grid mb-3">';
+        $html .= ' <button type="submit" class="btn btn-primary fs-5 py-2 rounded-pill shadow-sm">'
+            . 'Regisztráció</button>';
+        $html .= '</div>';
+        $html .= '<div class="col-12">';
+        $html .= ' <p class="text-center mb-0">Már van fiókod? '
+            . '<a href="/login" class="link-success fw-semibold">Bejelentkezés</a></p>';
+        $html .= '</div>';
+
+        $html .= '</div></form>';
         return $html;
     }
 

@@ -3,7 +3,7 @@
 /** @var string $message  – a controller állítja be
  *  @var string $type     – alert osztály: success | warning | danger
  */
-$title ??= 'E-mail megerősítése';  /* <title>-hez a layoutban */
+$title ??= 'E-mail megerősítése';
 ?>
 
 <div class="container py-5">

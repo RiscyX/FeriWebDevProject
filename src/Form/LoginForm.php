@@ -6,17 +6,17 @@ use WebDevProject\Model\User;
 
 class LoginForm
 {
-    private array $data  = [];
+    private array $data = [];
     private array $errors = [];
 
     public function __construct(
-        private \PDO $pdo
+        protected \PDO $pdo
     ) {
     }
 
     public function formLoad(array $post): void
     {
-        $this->data['email']    = trim($post['email']    ?? '');
+        $this->data['email'] = trim($post['email'] ?? '');
         $this->data['password'] = trim($post['password'] ?? '');
     }
 
@@ -56,7 +56,7 @@ class LoginForm
             $html .= '</div>';
         }
 
-        $html .= '<form method="post" class="login-form container" >';
+        $html .= '<form method="post" class="container" >';
         $html .= '<div class="row g-3">';
         // E-mail
         $html .= '<div class="col-12">';
@@ -83,16 +83,22 @@ class LoginForm
         $html .= '</div>';
         // Submit
         $html .= '<div class="col-12 d-grid mb-3">';
-        $html .= '  <button type="submit" 
-  class="btn btn-primary fs-5 py-2 rounded-pill shadow-sm">
-  Bejelentkezés
-  </button>';
+        $html .= '<button type="submit" 
+                  class="btn btn-primary fs-5 py-2 rounded-pill shadow-sm">
+                    Bejelentkezés
+                  </button>';
         $html .= '</div>';
         $html .= '<div class="col-12">';
         $html .= '<p class="text-center mb-0">Még nincs fiókod? 
-<a href="register.php" class="link-success fw-semibold">
-Regisztráció
-</a></p>';
+                    <a href="/register" class="link-success fw-semibold">
+                        Regisztráció
+                   </a></p>';
+        $html .= '</div>';
+        $html .= '<div class="col-12">';
+        $html .= '<p class="text-center mb-0">Elfelejtetted a jelszavad? 
+                    <a href="/reset" class="link-success fw-semibold">
+                        Jelszó megváltoztatása
+                   </a></p>';
         $html .= '</div>';
         $html .= '</div>';
         $html .= '</form>';

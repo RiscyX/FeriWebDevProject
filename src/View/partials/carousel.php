@@ -2,7 +2,8 @@
 
 ?>
 <div id="homeCarousel"
-     class="carousel slide mb-5 shadow-lg rounded-4 overflow-hidden" data-bs-ride="carousel" style="background: var(--secondary-bg, #f5f5f5);">
+     class="carousel slide mb-5 shadow-lg
+     rounded-4 overflow-hidden" data-bs-ride="carousel" style="background: var(--secondary-bg, #f5f5f5);">
     <div class="carousel-indicators">
         <button 
                 type="button" data-bs-target="#homeCarousel" data-bs-slide-to="0"

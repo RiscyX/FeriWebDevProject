@@ -11,7 +11,7 @@ $navItems = NavHelper::getNavItems();
 ?>
 <nav class="navbar navbar-expand-lg navbar-light">
     <div class="container-fluid">
-        <a class="navbar-brand fs-3 px-2" href="/FeriWebDevProject/public_html/">Hűtőszekrényem</a>
+        <a class="navbar-brand fs-3 px-2" href="/">Hűtőszekrényem</a>
 
         <!-- hamburger gomb minden eszközön, de collapse-olja a #mainNav-ot -->
         <button class="navbar-toggler"

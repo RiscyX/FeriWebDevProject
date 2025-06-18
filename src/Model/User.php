@@ -3,7 +3,6 @@
 namespace WebDevProject\Model;
 
 use Exception;
-use Random\RandomException;
 use WebDevProject\config\EmailConfig;
 
 class User
@@ -70,10 +69,11 @@ class User
         return null;
     }
 
-     /**
-     * @param int    $userId
+    /**
+     * @param int $userId
      * @param string $email
      * @return bool
+     * @throws \PHPMailer\PHPMailer\Exception
      */
     public function sendVerification(int $userId, string $email): bool
     {
@@ -97,7 +97,7 @@ class User
         }
 
         $verificationLink = sprintf(
-            'https://localhost/FeriWebDevProject/public_html/verify.php?token=%s',
+            'https://localhost/FeriWebDevProject/public_html/verify?token=%s',
             urlencode($token)
         );
 
@@ -130,56 +130,81 @@ class User
         }
     }
 
-    public function getUserByEmail(string $email): int
+    public function requestPasswordReset(string $email): bool
     {
-        $stmt = $this->pdo->prepare("
-        SELECT id FROM users WHERE email = :e OR username = :e LIMIT 1
-    ");
+        $stmt = $this->pdo->prepare(
+            "SELECT id FROM users WHERE email = :e LIMIT 1"
+        );
         $stmt->execute([':e' => $email]);
-        return ($row = $stmt->fetch()) ? (int)$row['id'] : -1;
-    }
+        $userId = $stmt->fetchColumn();
 
-    /**
-     * @throws RandomException
-     */
-    public function sendPasswordReset(string $email): bool
-    {
-        $user =  $this->getUserByEmail($email);
-
-        if (! $user) {
+        if (!$userId) {
             return true;
         }
+
         $token = bin2hex(random_bytes(32));
 
-        $ins = $this->pdo->prepare("
-        INSERT INTO password_resets (user_id, token, created_at)
-        VALUES (:u, :t, NOW())
-    ");
-        if (! $ins->execute([':u' => $user, ':t' => $token])) {
+        $ok = $this->pdo->prepare(
+            "INSERT INTO password_resets (user_id, token, created_at)
+                   VALUES (:u, :t, NOW())"
+        )->execute([':u' => $userId, ':t' => $token]);
+
+        if (!$ok) {
             return false;
         }
 
-        // 4) E-mail küldés
-        $resetLink = sprintf(
-            'https://localhost/FeriWebDevProject/public_html/reset.php?token=%s',
-            urlencode($token)
-        );
+        $base = $_ENV['APP_URL']
+            ?? ((PHP_SAPI === 'cli')
+                ? 'localhost/FeriWebDevProject/'
+                : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http')
+                . '://' . ($_SERVER['HTTP_HOST'] ?? 'feriwebdevproject'));
+
+        $resetLink = $base . '/reset?token=' . urlencode($token);
 
         try {
             $mail = EmailConfig::createMailer();
             $mail->addAddress($email);
             $mail->Subject = 'FeriWebDev – Jelszó-visszaállítás';
             $mail->Body = "
-            <p>Szia!</p>
-            <p>A jelszó visszaállításához kattints az alábbi linkre:</p>
-            <p><a href=\"{$resetLink}\">{$resetLink}</a></p>
-            <p>Ha nem te kérted, hagyd figyelmen kívül.</p>
-        ";
+              <p>Szia!</p>
+              <p>A jelszó visszaállításához kattints:<br>
+                 <a href=\"{$resetLink}\">{$resetLink}</a></p>
+              <p>Ha nem te kérted, hagyd figyelmen kívül.</p>";
             $mail->AltBody = "Jelszó-visszaállítás: {$resetLink}";
             $mail->send();
             return true;
-        } catch (Exception $e) {
+        } catch (\PHPMailer\PHPMailer\Exception $e) {
+            error_log('[MAILERR] ' . $e->getMessage());
             return false;
         }
+    }
+
+    public function resetPassword(string $token, string $newPwd): bool
+    {
+        $stmt = $this->pdo->prepare(
+            "SELECT user_id
+               FROM password_resets
+              WHERE token = :t
+                AND created_at >= (NOW() - INTERVAL 10 MINUTE)
+              LIMIT 1"
+        );
+        $stmt->execute([':t' => $token]);
+        $userId = $stmt->fetchColumn();
+
+        if (!$userId) {
+            return false;
+        }
+
+        $pwdHash = password_hash($newPwd, PASSWORD_DEFAULT);
+
+        $ok = $this->pdo->prepare(
+            "UPDATE users SET password_hash = :p WHERE id = :u LIMIT 1"
+        )->execute([':p' => $pwdHash, ':u' => $userId]);
+
+        if ($ok) {
+            $this->pdo->prepare("DELETE FROM password_resets WHERE token = :t")
+                ->execute([':t' => $token]);
+        }
+        return $ok;
     }
 }

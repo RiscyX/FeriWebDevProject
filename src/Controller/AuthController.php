@@ -3,10 +3,11 @@
 namespace WebDevProject\Controller;
 
 use JetBrains\PhpStorm\NoReturn;
+use Random\RandomException;
+use WebDevProject\Form\LoginForm;
+use WebDevProject\Form\PasswordResetForm;
 use WebDevProject\Form\RegisterForm;
 use WebDevProject\Model\User;
-use DateTime;
-use PDOException;
 
 class AuthController
 {
@@ -17,16 +18,15 @@ class AuthController
 
     public function authRegister(): void
     {
-        $form = new \WebDevProject\Form\RegisterForm($this->pdo);
+        $form = new RegisterForm($this->pdo);
 
-        /* ------------ 1)  Feldolgozás / POST ------------ */
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $form->formLoad($_POST);
 
             if ($form->formValidate()) {
-                $newUserId = $form->formRegister();          // ↲ új user ID
+                $newUserId = $form->formRegister();
                 if ($newUserId !== null) {
-                    $userModel = new \WebDevProject\Model\User($this->pdo);
+                    $userModel = new User($this->pdo);
                     $sent = $userModel->sendVerification(
                         $newUserId,
                         $form->formGetValue('email')
@@ -36,18 +36,14 @@ class AuthController
                         ? 'Sikeres regisztráció! Kérlek, ellenőrizd az e-mail fiókodat.'
                         : 'Regisztráció sikerült, de az e-mailt nem sikerült elküldeni.';
 
-                    /* PRG-minta → redirect, hogy F5 ne küldje újra a POST-ot */
                     header('Location: /register');
                     exit;
                 }
 
-                // ismeretlen hiba
                 $err = &$form->formGetErrors();
                 $err[] = 'Ismeretlen hiba a regisztráció során.';
             }
         }
-
-        /* ------------ 2)  View → $content ------------ */
         $formHtml = $form->formRender();
 
         ob_start();
@@ -55,51 +51,43 @@ class AuthController
         $content = ob_get_clean();
         $title   = 'Regisztráció';
 
-        /* ------------ 3)  Layout ------------ */
         include __DIR__ . '/../View/layout.php';
     }
 
-
-    // src/Controller/AuthController.php
-
     public function authLogin(): void
     {
-        $form = new \WebDevProject\Form\LoginForm($this->pdo);
+        $form = new LoginForm($this->pdo);
 
-        /* -------- 1)  Feldolgozás -------- */
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $form->formLoad($_POST);
 
             if ($form->formValidate()) {
                 $user = $form->formLogin();
 
-                if ($user) {                       // sikeres login
+                if ($user) {
                     $_SESSION['user_id']  = $user['id'];
                     $_SESSION['username'] = $user['username'];
-                    header('Location: /');         // abszolút gyökérre
+                    header('Location: /');
                     exit;
                 }
 
-                // sikertelen login → hiba a formhoz
-                $errors = &$form->getErrors();     // REFERENCIÁVAL tér vissza
+                $errors = &$form->getErrors();
                 $errors[] = 'Hibás e-mail vagy jelszó.';
             }
         }
 
-        /* -------- 2)  View → buffer -------- */
-        $formHtml = $form->formRender();           // → változó a view-nak
+        $formHtml = $form->formRender();
 
-        ob_start();                                // 2/a: puffer indítása
+        ob_start();
         include __DIR__ . '/../View/pages/auth/login.php';
-        $content = ob_get_clean();                 // 2/b: HTML → $content
-        $title   = 'Bejelentkezés';                // <title> a layoutnak
+        $content = ob_get_clean();
+        $title   = 'Bejelentkezés';
 
-        /* -------- 3)  Layout betöltése ---- */
         include __DIR__ . '/../View/layout.php';
     }
 
 
-    #[NoReturn] public function authLogout(): void
+    public function authLogout(): never
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -119,17 +107,18 @@ class AuthController
         }
         session_destroy();
 
-        header('Location: /FeriWebDevProject/public_html/');
+        header('Location: /');
         exit;
     }
 
 
+    /**
+     * @throws \Exception
+     */
     public function authVerify(): bool
     {
         $type    = 'success';
-        $message = '';
 
-        /* -------- 1)  Token ellenőrzés -------- */
         $token = trim($_GET['token'] ?? '');
 
         if ($token === '') {
@@ -155,7 +144,6 @@ class AuthController
             return false;
         }
 
-        /* -------- 2)  Feldolgozás -------- */
         if (!$row) {
             http_response_code(404);
             $type    = 'warning';
@@ -169,7 +157,6 @@ class AuthController
                 $type    = 'warning';
                 $message = 'A verifikációs link lejárt (több mint 24 óra).';
             } else {
-                /* siker → user frissítése */
                 $this->pdo->prepare(
                     'UPDATE users SET email_verified_at = NOW() WHERE id = :uid'
                 )->execute([':uid' => $row['user_id']]);
@@ -182,7 +169,6 @@ class AuthController
             }
         }
 
-        /* -------- 3)  Megjelenítés -------- */
         $this->renderVerify($type, $message);
         return true;
     }
@@ -195,6 +181,38 @@ class AuthController
         include __DIR__ . '/../View/pages/auth/verify.php';
         $content = ob_get_clean();
 
+        include __DIR__ . '/../View/layout.php';
+    }
+
+    /**
+     * @throws RandomException
+     */
+    public function authPasswordReset(): void
+    {
+        $token = $_GET['token'] ?? ($_POST['token'] ?? null);
+        $form  = new PasswordResetForm($this->pdo, $token);
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $form->formLoad($_POST);
+
+            $ok = $form->formValidate() && $form->formSubmit();
+
+            $_SESSION['flash'] = $ok
+                ? ($token
+                    ? 'Sikeres jelszófrissítés! Most már bejelentkezhetsz.'
+                    : 'Ha létezik ilyen fiók, elküldtük a visszaállító linket.')
+                : 'Valami hiba történt. Próbáld újra.';
+
+            header('Location: ' . ($token ? '/login' : '/reset'), true, 303);
+            exit;
+        }
+
+
+        ob_start();
+        $formHtml = $form->formRender();
+        include __DIR__ . '/../View/pages/auth/reset.php';
+        $content = ob_get_clean();
+        $title   = 'Új jelszó beállítása';
         include __DIR__ . '/../View/layout.php';
     }
 }
