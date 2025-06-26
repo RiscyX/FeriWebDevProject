@@ -9,6 +9,7 @@ error_reporting(E_ALL);
 require_once __DIR__.'/../vendor/autoload.php';
 require_once __DIR__.'/../src/config/db_config.php';
 
+use WebDevProject\Controller\AdminController;
 use WebDevProject\Controller\AuthController;
 use WebDevProject\Controller\HomeController;
 
@@ -21,6 +22,7 @@ $path = ($base && str_starts_with($request, $base))
 
 $home = new HomeController($pdo);
 $auth = new AuthController($pdo);
+$admin = new AdminController($pdo);
 
 match ($path) {
     '/'         => $home->index(),
@@ -29,6 +31,9 @@ match ($path) {
     '/verify'   => $auth->authVerify(),
     '/logout'   => $auth->authLogout(),
     '/reset'    => $auth->authPasswordReset(),
+
+    '/admin'                => $admin->index(),
+    '/admin/users'          => $admin->index(),
     default     => (function () {
         http_response_code(404);
         echo '404 – oldal nem található';

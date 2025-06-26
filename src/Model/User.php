@@ -3,6 +3,7 @@
 namespace WebDevProject\Model;
 
 use Exception;
+use PDO;
 use WebDevProject\config\EmailConfig;
 
 class User
@@ -208,4 +209,36 @@ class User
         }
         return $ok;
     }
+
+    public static function count(PDO $pdo): int
+    {
+        $sql  = 'SELECT COUNT(*) FROM users
+             WHERE email_verified_at IS NOT NULL';
+
+        return (int) $pdo->query($sql)->fetchColumn();
+    }
+
+    /**
+     * Lapozott lekérdezés – csak a verifikált fiókok.
+     *
+     * @return array<array{
+     *     id:int, username:string, email:string, role:string,
+     *     created_at:string, is_banned:int}>
+     */
+    public static function paginated(PDO $pdo, int $limit, int $offset): array
+    {
+        $sql = 'SELECT id, username, email, role, created_at, is_banned
+            FROM users
+            WHERE email_verified_at IS NOT NULL
+            ORDER BY id DESC
+            LIMIT :l OFFSET :o';
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':l', $limit,  PDO::PARAM_INT);
+        $stmt->bindValue(':o', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
 }
