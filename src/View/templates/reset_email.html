@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jelszó-visszaállítás</title>
+    <style>
+        body{margin:0;padding:0;background:#ecf8ee;font-family:Arial,Helvetica,sans-serif;color:#333;}
+        .wrapper{width:100%;table-layout:fixed;padding:20px 0;}
+        .main{background:#ffffff;margin:0 auto;width:100%;max-width:600px;border-radius:8px;overflow:hidden;}
+        h1{color:#4caf50;font-size:24px;margin:0 0 16px 0;}
+        p{margin:0 0 16px 0;line-height:1.5;}
+        .btn{display:inline-block;background:#4caf50;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:6px;font-weight:bold;}
+        @media (max-width:600px){h1{font-size:20px;}.btn{padding:12px 18px;}}
+    </style>
+</head>
+<body>
+<center class="wrapper">
+    <table class="main" cellpadding="0" cellspacing="0" role="presentation">
+        <tr>
+            <td style="padding:32px 24px;text-align:center;">
+                <h1>Jelszó‑visszaállítás kérése</h1>
+                <p>Úgy tűnik, jelszó‑visszaállítást kértél az FeRiWebDev‑fiókodhoz.</p>
+                <p>Ha valóban te voltál, kattints az alábbi gombra, és állíts be új jelszót:</p>
+                <p style="margin:24px 0;">
+                    <a href="[reset_link]" class="btn">Jelszó visszaállítása</a>
+                </p>
+                <p>Ha a gomb nem működik, másold be ezt a linket a böngésződ címsorába:<br>
+                    <a href="[reset_link]" style="color:#4caf50;">[reset_link]</a></p>
+                <p style="margin-top:32px;">Ha nem te kérted a jelszó‑visszaállítást, egyszerűen hagyd figyelmen kívül ezt az e‑mailt.</p>
+                <p style="margin-top:32px;">Üdvözlettel,<br>az FeRiWebDev csapata</p>
+            </td>
+        </tr>
+    </table>
+</center>
+</body>
+</html>

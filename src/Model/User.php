@@ -24,7 +24,7 @@ class User
             ':u' => $username,
             ':e' => $email,
         ]);
-        return (bool) $stmt->fetch();
+        return (bool)$stmt->fetch();
     }
 
     public function userRegister(string $username, string $email, string $plainPassword): ?int
@@ -41,7 +41,7 @@ class User
             ':p' => $hash,
         ]);
 
-        if (! $ok) {
+        if (!$ok) {
             return null;
         }
 
@@ -61,9 +61,9 @@ class User
 
         if ($user && password_verify($plainPassword, $user['password_hash'])) {
             return [
-                'id'       => $user['id'],
+                'id' => $user['id'],
                 'username' => $user['username'],
-                'email'    => $user['email'],
+                'email' => $user['email'],
             ];
         }
         return null;
@@ -92,73 +92,37 @@ class User
             ':t' => $token,
         ]);
 
-        if (! $ok) {
+        if (!$ok) {
             return false;
         }
 
         $verificationLink = sprintf(
             'http://feriwebdevproject/verify?token=%s',
             urlencode($token)
-        );        try {
+        );
+        try {
             $mail = EmailConfig::createMailer();
         } catch (Exception $e) {
-            // Log hiba részleteit
             error_log("Email küldés hiba createMailer: " . $e->getMessage());
             return false;
         }
 
         try {
             $mail->addAddress($email);
-            $mail->Subject = 'FeriWebDev – E-mail cím megerősítése';            // Beolvassuk a HTML sablont a View/templates mappából
-            $templatePath = './View/templates/verification_email.html';
-            $absolutePath = realpath($templatePath);
-
-            file_put_contents(__DIR__ . '/../../email_error.log', date('Y-m-d H:i:s') . " - Sablon relatív útvonal: " . $templatePath . "\n", FILE_APPEND);
-            file_put_contents(__DIR__ . '/../../email_error.log', date('Y-m-d H:i:s') . " - Sablon abszolút útvonal: " . ($absolutePath ? $absolutePath : "Nem található") . "\n", FILE_APPEND);
-
-            // Próbáljuk meg közvetlenül beállítani a sablon tartalmát
-  
-
+            $mail->Subject = 'FeriWebDev – E-mail cím megerősítése';
             $mail->isHTML(true);
-            $mail->Body = $verificationEmailTemplate;
-            file_put_contents(__DIR__ . '/../../email_error.log', date('Y-m-d H:i:s') . " - Közvetlenül beállított sablon hossza: " . strlen($verificationEmailTemplate) . " karakter\n", FILE_APPEND);
-
-            // A file_get_contents kód a hibakeresés miatt marad itt
-            if (file_exists($templatePath)) {
-                try {
-                    file_put_contents(__DIR__ . '/../../email_error.log', date('Y-m-d H:i:s') . " - Próbálok olvasni: " . $templatePath . "\n", FILE_APPEND);
-                    $fileContent = file_get_contents($templatePath);
-                    file_put_contents(__DIR__ . '/../../email_error.log', date('Y-m-d H:i:s') . " - Olvasott tartalom hossza: " . (strlen($fileContent) ?? 0) . " karakter\n", FILE_APPEND);
-                } catch (\Exception $e) {
-                    file_put_contents(__DIR__ . '/../../email_error.log', date('Y-m-d H:i:s') . " - Hiba a sablon betöltésekor: " . $e->getMessage() . "\n", FILE_APPEND);
-                }
-            } else {
-                file_put_contents(__DIR__ . '/../../email_error.log', date('Y-m-d H:i:s') . " - Sablon fájl nem található: " . $templatePath . "\n", FILE_APPEND);
-                // A sablon már korábban be lett állítva, nem kell itt újat beállítani
-            }
-
-            // Biztonság kedvéért ellenőrizzük, hogy a Body nem üres
-            if (empty($mail->Body)) {
-                file_put_contents(__DIR__ . '/../../email_error.log', date('Y-m-d H:i:s') . " - FIGYELEM: Email body üres maradt a beállítás után!\n", FILE_APPEND);
-                $mail->Body = "Kérlek, erősítsd meg az e-mail címedet az alábbi linkre kattintva: {$verificationLink}";
-            }
-
+            $templatePath = __DIR__ . '/../View/templates/verification_email.html';
+            $bodyTpl = file_get_contents($templatePath);
+            $bodyHtml = str_replace('[verification_link]', $verificationLink, $bodyTpl);
+            $mail->Body = $bodyHtml;
             $mail->AltBody = "Üdvözlünk az FeriWebDev-nél!\n\n"
                 . "Kérlek, másold be ezt a böngészőbe a megerősítéshez:\n"
                 . "{$verificationLink}\n\n"
                 . "Ha nem Te regisztráltál, hagyd figyelmen kívül ezt az üzenetet.\n";
+            $mail->send();
+            return true;
         } catch (Exception $e) {
             error_log("Email küldés hiba beállítás: " . $e->getMessage());
-            return false;
-        }        try {
-            $result = $mail->send();
-            error_log("Email küldés eredménye: " . ($result ? "Sikeres" : "Sikertelen"));
-            return $result;
-        } catch (Exception $e) {
-            // Részletes hibaüzenet logolása
-            error_log("Email küldés hiba: " . $e->getMessage());
-            // File_put_contents is jó lehet a hibakereséshez
-            file_put_contents(__DIR__ . '/../../email_error.log', date('Y-m-d H:i:s') . " - Email küldési hiba: " . $e->getMessage() . "\n", FILE_APPEND);
             return false;
         }
     }
@@ -198,12 +162,15 @@ class User
             $mail = EmailConfig::createMailer();
             $mail->addAddress($email);
             $mail->Subject = 'FeriWebDev – Jelszó-visszaállítás';
-            $mail->Body = "
+            $templatePath = __DIR__ . '/../View/templates/reset_email.html';
+            $bodyTpl = file_get_contents($templatePath);
+            $bodyHtml = str_replace('[reset_link]', $resetLink, $bodyTpl);
+            $mail->Body = $bodyHtml;
+            $mail->AltBody = "
               <p>Szia!</p>
               <p>A jelszó visszaállításához kattints:<br>
                  <a href=\"{$resetLink}\">{$resetLink}</a></p>
               <p>Ha nem te kérted, hagyd figyelmen kívül.</p>";
-            $mail->AltBody = "Jelszó-visszaállítás: {$resetLink}";
             $mail->send();
             return true;
         } catch (\PHPMailer\PHPMailer\Exception $e) {
