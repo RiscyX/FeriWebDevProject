@@ -51,7 +51,7 @@ class User
     public function userLogin(string $email, string $plainPassword): ?array
     {
         $stmt = $this->pdo->prepare("
-            SELECT id, username, email, password_hash 
+            SELECT id, username, email, password_hash, role
             FROM users 
             WHERE email = :x OR username = :x 
             LIMIT 1
@@ -64,6 +64,7 @@ class User
                 'id' => $user['id'],
                 'username' => $user['username'],
                 'email' => $user['email'],
+                'role' => $user['role'],
             ];
         }
         return null;

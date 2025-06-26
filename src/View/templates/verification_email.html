@@ -1,83 +1,35 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Regisztráció megerősítése</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: #ecf8ee;
-            font-family: Arial, Helvetica, sans-serif;
-            color: #333;
-        }
-
-        .wrapper {
-            width: 100%;
-            table-layout: fixed;
-            padding: 20px 0;
-        }
-
-        .main {
-            background: #ffffff;
-            margin: 0 auto;
-            width: 100%;
-            max-width: 600px;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        h1 {
-            color: #4caf50;
-            font-size: 24px;
-            margin: 0 0 16px 0;
-        }
-
-        p {
-            margin: 0 0 16px 0;
-            line-height: 1.5;
-        }
-
-        .btn {
-            display: inline-block;
-            background: #4caf50;
-            color: #ffffff;
-            text-decoration: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-weight: bold;
-        }
-
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 20px;
-            }
-
-            .btn {
-                padding: 12px 18px;
-            }
-        }
-    </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FeriWebDev – E‑mail‑cím megerősítése</title>
 </head>
-<body>
-<center class="wrapper">
-    <table class="main" cellpadding="0" cellspacing="0" role="presentation">
-        <tr>
-            <td style="padding:32px 24px;text-align:center;">
-                <h1>Üdvözlünk a FeRiWebDev-nél!</h1>
-                <p>Köszönjük, hogy regisztráltál.<br>Csak egyetlen lépés választ el attól, hogy fiókod teljes körűen
-                    aktiváld.</p>
-                <p>Kérlek, erősítsd meg az e‑mail címed az alábbi gombra kattintva:</p>
-                <p style="margin:24px 0;">
-                    <a href="[verification_link]" class="btn">E‑mail megerősítése</a>
-                </p>
-                <p>Ha a gomb nem működne, másold be ezt a linket a böngésződ címsorába:<br>
-                    <a href="[verification_link]" style="color:#4caf50;">[verification_link]</a></p>
-                <p style="margin-top:32px;">Üdvözlettel,<br>az FeRiWebDev csapata</p>
-            </td>
-        </tr>
-    </table>
-</center>
+<body style="background:#f4f4f4;margin:0;padding:0;">
+<div class="wrapper" style="max-width:500px;margin:40px auto;background:#fff;padding:32px 24px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.07);font-family:sans-serif;">
+    <header class="header" style="text-align:center;margin-bottom:24px;">
+        <h1 style="margin:0;font-size:2rem;color:#2d3748;">FeriWebDev</h1>
+    </header>
+
+    <main class="content" style="font-size:1rem;color:#222;">
+        <p>Üdvözlünk az <strong>FeriWebDev</strong>-nél!</p>
+        <p>Kérlek, erősítsd meg az e‑mail címedet az alábbi gombra kattintva:</p>
+
+        <p class="center" style="text-align:center;margin:32px 0;">
+            <a class="button" href="[verification_link]" target="_blank"
+               style="background:#007bff;color:#fff;text-decoration:none;padding:14px 32px;border-radius:6px;font-weight:bold;display:inline-block;font-size:1.1rem;">
+                E‑mail cím megerősítése
+            </a>
+        </p>
+
+        <p>Ha nem Te regisztráltál erre az e‑mail címre, nyugodtan hagyd figyelmen kívül ezt az üzenetet.</p>
+
+        <p class="mt-large" style="margin-top:32px;">Üdvözlettel,<br /><strong>FeriWebDev</strong> csapata</p>
+    </main>
+
+    <footer class="footer" style="text-align:center;margin-top:32px;font-size:0.9rem;color:#888;">
+        <p>&copy; 2025 FeriWebDev. Minden jog fenntartva.</p>
+    </footer>
+</div>
 </body>
 </html>

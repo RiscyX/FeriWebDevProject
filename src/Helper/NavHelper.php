@@ -25,14 +25,11 @@ class NavHelper
         ];
 
         $adminExtra = [
-            ['label' => 'Admin Dashboard', 'href' => $prefix . '/admin/dashboard'],
-            ['label' => 'Kategóriák', 'href' => $prefix . '/admin/categories'],
-            ['label' => 'Hozzávalók', 'href' => $prefix . '/admin/ingredients'],
             ['label' => 'Felhasználók', 'href' => $prefix . '/admin/users'],
         ];
 
-        if (!empty($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-            return array_merge($common, $userExtra, $adminExtra);
+        if (!empty($_SESSION['role']) && $_SESSION['role'] === 1) {
+            return array_merge($adminExtra, $common, $userExtra);
         }
 
         if (!empty($_SESSION['user_id'])) {
