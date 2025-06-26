@@ -234,11 +234,10 @@ class User
             LIMIT :l OFFSET :o';
 
         $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':l', $limit,  PDO::PARAM_INT);
+        $stmt->bindValue(':l', $limit, PDO::PARAM_INT);
         $stmt->bindValue(':o', $offset, PDO::PARAM_INT);
         $stmt->execute();
 
         return $stmt->fetchAll();
     }
-
 }

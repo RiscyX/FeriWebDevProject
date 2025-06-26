@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace WebDevProject\Controller;
@@ -99,5 +100,4 @@ class AdminController
             ],
         ]);
     }
-
 }
