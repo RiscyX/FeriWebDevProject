@@ -15,7 +15,7 @@ class FridgeItem
     public static function getByUser(PDO $pdo, int $userId): array
     {
         $stmt = $pdo->prepare(
-            'SELECT id, ingredient_name, quantity, unit_name, unit_abbr
+            'SELECT id, ingredient_id ,ingredient_name, quantity, unit_name, unit_abbr
      FROM fridge_items_view
      WHERE user_id = :uid'
         );

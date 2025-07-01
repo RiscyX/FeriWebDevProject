@@ -44,22 +44,29 @@ export function initFridgeModal() {
             : 'Mennyiség';
     });
 
-    // 2) Edit gombok előtöltése
     document.querySelectorAll('.edit-item-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            const id       = btn.dataset.id;
-            const name     = btn.dataset.name;
-            const quantity = btn.dataset.quantity;
-            const unitName = btn.dataset.unitName;
-            const unitAbbr = btn.dataset.unitAbbr;
+            const fridgeItemId   = btn.dataset.id;              // fridge_items.id
+            const ingredientId   = btn.dataset.ingredientId;    // ingredient.id – új
+            const name           = btn.dataset.name;
+            const quantity       = btn.dataset.quantity;
+            const unitName       = btn.dataset.unitName;
+            const unitAbbr       = btn.dataset.unitAbbr;
+
+            // teljesen üresre húzzuk a map-et és a datalist-et
             ingredientMap.clear();
+            document.getElementById('ingredientList').innerHTML = '';
+
+            // most már helyesen az ingredient ID-t adjuk a map-nek
             ingredientMap.set(name.toLowerCase(), {
-                id:        parseInt(id, 10),
+                id:        parseInt(ingredientId, 10),
                 unit_name: unitName,
                 unit_abbr: unitAbbr
             });
-            editIdInput.value = id;
-            itemNameInput.value = name;
+
+            // hidden input a fridge_item PK-jének
+            editIdInput.value      = fridgeItemId;
+            itemNameInput.value    = name;
             document.getElementById('itemQuantity').value = quantity;
             quantityLabel.textContent = unitName
                 ? `Mennyiség (${unitName})`
@@ -71,42 +78,43 @@ export function initFridgeModal() {
     // 3) Delete gombok kezelése
     document.querySelectorAll('.delete-item-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
-            console.log('delete clicked', btn.dataset.id);
-            const id = btn.dataset.id;
-            if(!window.confirm("Biztosan torolni szeretned?")){
-                return;
-            }
-            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
-            const csrf = csrfMeta?.content;
-            console.log('CSRF token:', csrf);
+            const id = btn.dataset.id;  // ← ezt tedd be, különben id lesz undefined
+            if (!window.confirm("Biztosan törölni szeretnéd?")) return;
+
+            const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
             try {
                 const res = await fetch(`/api/fridge/${id}`, {
-                    method: 'DELETE',
+                    method: 'DELETE',                 // DELETE metódus
                     headers: {
                         'X-CSRF-Token': csrf || ''
                     }
                 });
-                console.log('fetch returned', res.status);
                 const data = await res.json();
-                console.log('response JSON:', data);
-                if (res.ok) location.reload();
-                else        alert('Hiba: ' + (data.error || 'Törlés sikertelen'));
+                if (res.ok) {
+                    // ha nem akarsz reload-olni:
+                    btn.closest('tr').remove();
+                } else {
+                    alert('Hiba: ' + (data.error || 'Törlés sikertelen'));
+                }
             } catch (err) {
-                console.error('fetch threw', err);
+                console.error('Törlés közben hiba:', err);
                 alert('Hálózati hiba történt.');
             }
         });
     });
 
-    // 4) Új tétel gomb reset
+
+// 4) Új tétel gomb reset – itt is töröljük a map-et és datalist-et
     document.querySelector('button[data-bs-target="#addItemModal"]:not(.edit-item-btn)')
         .addEventListener('click', () => {
             editIdInput.value = '';
             form.reset();
             quantityLabel.textContent = 'Mennyiség';
             modalTitle.textContent = 'Új hűtőelem hozzáadása';
-        });
 
+            ingredientMap.clear();
+            document.getElementById('ingredientList').innerHTML = '';
+        });
     // 5) Submit: POST vagy PUT
     form.addEventListener('submit', async e => {
         e.preventDefault();

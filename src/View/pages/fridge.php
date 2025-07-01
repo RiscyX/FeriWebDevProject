@@ -1,4 +1,5 @@
 <?php
+var_dump($items);
 // src/View/pages/admin/users.php
 ?>
 <div class="container py-4">
@@ -27,16 +28,20 @@
                             <button
                                     class="btn btn-sm btn-secondary me-2 edit-item-btn"
                                     data-id="<?= $item['id'] ?>"
+                                    data-ingredient-id="<?= (int)$item['ingredient_id'] ?>"
                                     data-name="<?= htmlspecialchars($item['ingredient_name'], ENT_QUOTES) ?>"
                                     data-unit-name="<?= htmlspecialchars($item['unit_name'], ENT_QUOTES) ?>"
                                     data-quantity="<?= (int)$item['quantity'] ?>"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#addItemModal"
-                            >Szerkesztés</button>
+                                    data-bs-target="#addItemModal">
+                                Szerkesztés
+                            </button>
                             <button
                                     class="btn btn-sm btn-danger delete-item-btn"
                                     data-id="<?= $item['id'] ?>"
-                            >Törlés</button>
+                                    data-ingredient-id="<?= (int)$item['ingredient_id'] ?>"
+                            >Törlés
+                            </button>
                         </td>
                     </tr>
                 <?php endforeach; ?>
