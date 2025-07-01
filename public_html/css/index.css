@@ -104,34 +104,28 @@ a:hover {
   border-top: 1px solid var(--divider);
   margin: 2.5rem 0;
 }
-
-/* ---------- Container wrapper ---------- */
-.container {
-  background: var(--primary-bg);
-  color: var(--primary-text);
-  border-radius: 1.25rem;
-  box-shadow: 0 2px 16px color-mix(in srgb, var(--navbar-hover) 10%, transparent);
-  padding: 2rem 1.5rem;
-  transition: background .3s, color .3s;
-}
-
 /* ---------- Form controls ---------- */
 input.form-control,
 textarea.form-control {
   color: var(--primary-text);
+  background: var(--primary-bg);
 }
 
+/* Felülírjuk a Bootstrap bg-light osztályt sötét témában */
 [data-bs-theme="dark"] input.form-control,
-[data-bs-theme="dark"] textarea.form-control {
+[data-bs-theme="dark"] textarea.form-control,
+[data-bs-theme="dark"] .form-control.bg-light {
   color: var(--primary-text);
+  background: var(--secondary-bg) !important;
+  border-color: var(--card-border);
 }
 [data-bs-theme="dark"] label.form-label {
   color: var(--primary-text) !important;
 }
 [data-bs-theme="dark"] input.form-control::placeholder,
 [data-bs-theme="dark"] textarea.form-control::placeholder {
-  color: var(--primary-bg);
-  opacity: 1;
+  color: var(--desc-text);
+  opacity: 0.7;
 }
 
 /* ---------- Responsive ---------- */

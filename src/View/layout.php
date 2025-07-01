@@ -1,9 +1,12 @@
 <?php
+
+use WebDevProject\Security\Csrf;
+
 ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 
-var_dump($_SESSION);
+$csrf = \WebDevProject\Security\Csrf::token();
 ?>
 <!-- src/View/layout.php -->
 <!DOCTYPE html>
@@ -11,12 +14,12 @@ var_dump($_SESSION);
 <head>
     <meta charset="UTF-8">
     <title><?= htmlspecialchars($title ?? 'Hűtőszekrényem') ?></title>
-
-    <link rel="stylesheet" href="./css/bootstrap.min.css">
-    <link rel="stylesheet" href="./css/global.css">
+    <meta name="csrf-token" content="<?= \WebDevProject\Security\Csrf::token() ?>">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/global.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="./favicon.png" type="image/png">
-    <link rel="stylesheet" href="./css/index.css">
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="stylesheet" href="/css/index.css">
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -32,10 +35,11 @@ var_dump($_SESSION);
     <?php unset($_SESSION['flash']); ?>
 <?php endif; ?>
 <main class="container py-3">
-    <?= $content ?>
+    <?php echo $content; ?>
 </main>
 
-<script src="./js/bootstrap.bundle.min.js"></script>
-<script src="./js/theme-toggle.js"></script>
+<script src="/js/bootstrap.bundle.min.js"></script>
+<script src="/js/theme-toggle.js"></script>
+<script type="module" src="/js/fridgeFunctions.js"></script>
 </body>
 </html>

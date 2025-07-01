@@ -28,16 +28,16 @@ class AdminController
     private function paging(): array
     {
         $page = max(1, (int)($_GET['page'] ?? 1));
-        $perPage = max(1, (int)($_GET['per_page'] ?? 20));
+        $perPage = max(1, (int)($_GET['per_page'] ?? 2));
         $offset = ($page - 1) * $perPage;
         return [$page, $perPage, $offset];
     }
 
-    private function render(string $view, array $vars = [], string $title = 'Admin'): void
+    private function render(array $vars = [], string $title = 'Admin'): void
     {
         extract($vars, EXTR_SKIP);
         ob_start();
-        include __DIR__ . "/../View/$view.php";
+        include __DIR__ . "/../View/pages/admin/users.php";
         $content = ob_get_clean();
 
         include __DIR__ . '/../View/layout.php';
@@ -56,12 +56,18 @@ class AdminController
     {
         [$page, $perPage, $offset] = $this->paging();
 
-        $total = User::count($this->pdo);
-        $users = User::paginated($this->pdo, $perPage, $offset);
+        $total       = User::count($this->pdo);
+        $totalPages  = (int)ceil($total / $perPage);   // ← új!
+        $users       = User::paginated($this->pdo, $perPage, $offset);
 
         $this->render(
-            'pages/admin/users',
-            compact('users', 'page', 'perPage', 'total'),
+            compact(
+                'users',
+                'page',          // ha kell, át is nevezheted currentPage-re
+                'perPage',
+                'total',
+                'totalPages'     // ← új!
+            ),
             'Felhasználók'
         );
     }

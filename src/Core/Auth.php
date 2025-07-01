@@ -9,6 +9,14 @@ class Auth
         return !empty($_SESSION['user_id']);
     }
 
+    public static function requireLogin(): void
+    {
+        if (!self::check()) {
+            http_response_code(401);
+            exit('Bejelentkezés szükséges');
+        }
+    }
+
     public static function requireRole(int $role): void
     {
         if (!self::check() || ($_SESSION['role'] ?? '') !== $role) {

@@ -1,18 +1,46 @@
 <?php
 
-namespace WebDevProject\config;
+namespace WebDevProject\Config;
 
 class Config
 {
-    //database
-    public const DB_HOST = 'localhost';
-    public const DB_USER = 'root';
-    public const DB_PASSWORD = '';
-    public const DB_NAME = 'recipe';
+    public static function dbHost(): string
+    {
+        return $_ENV['DB_HOST'] ?? 'localhost';
+    }
 
-    //MailTrap
-    public const MAILTRAP_HOST     = 'smtp.gmail.com';
-    public const MAILTRAP_PORT     = 465;
-    public const MAILTRAP_USERNAME = 'vassrichard31@gmail.com';
-    public const MAILTRAP_PASSWORD = 'itqc tbnx zlup ynpj ';
+    public static function dbUser(): string
+    {
+        return $_ENV['DB_USER'] ?? 'root';
+    }
+
+    public static function dbPass(): string
+    {
+        return $_ENV['DB_PASS'] ?? '';
+    }
+
+    public static function dbName(): string
+    {
+        return $_ENV['DB_NAME'] ?? 'recipe';
+    }
+
+    public static function mailHost(): string
+    {
+        return $_ENV['MAIL_HOST'] ?? 'smtp.gmail.com';
+    }
+
+    public static function mailPort(): int
+    {
+        return (int)($_ENV['MAIL_PORT'] ?? 465);
+    }
+
+    public static function mailUser(): string
+    {
+        return $_ENV['MAIL_USER'] ?? 'vassrichard31@gmail.com';
+    }
+
+    public static function mailPass(): string
+    {
+        return $_ENV['MAIL_PASSWORD'] ?? 'itqc tbnx zlup ynpj ';
+    }
 }

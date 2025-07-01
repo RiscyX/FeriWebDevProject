@@ -2,16 +2,14 @@
 
 namespace WebDevProject\Form;
 
+use PDO;
 use WebDevProject\Model\User;
+use WebDevProject\Security\Csrf;
 
-class LoginForm
+class LoginForm extends BaseForm
 {
-    private array $data = [];
-    private array $errors = [];
-
-    public function __construct(
-        protected \PDO $pdo
-    ) {
+    public function __construct(protected PDO $pdo)
+    {
     }
 
     public function formLoad(array $post): void
@@ -22,86 +20,71 @@ class LoginForm
 
     public function formValidate(): bool
     {
-        if ($this->data['email'] === '' || !filter_var($this->data['email'], FILTER_VALIDATE_EMAIL)) {
-            $this->errors[] = 'Érvénytelen vagy hiányzó e-mail cím.';
+        if (
+            $this->getValue('email') === '' || !filter_var(
+                $this->getValue('email'),
+                FILTER_VALIDATE_EMAIL
+            )
+        ) {
+            $this->addError('Érvénytelen vagy hiányzó e-mail cím.');
         }
-        if ($this->data['password'] === '') {
-            $this->errors[] = 'Add meg a jelszavadat.';
+        if ($this->getValue('password') === '') {
+            $this->addError('Add meg a jelszavadat.');
         }
-        return empty($this->errors);
+        return !$this->hasErrors();
     }
 
     public function formLogin(): ?array
     {
         $user = new User($this->pdo);
-        return $user->userLogin($this->data['email'], $this->data['password']);
-    }
-
-    public function &getErrors(): array
-    {
-        return $this->errors;
+        return $user->userLogin(
+            $this->data['email'],
+            $this->data['password']
+        );
     }
 
     public function formRender(): string
     {
         $html = '';
-        if ($this->errors) {
-            $html .= '<div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm" role="alert">';
-            $html .= '<ul class="mb-0">';
-            foreach ($this->errors as $e) {
+        if ($this->hasErrors()) {
+            $html .= '<div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm"
+ role="alert"><ul class="mb-0">';
+            foreach ($this->getErrors() as $e) {
                 $html .= '<li>' . htmlspecialchars($e, ENT_QUOTES) . '</li>';
             }
-            $html .= '</ul>';
-            $html .= '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Bezárás"></button>';
-            $html .= '</div>';
+            $html .= '</ul><button type="button" class="btn-close" data-bs-dismiss="alert"
+ aria-label="Bezárás"></button></div>';
         }
 
-        $html .= '<form method="post" class="container" >';
-        $html .= '<div class="row g-3">';
-        // E-mail
+        $html .= '<form method="post" class="container"><div class="row g-3">';
+
         $html .= '<div class="col-12">';
-        $html .= '  <label for="email" class="form-label fw-semibold text-dark">E-mail cím</label>';
-        $html .= '  <input'
-            . ' type="email"'
-            . ' name="email"'
-            . ' class="form-control fs-5 rounded-3 bg-light"'
-            . ' id="email"'
-            . ' placeholder="E-mail cím"'
-            . ' value="' . htmlspecialchars($this->data['email'] ?? '', ENT_QUOTES) . '"'
-            . ' required>';
+        $html .= '<input type="hidden" name="csrf" value="' . Csrf::token() . '">';
+        $html .= '<label for="email" class="form-label fw-semibold text-dark">E-mail cím</label>';
+        $html .= '<input type="email" name="email" id="email" class="form-control fs-5 rounded-3 bg-light"
+         placeholder="E-mail cím" value="' . htmlspecialchars(
+            $this->getValue('email'),
+            ENT_QUOTES
+        ) . '" required>';
         $html .= '</div>';
-        // Jelszó
+
         $html .= '<div class="col-12">';
-        $html .= '  <label for="password" class="form-label fw-semibold text-dark">Jelszó</label>';
-        $html .= '  <input'
-            . ' type="password"'
-            . ' name="password"'
-            . ' class="form-control fs-5 rounded-3 bg-light"'
-            . ' id="password"'
-            . ' placeholder="Jelszó"'
-            . ' required>';
+        $html .= '<label for="password" class="form-label fw-semibold text-dark">Jelszó</label>';
+        $html .= '<input type="password" name="password" id="password" class="form-control fs-5 rounded-3 bg-light"
+ placeholder="Jelszó" required>';
         $html .= '</div>';
-        // Submit
+
         $html .= '<div class="col-12 d-grid mb-3">';
         $html .= '<button type="submit" 
-                  class="btn btn-primary fs-5 py-2 rounded-pill shadow-sm">
-                    Bejelentkezés
-                  </button>';
+class="btn btn-primary fs-5 py-2 rounded-pill shadow-sm">Bejelentkezés</button>';
         $html .= '</div>';
-        $html .= '<div class="col-12">';
-        $html .= '<p class="text-center mb-0">Még nincs fiókod? 
-                    <a href="/register" class="link-success fw-semibold">
-                        Regisztráció
-                   </a></p>';
-        $html .= '</div>';
-        $html .= '<div class="col-12">';
-        $html .= '<p class="text-center mb-0">Elfelejtetted a jelszavad? 
-                    <a href="/reset" class="link-success fw-semibold">
-                        Jelszó megváltoztatása
-                   </a></p>';
-        $html .= '</div>';
-        $html .= '</div>';
-        $html .= '</form>';
+
+        $html .= '<div class="col-12"><p class="text-center mb-0">Még nincs fiókod? <a href="/register"
+ class="link-success fw-semibold">Regisztráció</a></p></div>';
+        $html .= '<div class="col-12"><p class="text-center mb-0">Elfelejtetted a jelszavad? <a href="/reset"
+ class="link-success fw-semibold">Jelszó megváltoztatása</a></p></div>';
+
+        $html .= '</div></form>';
 
         return $html;
     }

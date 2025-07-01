@@ -3,12 +3,10 @@
 use WebDevProject\config\Config;
 
 try {
-    $pdo = new PDO(
-        "mysql:host=" . Config::DB_HOST . ";dbname=" . Config::DB_NAME . ";charset=utf8mb4",
-        Config::DB_USER,
-        Config::DB_PASSWORD
-    );
+    $dsn = 'mysql:host=' . Config::dbHost() . ';dbname=' . Config::dbName() . ';charset=utf8mb4';
+    $pdo = new PDO($dsn, Config::dbUser(), Config::dbPass());
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    die("Database connection error: " . $e->getMessage());
+    http_response_code(500);
+    exit;
 }

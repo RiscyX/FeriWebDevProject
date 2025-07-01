@@ -3,11 +3,13 @@
 namespace WebDevProject\Controller;
 
 use JetBrains\PhpStorm\NoReturn;
+use PHPMailer\PHPMailer\Exception;
 use Random\RandomException;
 use WebDevProject\Form\LoginForm;
 use WebDevProject\Form\PasswordResetForm;
 use WebDevProject\Form\RegisterForm;
 use WebDevProject\Model\User;
+use WebDevProject\Security\Csrf;
 
 class AuthController
 {
@@ -16,11 +18,18 @@ class AuthController
     ) {
     }
 
+    /**
+     * @throws Exception
+     */
     public function authRegister(): void
     {
         $form = new RegisterForm($this->pdo);
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!Csrf::check($_POST['csrf'] ?? '')) {
+                http_response_code(419); // CSRF token mismatch
+                exit;
+            }
             $form->formLoad($_POST);
 
             if ($form->formValidate()) {
@@ -29,7 +38,7 @@ class AuthController
                     $userModel = new User($this->pdo);
                     $sent = $userModel->sendVerification(
                         $newUserId,
-                        $form->formGetValue('email')
+                        $form->getValue('email')
                     );
 
                     $_SESSION['flash'] = $sent
@@ -40,8 +49,7 @@ class AuthController
                     exit;
                 }
 
-                $err = &$form->formGetErrors();
-                $err[] = 'Ismeretlen hiba a regisztráció során.';
+                $form->addError('Ismeretlen hiba a regisztráció során.');
             }
         }
         $formHtml = $form->formRender();
@@ -56,9 +64,14 @@ class AuthController
 
     public function authLogin(): void
     {
+
         $form = new LoginForm($this->pdo);
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!Csrf::check($_POST['csrf'] ?? '')) {
+                http_response_code(419); // CSRF token mismatch
+                exit;
+            }
             $form->formLoad($_POST);
 
             if ($form->formValidate()) {
@@ -72,8 +85,7 @@ class AuthController
                     exit;
                 }
 
-                $errors = &$form->getErrors();
-                $errors[] = 'Hibás e-mail vagy jelszó.';
+                $form->addError('Hibás e-mail vagy jelszó.');
             }
         }
 
@@ -194,6 +206,10 @@ class AuthController
         $form  = new PasswordResetForm($this->pdo, $token);
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!Csrf::check($_POST['csrf'] ?? '')) {
+                http_response_code(419);
+                exit;
+            }
             $form->formLoad($_POST);
 
             $ok = $form->formValidate() && $form->formSubmit();

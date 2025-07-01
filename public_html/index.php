@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 session_start();
 
 ini_set('display_errors', '1');
@@ -7,35 +8,83 @@ ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 
 require_once __DIR__.'/../vendor/autoload.php';
+
+use Dotenv\Dotenv;
+use FastRoute\RouteCollector;
+use WebDevProject\Controller\Api\FridgeApiController;
+use WebDevProject\Controller\FridgeController;
+use WebDevProject\Controller\HomeController;
+use WebDevProject\Controller\AuthController;
+use WebDevProject\Controller\AdminController;
+use WebDevProject\Security\Csrf;
+
+$dotenv = Dotenv::createImmutable(dirname(__DIR__));
+$dotenv->safeLoad();
+
 require_once __DIR__.'/../src/config/db_config.php';
 
-use WebDevProject\Controller\AdminController;
-use WebDevProject\Controller\AuthController;
-use WebDevProject\Controller\HomeController;
+$dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r) {
+    $r->addRoute('GET',  '/',             [HomeController::class, 'index']);
 
-$base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');   //  pl.  "/FeriWebDevProject"
-$request = rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
-$path = ($base && str_starts_with($request, $base))
-    ? substr($request, strlen($base)) ?: '/'
-    : ($request ?: '/');
+    // Auth
+    $r->addRoute('GET',  '/login',        [AuthController::class, 'authLogin']);
+    $r->addRoute('POST', '/login',        [AuthController::class, 'authLogin']);
+
+    $r->addRoute('GET',  '/register',     [AuthController::class, 'authRegister']);
+    $r->addRoute('POST', '/register',     [AuthController::class, 'authRegister']);
+
+    $r->addRoute('GET',  '/verify',       [AuthController::class, 'authVerify']);
+
+    $r->addRoute('GET',  '/logout',       [AuthController::class, 'authLogout']);
+    $r->addRoute('POST', '/logout',       [AuthController::class, 'authLogout']);
+
+    $r->addRoute('GET',  '/reset',        [AuthController::class, 'authPasswordReset']);
+    $r->addRoute('POST', '/reset',        [AuthController::class, 'authPasswordReset']);
+
+    $r->addRoute('GET',    '/fridge',           [FridgeController::class, 'index']);
+
+    $r->addGroup('/api/fridge', function(RouteCollector $r) {
+        $r->addRoute('GET',   '',             [FridgeApiController::class, 'getItems']);
+        $r->addRoute('POST',  '',             [FridgeApiController::class, 'addItem']);
+        $r->addRoute('PUT',    '/{id:\d+}', [FridgeApiController::class, 'updateItem']);
+        $r->addRoute('DELETE','/{id:\d+}',    [FridgeApiController::class, 'deleteItem']);
+        $r->addRoute('GET',    '/user/{userId:\d+}', [FridgeApiController::class, 'getItems']);
+    });
+    $r->addRoute('GET',  '/api/ingredients', [FridgeApiController::class, 'searchIngredients']);
 
 
-$home = new HomeController($pdo);
-$auth = new AuthController($pdo);
-$admin = new AdminController($pdo);
+    $r->addGroup('/admin', function (RouteCollector $r) {
+        $r->addRoute('GET',  '',          [AdminController::class, 'index']);
+        $r->addRoute('GET',  '/users',    [AdminController::class, 'index']);
+    });
+});
 
-match ($path) {
-    '/'         => $home->index(),
-    '/login'    => $auth->authLogin(),
-    '/register' => $auth->authRegister(),
-    '/verify'   => $auth->authVerify(),
-    '/logout'   => $auth->authLogout(),
-    '/reset'    => $auth->authPasswordReset(),
+$httpMethod = $_SERVER['REQUEST_METHOD'];
+$uri        = rawurldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 
-    '/admin'                => $admin->index(),
-    '/admin/users'          => $admin->index(),
-    default     => (function () {
+$basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
+if ($basePath !== '' && str_starts_with($uri, $basePath)) {
+    $uri = substr($uri, strlen($basePath)) ?: '/';
+}
+
+$routeInfo = $dispatcher->dispatch($httpMethod, $uri);
+switch ($routeInfo[0]) {
+    case FastRoute\Dispatcher::NOT_FOUND:
         http_response_code(404);
         echo '404 – oldal nem található';
-    })(),
-};
+        break;
+
+    case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
+        http_response_code(405);
+        echo '405 – HTTP metódus nem engedélyezett';
+        break;
+
+    case FastRoute\Dispatcher::FOUND:
+        [$class, $method] = $routeInfo[1];   // [Controller osztály, metódus]
+        $vars = $routeInfo[2];               // útvonal‑paraméterek tömbje
+
+        // Egyszerű dependency‑injection; válts DI‑konténerre, ha bővül a projekt
+        $controller = new $class($pdo);
+        $controller->$method(...array_values($vars));
+        break;
+}

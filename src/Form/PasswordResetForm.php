@@ -1,18 +1,12 @@
 <?php
 
-// src/Form/PasswordResetForm.php
 namespace WebDevProject\Form;
 
-use Random\RandomException;
 use WebDevProject\Model\User;
+use WebDevProject\Security\Csrf;
 
-class PasswordResetForm
+class PasswordResetForm extends BaseForm
 {
-    /** @var string[] űrlap-adatok (POST) */
-    private array $data = [];
-    /** @var string[] validációs hibák */
-    private array $errors = [];
-
     public function __construct(
         protected \PDO $pdo,
         protected ?string $token = null
@@ -22,7 +16,7 @@ class PasswordResetForm
     public function formLoad(array $post): void
     {
         if ($this->token) {
-            $this->data['password']         = trim($post['password']         ?? '');
+            $this->data['password']         = trim($post['password'] ?? '');
             $this->data['password_confirm'] = trim($post['password_confirm'] ?? '');
         } else {
             $this->data['email'] = trim($post['email'] ?? '');
@@ -32,84 +26,94 @@ class PasswordResetForm
     public function formValidate(): bool
     {
         if ($this->token) {
-            $pass1 = $this->data['password']         ?? '';
-            $pass2 = $this->data['password_confirm'] ?? '';
-
-            if ($pass1 === '' || strlen($pass1) < 6) {
-                $this->errors[] = 'A jelszó legalább 6 karakter legyen.';
+            if ($this->getValue('password') === '' || strlen($this->getValue('password')) < 6) {
+                $this->addError('A jelszó legalább 6 karakter legyen.');
             }
-            if ($pass1 !== $pass2) {
-                $this->errors[] = 'A két jelszó nem egyezik.';
+            if ($this->getValue('password') !== $this->getValue('password_confirm')) {
+                $this->addError('A két jelszó nem egyezik.');
             }
         } else {
-            $email = $this->data['email'] ?? '';
-            if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $this->errors[] = 'Adj meg érvényes e-mail címet.';
+            if (
+                $this->getValue('email') === '' || !filter_var(
+                    $this->getValue('email'),
+                    FILTER_VALIDATE_EMAIL
+                )
+            ) {
+                $this->addError('Adj meg érvényes e-mail címet.');
             }
         }
-        return empty($this->errors);
+        return !$this->hasErrors();
     }
 
     public function formSubmit(): bool
     {
         $user = new User($this->pdo);
-
         if ($this->token) {
-            return $user->resetPassword($this->token, $this->data['password']);
+            return $user->resetPassword($this->token, $this->getValue('password'));
         }
-
-        return $user->requestPasswordReset($this->data['email']);
-    }
-
-    public function formGetValue(string $field): string
-    {
-        return $this->data[$field] ?? '';
+        return $user->requestPasswordReset($this->getValue('email'));
     }
 
     public function formRender(): string
     {
         $html = '';
 
-        if ($this->errors) {
-            $html .= '<div class="alert alert-danger"><ul class="mb-0">';
-            foreach ($this->errors as $e) {
-                $html .= '<li>' . htmlspecialchars($e, ENT_QUOTES) . '</li>';
+        if ($this->hasErrors()) {
+            $html .= '<div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm" role="alert">';
+            $html .= '<ul class="mb-0">';
+            foreach ($this->getErrors() as $error) {
+                $html .= '<li>' . htmlspecialchars($error, ENT_QUOTES) . '</li>';
             }
-            $html .= '</ul></div>';
+            $html .= '</ul>';
+            $html .= '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Bezárás"></button>';
+            $html .= '</div>';
         }
 
-        $html .= '<form action=" " method="post" class="d-grid gap-3">';
+        $html .= '<form method="post" class="container"><div class="row g-3">';
+        $html .= '<div class="col-12">';
+        $html .= '<input type="hidden" name="csrf" value="' . Csrf::token() . '">';
+        $html .= '</div>';
 
         if (!$this->token) {
-            $html .= '<div class="form-floating">';
-            $html .= '  <input type="email" name="email" id="email"'
-                . ' class="form-control fs-5" placeholder="E-mail" required'
-                . ' value="' . htmlspecialchars($this->formGetValue('email'), ENT_QUOTES) . '">';
-            $html .= '  <label for="email">E-mail cím</label>';
+            $html .= '<div class="col-12">';
+            $html .= '<label for="email" class="form-label fw-semibold text-dark">E-mail cím</label>';
+            $html .= '<input type="email" name="email" id="email" class="form-control fs-5 rounded-3 bg-light"
+             placeholder="E-mail cím" required value="' . htmlspecialchars(
+                $this->getValue('email'),
+                ENT_QUOTES
+            ) . '">';
             $html .= '</div>';
 
-            $html .= '<button class="btn btn-primary fs-5">Visszaállító link küldése</button>';
-        }
-
-        if ($this->token) {
+            $html .= '<div class="col-12 d-grid mb-3">';
+            $html .= '<button type="submit" class="btn btn-primary fs-5 py-2 rounded-pill shadow-sm">
+            Visszaállító link küldése</button>';
+            $html .= '</div>';
+        } else {
+            $html .= '<div class="col-12">';
             $html .= '<input type="hidden" name="token" value="' . htmlspecialchars($this->token, ENT_QUOTES) . '">';
-
-            $html .= '<div class="form-floating">';
-            $html .= '  <input type="password" name="password" id="password"'
-                . ' class="form-control fs-5" placeholder="Új jelszó" required minlength="6">';
-            $html .= '  <label for="password">Új jelszó (min. 6 karakter)</label>';
             $html .= '</div>';
 
-            $html .= '<div class="form-floating">';
-            $html .= '  <input type="password" name="password_confirm" id="password_confirm"'
-                . ' class="form-control fs-5" placeholder="Jelszó megerősítése" required minlength="6">';
-            $html .= '  <label for="password_confirm">Jelszó megerősítése</label>';
+            $html .= '<div class="col-12">';
+            $html .= '<label for="password" 
+class="form-label fw-semibold text-dark">Új jelszó (min. 6 karakter)</label>';
+            $html .= '<input type="password" name="password" id="password" 
+class="form-control fs-5 rounded-3 bg-light" placeholder="Új jelszó" required minlength="6">';
             $html .= '</div>';
 
-            $html .= '<button class="btn btn-success fs-5">Jelszó frissítése</button>';
+            $html .= '<div class="col-12">';
+            $html .= '<label for="password_confirm" 
+class="form-label fw-semibold text-dark">Jelszó megerősítése</label>';
+            $html .= '<input type="password" name="password_confirm" id="password_confirm" 
+class="form-control fs-5 rounded-3 bg-light" placeholder="Jelszó megerősítése" required minlength="6">';
+            $html .= '</div>';
+
+            $html .= '<div class="col-12 d-grid mb-3">';
+            $html .= '<button type="submit" 
+class="btn btn-success fs-5 py-2 rounded-pill shadow-sm">Jelszó frissítése</button>';
+            $html .= '</div>';
         }
 
-        $html .= '</form>';
+        $html .= '</div></form>';
         return $html;
     }
 }
