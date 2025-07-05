@@ -41,6 +41,21 @@ class Config
 
     public static function mailPass(): string
     {
-        return $_ENV['MAIL_PASSWORD'] ?? 'itqc tbnx zlup ynpj ';
+        return $_ENV['MAIL_PASSWORD'] ?? 'itqc tbnx zlup ynpj';
+    }
+    
+    public static function mailFromAddress(): string
+    {
+        return $_ENV['MAIL_FROM_ADDRESS'] ?? 'feri@feri.com';
+    }
+    
+    public static function mailFromName(): string
+    {
+        return $_ENV['MAIL_FROM_NAME'] ?? 'FeriWebDevProject';
+    }
+    
+    public static function baseUrl(): string
+    {
+        return $_ENV['BASE_URL'] ?? 'http://feriwebdevproject';
     }
 }

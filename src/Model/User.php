@@ -4,6 +4,7 @@ namespace WebDevProject\Model;
 
 use Exception;
 use PDO;
+use WebDevProject\config\Config;
 use WebDevProject\config\EmailConfig;
 
 class User
@@ -104,7 +105,8 @@ class User
         }
 
         $verificationLink = sprintf(
-            'http://feriwebdevproject/verify?token=%s',
+            '%s/verify?token=%s',
+            Config::baseUrl(),
             urlencode($token)
         );
         try {
@@ -157,11 +159,7 @@ class User
             return false;
         }
 
-        $base = $_ENV['APP_URL']
-            ?? ((PHP_SAPI === 'cli')
-                ? 'localhost/FeriWebDevProject/'
-                : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http')
-                . '://' . ($_SERVER['HTTP_HOST'] ?? 'feriwebdevproject'));
+        $base = Config::baseUrl();
 
         $resetLink = $base . '/reset?token=' . urlencode($token);
 

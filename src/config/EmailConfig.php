@@ -17,7 +17,7 @@ class EmailConfig
         $mail->Username   = Config::mailUser();
         $mail->Password   = Config::mailPass();
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-        $mail->setFrom('feri@feri.com', 'FeriWebDevProject');
+        $mail->setFrom(Config::mailFromAddress(), Config::mailFromName());
         $mail->CharSet = 'UTF-8';
         $mail->isHTML(true);
         return $mail;

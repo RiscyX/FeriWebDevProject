@@ -4,6 +4,7 @@ namespace WebDevProject\Controller;
 
 use GuzzleHttp\Client;
 use PDO;
+use WebDevProject\Config\Config;
 use WebDevProject\Core\Auth;
 use WebDevProject\Model\FridgeItem;
 use WebDevProject\Security\Csrf;
@@ -17,7 +18,7 @@ class FridgeController
     ) {
         Auth::requireLogin();
         $this->http = new Client([
-            'base_uri' => 'http://localhost',
+            'base_uri' => Config::baseUrl(),
             'cookies'  => true,
         ]);
     }

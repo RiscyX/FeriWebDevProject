@@ -1,408 +1,561 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Host: localhost
--- Generation Time: Jul 01, 2025 at 03:42 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+/* -------------------------------------------------------
+   recipe – minimal dump (structures + units & ingredients)
+   ------------------------------------------------------- */
 
+SET FOREIGN_KEY_CHECKS = 0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
---
--- Database: `recipe`
---
+/* ---------- PARENT TÁBLÁK ----------------------------- */
 
--- --------------------------------------------------------
-
---
--- Table structure for table `categories`
---
-
+DROP TABLE IF EXISTS `categories`;
 CREATE TABLE `categories` (
-  `id` int(11) NOT NULL,
-  `name` varchar(100) NOT NULL COMMENT 'Name of the recipe category (e.g., Breakfast, Dessert)'
+                              `id`   INT(11)     NOT NULL AUTO_INCREMENT,
+                              `name` VARCHAR(100) NOT NULL COMMENT 'Name of the recipe category (e.g., Breakfast, Dessert)',
+                              PRIMARY KEY (`id`),
+                              UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `email_verifications`
---
-
-CREATE TABLE `email_verifications` (
-  `user_id` int(11) NOT NULL,
-  `token` varchar(255) NOT NULL,
-  `created_at` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `email_verifications`
---
-
-INSERT INTO `email_verifications` (`user_id`, `token`, `created_at`) VALUES
-(23, '1c1c4b2e1b120418fa337b20b4e4cbcf9cdc312138b514628b468f6988356219', '2025-06-30 01:13:30');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `favorites`
---
-
-CREATE TABLE `favorites` (
-  `user_id` int(11) NOT NULL,
-  `recipe_id` int(11) NOT NULL,
-  `created_at` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `fridge_items`
---
-
-CREATE TABLE `fridge_items` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `ingredient_id` int(11) NOT NULL,
-  `quantity` decimal(10,2) NOT NULL DEFAULT 0.00 COMMENT 'Amount of ingredient in user''s fridge'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `fridge_items`
---
-
-INSERT INTO `fridge_items` (`id`, `user_id`, `ingredient_id`, `quantity`) VALUES
-(1, 22, 1, 21.00),
-(5, 22, 3, 1000.00),
-(6, 22, 4, 1000.00),
-(7, 22, 2, 19.00);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `ingredients`
---
-
-CREATE TABLE `ingredients` (
-  `id` int(11) NOT NULL,
-  `name` varchar(100) NOT NULL COMMENT 'Name of the ingredient',
-  `unit_id` int(11) NOT NULL COMMENT 'Measurement unit reference'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `ingredients`
---
-
-INSERT INTO `ingredients` (`id`, `name`, `unit_id`) VALUES
-(1, 'Alma', 2),
-(2, 'Banán', 2),
-(3, 'Cukor', 3),
-(4, 'Liszt', 3),
-(5, 'Tej', 4),
-(6, 'Vaj', 3),
-(7, 'Tojás', 2),
-(8, 'Só', 3),
-(9, 'Rizs', 3),
-(10, 'Olaj', 4),
-(11, 'Sajt', 3);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `menus`
---
-
-CREATE TABLE `menus` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `name` varchar(10) NOT NULL,
-  `recipe_id` int(11) NOT NULL,
-  `day_of_week` enum('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday') NOT NULL COMMENT 'Planned day for the recipe',
-  `created_at` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `password_resets`
---
-
-CREATE TABLE `password_resets` (
-  `user_id` int(11) NOT NULL COMMENT 'FK to users.id',
-  `token` varchar(255) NOT NULL,
-  `created_at` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `recipes`
---
-
-CREATE TABLE `recipes` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL COMMENT 'Creator of the recipe',
-  `title` varchar(255) NOT NULL COMMENT 'Recipe title',
-  `description` text DEFAULT NULL COMMENT 'Detailed description of the recipe',
-  `instructions` text DEFAULT NULL COMMENT 'Cooking instructions',
-  `prep_time` int(11) DEFAULT NULL COMMENT 'Preparation time in minutes',
-  `cook_time` int(11) DEFAULT NULL COMMENT 'Cooking time in minutes',
-  `servings` int(11) DEFAULT NULL COMMENT 'Number of servings',
-  `category_id` int(11) DEFAULT NULL COMMENT 'Recipe category',
-  `created_at` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `recipe_ingredients`
---
-
-CREATE TABLE `recipe_ingredients` (
-  `recipe_id` int(11) NOT NULL,
-  `ingredient_id` int(11) NOT NULL,
-  `quantity` decimal(10,2) DEFAULT NULL COMMENT 'Amount of the ingredient used'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `units`
---
-
+DROP TABLE IF EXISTS `units`;
 CREATE TABLE `units` (
-  `id` int(11) NOT NULL,
-  `name` varchar(50) NOT NULL COMMENT 'Name of the unit (e.g., gram, liter, piece)',
-  `abbreviation` varchar(10) NOT NULL COMMENT 'Short form of the unit (e.g., g, l, pcs)'
+                         `id`          INT(11)     NOT NULL AUTO_INCREMENT,
+                         `name`        VARCHAR(50) NOT NULL COMMENT 'Unit name',
+                         `abbreviation`VARCHAR(10) NOT NULL COMMENT 'Short form',
+                         PRIMARY KEY (`id`),
+                         UNIQUE KEY `name` (`name`),
+                         UNIQUE KEY `abbreviation` (`abbreviation`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `units`
---
+/* alapegységek */
+INSERT INTO `units` (`id`,`name`,`abbreviation`) VALUES
+                                                     (1,'Kilogramm','kg'),
+                                                     (2,'Darab','db'),
+                                                     (3,'Gramm','g'),
+                                                     (4,'Liter','l'),
+                                                     (5,'Milliliter','ml'),
+                                                     (6,'Csomag','cs');
 
-INSERT INTO `units` (`id`, `name`, `abbreviation`) VALUES
-(1, 'Kilogramm', 'kg'),
-(2, 'Darab', 'db'),
-(3, 'Gramm', 'g'),
-(4, 'Liter', 'l'),
-(5, 'Milliliter', 'ml'),
-(6, 'Csomag', 'cs');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `users`
---
-
+DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
-  `username` varchar(100) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `password_hash` varchar(255) NOT NULL,
-  `is_banned` tinyint(1) NOT NULL DEFAULT 0 COMMENT '0=active, 1=banned',
-  `role` int(1) NOT NULL DEFAULT 0 COMMENT '0=user, 1=admin',
-  `created_at` datetime DEFAULT current_timestamp() COMMENT 'User registration date',
-  `email_verified_at` datetime DEFAULT NULL
+                         `id`              INT(11)      NOT NULL AUTO_INCREMENT,
+                         `username`        VARCHAR(100) NOT NULL,
+                         `email`           VARCHAR(255) NOT NULL,
+                         `password_hash`   VARCHAR(255) NOT NULL,
+                         `is_banned`       TINYINT(1)   NOT NULL DEFAULT 0 COMMENT '0=active,1=banned',
+                         `role`            TINYINT(1)   NOT NULL DEFAULT 0 COMMENT '0=user,1=admin',
+                         `created_at`      DATETIME     DEFAULT CURRENT_TIMESTAMP,
+                         `email_verified_at` DATETIME   DEFAULT NULL,
+                         PRIMARY KEY (`id`),
+                         UNIQUE KEY `username` (`username`),
+                         UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `users`
---
+/* ---------- INGREDIENTS (nagy lista) ------------------ */
 
-INSERT INTO `users` (`id`, `username`, `email`, `password_hash`, `is_banned`, `role`, `created_at`, `email_verified_at`) VALUES
-(22, 'vassrichard31@gmail.com', 'vassrichard31@gmail.com', '$2y$10$/PJv4iYAScWRgWXHlPLyme/FhYxki1QyNFSFPB7CJdezlEPEduFA2', 0, 1, '2025-06-30 01:11:21', '2025-06-30 01:13:12'),
-(23, 'Ricsi', 'ricsyxchannel@gmail.com', '$2y$10$nmxNWEeo0YUL7X6BSdHadOSD0oWiH.64SdT9TE0b3g91.3sOSZgcy', 0, 0, '2025-06-30 01:13:30', NULL);
+DROP TABLE IF EXISTS `ingredients`;
+CREATE TABLE `ingredients` (
+                               `id`      INT(11)      NOT NULL AUTO_INCREMENT,
+                               `name`    VARCHAR(100) NOT NULL COMMENT 'Name of the ingredient',
+                               `unit_id` INT(11)      NOT NULL COMMENT 'FK → units.id',
+                               PRIMARY KEY (`id`),
+                               UNIQUE KEY `name` (`name`),
+                               KEY `unit_id` (`unit_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Indexes for dumped tables
---
+INSERT INTO `ingredients` (`name`,`unit_id`) VALUES
+                                                 ('darált marhahús',3),
+                                                 ('darált sertéshús',3),
+                                                 ('darált bárányhús',3),
+                                                 ('darált csirkehús',3),
+                                                 ('darált pulykahús',3),
+                                                 ('darált kacsahús',3),
+                                                 ('darált libahús',3),
+                                                 ('darált borjúhús',4),
+                                                 ('darált szarvashús',3),
+                                                 ('vaddisznóhús',3),
+                                                 ('nyúlhús',3),
+                                                 ('lóhús',3),
+                                                 ('kecskehús',3),
+                                                 ('strucchús',3),
+                                                 ('kenguruhús',3),
+                                                 ('sonka',3),
+                                                 ('szalonna',3),
+                                                 ('kolbász',3),
+                                                 ('szalámi',3),
+                                                 ('cheddar',3),
+                                                 ('parmezán',3),
+                                                 ('mozzarella',3),
+                                                 ('feta',3),
+                                                 ('camembert',3),
+                                                 ('brie',3),
+                                                 ('gouda',3),
+                                                 ('rokfort',3),
+                                                 ('edami',3),
+                                                 ('ementáli',3),
+                                                 ('trappista',3),
+                                                 ('gruyère',3),
+                                                 ('mascarpone',3),
+                                                 ('ricotta',3),
+                                                 ('pecorino',3),
+                                                 ('gorgonzola',3),
+                                                 ('halloumi',3),
+                                                 ('pálpusztai',3),
+                                                 ('maasdam',3),
+                                                 ('manchego',3),
+                                                 ('kecskesajt',3),
+                                                 ('limburger',3),
+                                                 ('sárgarépa',3),
+                                                 ('burgonya',3),
+                                                 ('paradicsom',3),
+                                                 ('uborka',4),
+                                                 ('paprika',3),
+                                                 ('hagyma',3),
+                                                 ('fokhagyma',3),
+                                                 ('padlizsán',3),
+                                                 ('cukkini',3),
+                                                 ('brokkoli',3),
+                                                 ('karfiol',3),
+                                                 ('spenót',3),
+                                                 ('káposzta',3),
+                                                 ('kelbimbó',3),
+                                                 ('avokádó',3),
+                                                 ('cékla',3),
+                                                 ('retek',3),
+                                                 ('édesburgonya',3),
+                                                 ('gomba',3),
+                                                 ('zöldborsó',4),
+                                                 ('spárga',3),
+                                                 ('articsóka',3),
+                                                 ('karalábé',3),
+                                                 ('paszternák',3),
+                                                 ('okra',3),
+                                                 ('spagetti',3),
+                                                 ('makaróni',3),
+                                                 ('penne',3),
+                                                 ('fusilli',3),
+                                                 ('lasagne',3),
+                                                 ('ravioli',3),
+                                                 ('tortellini',3),
+                                                 ('tagliatelle',3),
+                                                 ('linguine',3),
+                                                 ('farfalle',3),
+                                                 ('orzo',3),
+                                                 ('udon tészta',3),
+                                                 ('soba tészta',3),
+                                                 ('ramen tészta',3),
+                                                 ('üvegtészta',3),
+                                                 ('rizstészta',3),
+                                                 ('gnocchi',3),
+                                                 ('cannelloni',3),
+                                                 ('fettuccine',3),
+                                                 ('pappardelle',3),
+                                                 ('vörösbor',4),
+                                                 ('fehérbor',4),
+                                                 ('sör',4),
+                                                 ('whisky',4),
+                                                 ('konyak',3),
+                                                 ('rum',4),
+                                                 ('vodka',4),
+                                                 ('vermut',4),
+                                                 ('sherry',3),
+                                                 ('portói bor',4),
+                                                 ('Marsala bor',4),
+                                                 ('Madeira bor',4),
+                                                 ('szaké',3),
+                                                 ('tequila',4),
+                                                 ('pezsgő',4),
+                                                 ('pálinka',4),
+                                                 ('narancslikőr',4),
+                                                 ('amaretto',3),
+                                                 ('alma',3),
+                                                 ('banán',3),
+                                                 ('narancs',3),
+                                                 ('citrom',3),
+                                                 ('lime',3),
+                                                 ('eper',3),
+                                                 ('málna',3),
+                                                 ('áfonya',3),
+                                                 ('szőlő',3),
+                                                 ('őszibarack',3),
+                                                 ('sárgabarack',3),
+                                                 ('szilva',3),
+                                                 ('cseresznye',3),
+                                                 ('meggy',3),
+                                                 ('körte',3),
+                                                 ('mangó',3),
+                                                 ('ananász',3),
+                                                 ('kókusz',3),
+                                                 ('görögdinnye',3),
+                                                 ('sárgadinnye',3),
+                                                 ('kivi',3),
+                                                 ('papaja',3),
+                                                 ('gránátalma',3),
+                                                 ('licsi',3),
+                                                 ('füge',3),
+                                                 ('grapefruit',3),
+                                                 ('maracuja',3),
+                                                 ('lazac',3),
+                                                 ('tonhal',3),
+                                                 ('tőkehal',3),
+                                                 ('szardínia',3),
+                                                 ('makréla',3),
+                                                 ('pisztráng',3),
+                                                 ('ponty',3),
+                                                 ('harcsa',3),
+                                                 ('süllő',3),
+                                                 ('csuka',3),
+                                                 ('hering',3),
+                                                 ('szardella',3),
+                                                 ('tilápia',3),
+                                                 ('pangasius',3),
+                                                 ('hekk',3),
+                                                 ('angolna',3),
+                                                 ('busa',3),
+                                                 ('keszeg',3),
+                                                 ('sügér',3),
+                                                 ('kardhal',3),
+                                                 ('garnélarák',3),
+                                                 ('királyrák',3),
+                                                 ('homár',3),
+                                                 ('osztriga',3),
+                                                 ('kagyló',3),
+                                                 ('fésűkagyló',3),
+                                                 ('tintahal',3),
+                                                 ('polip',3),
+                                                 ('tarisznyarák',3),
+                                                 ('kaviár',3),
+                                                 ('kalmár',3),
+                                                 ('tengeri sün',3),
+                                                 ('languszta',3),
+                                                 ('folyami rák',3),
+                                                 ('basmati rizs',3),
+                                                 ('jázmin rizs',3),
+                                                 ('arborio rizs',4),
+                                                 ('carnaroli rizs',3),
+                                                 ('vadrizs',3),
+                                                 ('barna rizs',3),
+                                                 ('fekete rizs',3),
+                                                 ('ragacsos rizs',3),
+                                                 ('sushi rizs',3),
+                                                 ('bomba rizs',3),
+                                                 ('vörös rizs',3),
+                                                 ('előfőzött rizs',3),
+                                                 ('tej',3),
+                                                 ('vaj',3),
+                                                 ('tejszín',3),
+                                                 ('tejföl',3),
+                                                 ('joghurt',3),
+                                                 ('kefir',3),
+                                                 ('író',3),
+                                                 ('túró',3),
+                                                 ('krémsajt',3),
+                                                 ('sűrített tej',3),
+                                                 ('ghí',3),
+                                                 ('tejpor',3),
+                                                 ('tejsavó',3),
+                                                 ('búza',3),
+                                                 ('árpa',3),
+                                                 ('zab',3),
+                                                 ('rozs',3),
+                                                 ('köles',3),
+                                                 ('kukorica',3),
+                                                 ('hajdina',3),
+                                                 ('quinoa',3),
+                                                 ('bulgur',3),
+                                                 ('kuszkusz',3),
+                                                 ('amaránt',3),
+                                                 ('tönkölybúza',3),
+                                                 ('cirok',3),
+                                                 ('árpagyöngy',3),
+                                                 ('búzadara',3),
+                                                 ('marha fej',3),
+                                                 ('marha pofa',3),
+                                                 ('marha nyak (tarja)',3),
+                                                 ('marha hasaalja',3),
+                                                 ('marha szegy',3),
+                                                 ('marha lapocka',3),
+                                                 ('marha oldalas',3),
+                                                 ('marha láb',3),
+                                                 ('marha lábszár',3),
+                                                 ('marha farok',3),
+                                                 ('marha fartő',3),
+                                                 ('marha fehérpecsenye',3),
+                                                 ('marha feketepecsenye',3),
+                                                 ('marha felsál',3),
+                                                 ('marha dió',3),
+                                                 ('marha rostélyos',3),
+                                                 ('marha hátszín',3),
+                                                 ('marha bélszín',3),
+                                                 ('marha máj',3),
+                                                 ('marha vese',3),
+                                                 ('marha szív',3),
+                                                 ('marha tüdő',3),
+                                                 ('pacal',3),
+                                                 ('marha nyelv',3),
+                                                 ('marha velőscsont',3),
+                                                 ('marha agyvelő',3),
+                                                 ('marha lép',4),
+                                                 ('bikahere',3),
+                                                 ('borjúmirigy (bríz)',4),
+                                                 ('sertés fej',3),
+                                                 ('sertés orr',3),
+                                                 ('sertés fül',3),
+                                                 ('sertés pofa',3),
+                                                 ('sertés nyelv',3),
+                                                 ('sertés nyak',3),
+                                                 ('sertés tarja',3),
+                                                 ('sertés lapocka',3),
+                                                 ('sertés hosszú karaj',3),
+                                                 ('sertés rövid karaj',3),
+                                                 ('sertés szűzpecsenye',3),
+                                                 ('sertés oldalas',3),
+                                                 ('sertés dagadó',3),
+                                                 ('sertés comb',3),
+                                                 ('sertés felsál',3),
+                                                 ('sertés dió',3),
+                                                 ('sertés frikandó',3),
+                                                 ('sertés rózsa',3),
+                                                 ('sertés csülök',3),
+                                                 ('sertés láb',3),
+                                                 ('sertés farok',3),
+                                                 ('sertés szalonna',3),
+                                                 ('sertés máj',3),
+                                                 ('sertés vese',3),
+                                                 ('sertés szív',3),
+                                                 ('sertés tüdő',3),
+                                                 ('sertés agyvelő',3),
+                                                 ('sertés vér',3),
+                                                 ('sertés belek',3),
+                                                 ('sertés gyomor',3),
+                                                 ('sertés lép',4),
+                                                 ('csirkemell',3),
+                                                 ('csirke felsőcomb',3),
+                                                 ('csirke alsócomb',3),
+                                                 ('csirkeszárny',3),
+                                                 ('csirkenyak',3),
+                                                 ('csirkefarhát',3),
+                                                 ('csirkemáj',3),
+                                                 ('csirkeszív',3),
+                                                 ('csirkezúza',3),
+                                                 ('csirkeláb',3),
+                                                 ('kakashere',3),
+                                                 ('kakastaréj',3),
+                                                 ('kacsamell',3),
+                                                 ('kacsacomb',3),
+                                                 ('kacsaszárny',3),
+                                                 ('kacsanyak',3),
+                                                 ('kacsamáj',3),
+                                                 ('kacsaszív',3),
+                                                 ('kacsazúza',3),
+                                                 ('kacsaháj',3),
+                                                 ('libamell',3),
+                                                 ('libacomb',3),
+                                                 ('libaszárny',3),
+                                                 ('libanyak',3),
+                                                 ('libamáj',3),
+                                                 ('libaszív',3),
+                                                 ('libazúza',3),
+                                                 ('libaháj',3),
+                                                 ('pulykamell',3),
+                                                 ('pulykacomb',3),
+                                                 ('pulykaszárny',3),
+                                                 ('pulykanyak',3),
+                                                 ('pulykamáj',3),
+                                                 ('pulykaszív',3),
+                                                 ('pulykazúza',3),
+                                                 ('bárány fej',3),
+                                                 ('bárány nyak',3),
+                                                 ('bárány lapocka',3),
+                                                 ('bárány borda',4),
+                                                 ('bárány gerinc',3),
+                                                 ('bárány comb',3),
+                                                 ('bárány lábszár',3),
+                                                 ('bárány máj',3),
+                                                 ('bárány vese',3),
+                                                 ('bárány szív',3),
+                                                 ('bárány tüdő',3),
+                                                 ('bárány nyelv',3),
+                                                 ('bárány agyvelő',3),
+                                                 ('bárány here',3),
+                                                 ('bárány lép',4),
+                                                 ('nyúl lapocka',3),
+                                                 ('nyúl comb',3),
+                                                 ('nyúl gerinc',3),
+                                                 ('nyúl máj',3),
+                                                 ('nyúl szív',3),
+                                                 ('nyúl vese',3),
+                                                 ('lazacikra',3),
+                                                 ('pisztrángikra',3),
+                                                 ('pontyikra',3),
+                                                 ('tokhalikra',3),
+                                                 ('Csiperke gomba',3),
+                                                 ('Laskagomba',3),
+                                                 ('Őzlábgomba',3),
+                                                 ('Rókagomba',3),
+                                                 ('Ízletes vargánya',3),
+                                                 ('Fenyőalja vargánya',3),
+                                                 ('Kék tönkű galambgomba',3),
+                                                 ('Mezei szegfűgomba',3),
+                                                 ('Sárga rókagomba',3),
+                                                 ('Szarvasgomba',3),
+                                                 ('Kucsmagomba',3),
+                                                 ('Gyapjas tintagomba',3),
+                                                 ('Shiitake gomba',3),
+                                                 ('Portobello gomba',3),
+                                                 ('Enoki gomba',3),
+                                                 ('Shimeji gomba',3),
+                                                 ('Maitake gomba',3),
+                                                 ('Trombitagomba',3),
+                                                 ('Japán laskagomba',3),
+                                                 ('Vajaspöfeteg',3),
+                                                 ('Csirketojás',2),
+                                                 ('Fürjtojás',2),
+                                                 ('Kacsatojás',2),
+                                                 ('Libatojás',2),
+                                                 ('Pulykatojás',2),
+                                                 ('Strucctojás',2),
+                                                 ('Emutojás',2),
+                                                 ('Gyöngytyúktojás',2),
+                                                 ('Fácántojás',2),
+                                                 ('Coca-Cola',4),
+                                                 ('Pepsi',4),
+                                                 ('Fanta',4),
+                                                 ('Sprite',4),
+                                                 ('Tonic víz',4),
+                                                 ('Gyömbérsör',4),
+                                                 ('Club Soda',4),
+                                                 ('Dr Pepper',4),
+                                                 ('7 Up',3),
+                                                 ('Mountain Dew',4),
+                                                 ('Root Beer',4),
+                                                 ('Appletiser',3),
+                                                 ('Schweppes Narancs',4),
+                                                 ('Schweppes Citrom',4),
+                                                 ('Kóla ital',3),
+                                                 ('Narancs üdítő',4),
+                                                 ('Citrom üdítő',4),
+                                                 ('Almás üdítő',4),
+                                                 ('Cola Zero',4),
+                                                 ('Pepsi Max',4);
 
---
--- Indexes for table `categories`
---
-ALTER TABLE `categories`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `name` (`name`);
+/* FK az ingredients → units-re */
+ALTER TABLE `ingredients`
+    ADD CONSTRAINT `ingredients_ibfk_1`
+        FOREIGN KEY (`unit_id`) REFERENCES `units` (`id`);
 
---
--- Indexes for table `email_verifications`
---
+/* ---------- GYERMEK-/KAPCSOLÓ TÁBLÁK ------------------ */
+
+DROP TABLE IF EXISTS `recipes`;
+CREATE TABLE `recipes` (
+                           `id`          INT(11)      NOT NULL AUTO_INCREMENT,
+                           `user_id`     INT(11)      NOT NULL COMMENT 'Creator',
+                           `title`       VARCHAR(255) NOT NULL,
+                           `description` TEXT         DEFAULT NULL,
+                           `instructions`TEXT         DEFAULT NULL,
+                           `prep_time`   INT(11)      DEFAULT NULL,
+                           `cook_time`   INT(11)      DEFAULT NULL,
+                           `servings`    INT(11)      DEFAULT NULL,
+                           `category_id` INT(11)      DEFAULT NULL,
+                           `created_at`  DATETIME     DEFAULT CURRENT_TIMESTAMP,
+                           PRIMARY KEY (`id`),
+                           KEY `user_id` (`user_id`),
+                           KEY `category_id` (`category_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `email_verifications`;
+CREATE TABLE `email_verifications` (
+                                       `user_id`   INT(11)  NOT NULL,
+                                       `token`     VARCHAR(255) NOT NULL,
+                                       `created_at`DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                       PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `password_resets`;
+CREATE TABLE `password_resets` (
+                                   `user_id`   INT(11)  NOT NULL,
+                                   `token`     VARCHAR(255) NOT NULL,
+                                   `created_at`DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                   PRIMARY KEY (`user_id`),
+                                   KEY `idx_token` (`token`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `favorites`;
+CREATE TABLE `favorites` (
+                             `user_id`  INT(11) NOT NULL,
+                             `recipe_id`INT(11) NOT NULL,
+                             `created_at`DATETIME DEFAULT CURRENT_TIMESTAMP,
+                             PRIMARY KEY (`user_id`,`recipe_id`),
+                             KEY `recipe_id` (`recipe_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `fridge_items`;
+CREATE TABLE `fridge_items` (
+                                `id`           INT(11)      NOT NULL AUTO_INCREMENT,
+                                `user_id`      INT(11)      NOT NULL,
+                                `ingredient_id`INT(11)      NOT NULL,
+                                `quantity`     DECIMAL(10,2) NOT NULL DEFAULT 0.00 COMMENT 'Amount in user fridge',
+                                PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `menus`;
+CREATE TABLE `menus` (
+                         `id`         INT(11) NOT NULL AUTO_INCREMENT,
+                         `user_id`    INT(11) NOT NULL,
+                         `name`       VARCHAR(10) NOT NULL,
+                         `recipe_id`  INT(11) NOT NULL,
+                         `day_of_week`ENUM('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday') NOT NULL,
+                         `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+                         PRIMARY KEY (`id`),
+                         KEY `user_id` (`user_id`),
+                         KEY `recipe_id` (`recipe_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `recipe_ingredients`;
+CREATE TABLE `recipe_ingredients` (
+                                      `recipe_id`    INT(11)      NOT NULL,
+                                      `ingredient_id`INT(11)      NOT NULL,
+                                      `quantity`     DECIMAL(10,2) DEFAULT NULL,
+                                      PRIMARY KEY (`recipe_id`,`ingredient_id`),
+                                      KEY `ingredient_id` (`ingredient_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+/* ---------- KÜLSŐ KULCSOK ---------------------------- */
+
 ALTER TABLE `email_verifications`
-  ADD PRIMARY KEY (`user_id`);
+    ADD CONSTRAINT `email_verifications_ibfk_1`
+        FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
---
--- Indexes for table `favorites`
---
-ALTER TABLE `favorites`
-  ADD PRIMARY KEY (`user_id`,`recipe_id`),
-  ADD KEY `recipe_id` (`recipe_id`);
-
---
--- Indexes for table `fridge_items`
---
-ALTER TABLE `fridge_items`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `ingredients`
---
-ALTER TABLE `ingredients`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `name` (`name`),
-  ADD KEY `unit_id` (`unit_id`);
-
---
--- Indexes for table `menus`
---
-ALTER TABLE `menus`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `recipe_id` (`recipe_id`);
-
---
--- Indexes for table `password_resets`
---
 ALTER TABLE `password_resets`
-  ADD PRIMARY KEY (`user_id`),
-  ADD KEY `idx_token` (`token`);
+    ADD CONSTRAINT `fk_password_resets_user`
+        FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
---
--- Indexes for table `recipes`
---
 ALTER TABLE `recipes`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `category_id` (`category_id`);
+    ADD CONSTRAINT `recipes_ibfk_1`
+        FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `recipes_ibfk_2`
+      FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`);
 
---
--- Indexes for table `recipe_ingredients`
---
-ALTER TABLE `recipe_ingredients`
-  ADD PRIMARY KEY (`recipe_id`,`ingredient_id`),
-  ADD KEY `ingredient_id` (`ingredient_id`);
-
---
--- Indexes for table `units`
---
-ALTER TABLE `units`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `name` (`name`),
-  ADD UNIQUE KEY `abbreviation` (`abbreviation`);
-
---
--- Indexes for table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `username` (`username`),
-  ADD UNIQUE KEY `email` (`email`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `categories`
---
-ALTER TABLE `categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `fridge_items`
---
-ALTER TABLE `fridge_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT for table `ingredients`
---
-ALTER TABLE `ingredients`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
-
---
--- AUTO_INCREMENT for table `menus`
---
-ALTER TABLE `menus`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `recipes`
---
-ALTER TABLE `recipes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `units`
---
-ALTER TABLE `units`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT for table `users`
---
-ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `email_verifications`
---
-ALTER TABLE `email_verifications`
-  ADD CONSTRAINT `email_verifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `favorites`
---
 ALTER TABLE `favorites`
-  ADD CONSTRAINT `favorites_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `favorites_ibfk_2` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`id`) ON DELETE CASCADE;
+    ADD CONSTRAINT `favorites_ibfk_1`
+        FOREIGN KEY (`user_id`)   REFERENCES `users`   (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `favorites_ibfk_2`
+      FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`id`) ON DELETE CASCADE;
 
---
--- Constraints for table `ingredients`
---
-ALTER TABLE `ingredients`
-  ADD CONSTRAINT `ingredients_ibfk_1` FOREIGN KEY (`unit_id`) REFERENCES `units` (`id`);
-
---
--- Constraints for table `menus`
---
-ALTER TABLE `menus`
-  ADD CONSTRAINT `menus_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `menus_ibfk_2` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `password_resets`
---
-ALTER TABLE `password_resets`
-  ADD CONSTRAINT `fk_password_resets_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `recipes`
---
-ALTER TABLE `recipes`
-  ADD CONSTRAINT `recipes_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `recipes_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`);
-
---
--- Constraints for table `recipe_ingredients`
---
 ALTER TABLE `recipe_ingredients`
-  ADD CONSTRAINT `recipe_ingredients_ibfk_1` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `recipe_ingredients_ibfk_2` FOREIGN KEY (`ingredient_id`) REFERENCES `ingredients` (`id`) ON DELETE CASCADE;
+    ADD CONSTRAINT `recipe_ingredients_ibfk_1`
+        FOREIGN KEY (`recipe_id`)    REFERENCES `recipes`    (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `recipe_ingredients_ibfk_2`
+      FOREIGN KEY (`ingredient_id`)REFERENCES `ingredients`(`id`) ON DELETE CASCADE;
+
+ALTER TABLE `menus`
+    ADD CONSTRAINT `menus_ibfk_1`
+        FOREIGN KEY (`user_id`)   REFERENCES `users`   (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `menus_ibfk_2`
+      FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`id`) ON DELETE CASCADE;
+
+/* ----------------------------------------------------- */
+
+SET FOREIGN_KEY_CHECKS = 1;
 COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
