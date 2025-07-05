@@ -1,0 +1,231 @@
+/* Recipe styles */
+
+.recipe-card {
+    transition: transform 0.3s ease;
+    border-color: var(--card-border);
+    background-color: var(--primary-bg);
+}
+
+.recipe-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px color-mix(in srgb, var(--navbar-hover) 15%, transparent) !important;
+}
+
+.recipe-card-image {
+    height: 180px;
+    object-fit: cover;
+}
+
+.recipe-detail-image {
+    height: 100%;
+    object-fit: cover;
+}
+
+.recipe-image-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 767.98px) {
+    .recipe-detail-image {
+        height: 250px;
+        width: 90%;
+        border-radius: 8px !important;
+        margin: 15px auto;
+        object-position: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .recipe-image-container {
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
+    
+    .card-body {
+        padding-top: 0;
+    }
+    
+    /* Telefonos méretezések a recept nézetben */
+    .recipe-view h1.recipe-card-title {
+        font-size: 1.6rem !important;
+        text-align: center;
+    }
+    
+    .recipe-view h3.recipe-card-title {
+        font-size: 1.15rem !important;
+    }
+    
+    .recipe-view .fs-5 {
+        font-size: 1rem !important;
+    }
+    
+    .recipe-view .list-group-item {
+        font-size: 1rem !important;
+        padding: 0.5rem;
+    }
+    
+    .recipe-view .badge {
+        font-size: 0.8rem !important;
+        padding: 0.25rem 0.5rem !important;
+        margin: 0 auto;
+        display: table;
+    }
+    
+    .card-header.bg-primary {
+        padding: 0.5rem 0.75rem !important;
+    }
+    
+    .recipe-view .card-header {
+        min-height: 2.5rem;
+    }
+    
+    /* Receptek lista oldal telefonos nézet */
+    h1 {
+        font-size: 1.75rem !important;
+        margin-bottom: 1rem;
+    }
+    
+    .recipe-card-title {
+        font-size: 1.25rem !important;
+    }
+    
+    .card-footer .btn {
+        padding: 0.375rem 0.75rem;
+        width: 100%;
+    }
+    
+    /* Fejléc gombok teljes szélességű mobilnézetben */
+    .flex-column .btn {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+}
+
+.recipe-card-title {
+    font-weight: 700;
+    color: var(--primary-text);
+}
+
+/* Recipe view címsorok speciális méretezése */
+.recipe-view h1.recipe-card-title {
+    font-size: 2rem !important; /* Főcím mérete */
+}
+
+.recipe-view h3.recipe-card-title {
+    font-size: 1.35rem !important; /* Szekcióheadingek mérete */
+    padding: 3px 0 !important;
+}
+
+/* Recipe card text */
+.recipe-card .card-text {
+    color: var(--desc-text);
+}
+
+/* Badge színek */
+.badge.bg-primary {
+    background-color: var(--btn-bg) !important;
+    color: var(--btn-text);
+}
+
+/* Recipe detail card */
+.card-header.bg-primary {
+    background-color: var(--navbar-bg) !important;
+    border-color: var(--card-border);
+    padding: 0.75rem 1.25rem !important; /* Mérsékelt padding a fejlécben */
+}
+
+.card-header.bg-primary .recipe-card-title {
+    color: var(--navbar-text);
+    margin: 0.25rem 0 !important; /* Mérsékelt margó a címsornak */
+}
+
+/* Szövegtartalmak a recept nézetben */
+.recipe-view .fs-5 {
+    font-size: 1.1rem !important; /* Kisebb szövegméret */
+}
+
+.recipe-view .list-group-item {
+    padding: 0.5rem 0.75rem;
+    font-size: 1.05rem !important;
+}
+
+.recipe-view .badge {
+    font-size: 0.85rem !important;
+    padding: 0.3rem 0.5rem !important;
+}
+
+/* Ingredients list styling */
+.list-group-item {
+    transition: background-color 0.2s;
+}
+
+.list-group-item:hover {
+    background-color: color-mix(in srgb, var(--navbar-hover) 5%, transparent);
+}
+
+/* Címek a recept nézetben */
+.recipe-view .card-header {
+    min-height: 2.75rem;
+    display: flex;
+    align-items: center;
+}
+
+.recipe-view h3.recipe-card-title {
+    line-height: 1.2;
+    letter-spacing: 0.3px;
+}
+
+.recipe-view h1.recipe-card-title {
+    line-height: 1.2;
+    letter-spacing: 0.3px;
+}
+
+/* Form ingredient styles */
+.ingredient-row {
+    transition: background-color 0.3s;
+    padding: 10px 0;
+    border-radius: 4px;
+}
+
+.ingredient-row:hover {
+    background-color: color-mix(in srgb, var(--navbar-hover) 2%, transparent);
+}
+
+[data-bs-theme="dark"] .ingredient-row:hover {
+    background-color: color-mix(in srgb, var(--navbar-hover) 5%, transparent);
+}
+
+/* Badge másodlagos */
+.badge.bg-secondary {
+    background-color: var(--navbar-text) !important;
+    color: var(--btn-text);
+}
+
+/* List group elemek sötét témában */
+[data-bs-theme="dark"] .list-group-item {
+    background-color: var(--secondary-bg);
+    border-color: var(--card-border);
+    color: var(--primary-text);
+}
+
+/* Recept űrlap elemek */
+.form-control:focus {
+    border-color: var(--navbar-hover);
+    box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--navbar-hover) 25%, transparent);
+}
+
+/* Recept gomb kiemelés */
+.btn-success {
+    background-color: var(--btn-bg);
+    border-color: var(--btn-bg);
+}
+
+.btn-success:hover {
+    background-color: color-mix(in srgb, var(--btn-bg) 85%, var(--btn-text) 15%);
+    border-color: var(--btn-bg);
+}

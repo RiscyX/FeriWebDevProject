@@ -17,6 +17,7 @@ use WebDevProject\Controller\FridgeController;
 use WebDevProject\Controller\HomeController;
 use WebDevProject\Controller\AuthController;
 use WebDevProject\Controller\AdminController;
+use WebDevProject\Controller\RecipeController;
 use WebDevProject\Security\Csrf;
 
 $dotenv = Dotenv::createImmutable(dirname(__DIR__));
@@ -43,6 +44,12 @@ $dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('POST', '/reset',        [AuthController::class, 'authPasswordReset']);
 
     $r->addRoute('GET',    '/fridge',           [FridgeController::class, 'index']);
+    
+    // Recipes
+    $r->addRoute('GET',  '/recipes',         [RecipeController::class, 'index']);
+    $r->addRoute('GET',  '/recipe/{id:\d+}', [RecipeController::class, 'view']);
+    $r->addRoute('GET',  '/recipe/submit',   [RecipeController::class, 'submitForm']);
+    $r->addRoute('POST', '/recipe/submit',   [RecipeController::class, 'submitProcess']);
 
     $r->addGroup('/api/fridge', function(RouteCollector $r) {
         $r->addRoute('GET',   '',             [FridgeApiController::class, 'getItems']);
@@ -60,6 +67,11 @@ $dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r) {
         $r->addRoute('GET',  '/users',    [AdminController::class, 'index']);
         $r->addRoute('POST', '/users/ban', [AdminController::class, 'banUser']);
         $r->addRoute('POST', '/users/unban', [AdminController::class, 'unbanUser']);
+        
+        // Recept admin útvonalak
+        $r->addRoute('GET',  '/recipes',    [AdminController::class, 'recipes']);
+        $r->addRoute('POST', '/recipes/approve', [AdminController::class, 'approveRecipe']);
+        $r->addRoute('POST', '/recipes/reject', [AdminController::class, 'rejectRecipe']);
     });
 });
 

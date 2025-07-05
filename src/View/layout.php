@@ -41,5 +41,6 @@ $csrf = \WebDevProject\Security\Csrf::token();
 <script src="/js/bootstrap.bundle.min.js"></script>
 <script src="/js/theme-toggle.js"></script>
 <script src="/js/functions.js"></script>
+<script src="/js/form-validation.js"></script>
 </body>
 </html>

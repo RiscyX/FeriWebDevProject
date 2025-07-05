@@ -6,6 +6,7 @@ namespace WebDevProject\Controller;
 
 use WebDevProject\Core\Auth;
 use WebDevProject\Model\User;
+use WebDevProject\Model\Recipe;
 use WebDevProject\Security\Csrf;
 
 /**
@@ -34,11 +35,11 @@ class AdminController
         return [$page, $perPage, $offset];
     }
 
-    private function render(array $vars = [], string $title = 'Admin'): void
+    private function render(array $vars = [], string $title = 'Admin', string $view = 'users'): void
     {
         extract($vars, EXTR_SKIP);
         ob_start();
-        include __DIR__ . "/../View/pages/admin/users.php";
+        include __DIR__ . "/../View/pages/admin/{$view}.php";
         $content = ob_get_clean();
 
         include __DIR__ . '/../View/layout.php';
@@ -123,6 +124,121 @@ class AdminController
         $id = (int)($_GET['id'] ?? 0);
         $ok = $id && User::delete($this->pdo, $id);
         $this->json(['ok' => $ok]);
+    }
+
+    /** GET /admin/recipes - Beküldött receptek kezelése */
+    public function recipes(): void
+    {
+        [$page, $perPage, $offset] = $this->paging();
+
+        try {
+            // Nem jóváhagyott receptek lekérése
+            $recipes = Recipe::getPendingRecipes($this->pdo, [
+                'limit' => $perPage,
+                'offset' => $offset
+            ]);
+
+            // Átalakítás a nézethez
+            foreach ($recipes as &$recipe) {
+                $recipe['name'] = $recipe['title'];
+                $recipe['status'] = 'pending';
+
+                // Alapértelmezett kép beállítása, ha nincs
+                if (empty($recipe['image_path'])) {
+                    $recipe['image'] = '/assets/slide' . (($recipe['id'] % 3) + 1) . '.png';
+                } else {
+                    $recipe['image'] = $recipe['image_path'];
+                }
+            }
+
+            // Receptek számának lekérése
+            $stmt = $this->pdo->query("SELECT COUNT(*) as total FROM recipes WHERE verified_at IS NULL");
+            $total = $stmt->fetch(\PDO::FETCH_ASSOC)['total'] ?? 0;
+        } catch (\Exception $e) {
+            // Hiba esetén használjuk az alapértelmezett demo recepteket
+            $recipes = [
+                [
+                    'id' => 10,
+                    'name' => 'Túrógombóc',
+                    'category' => 'Desszert',
+                    'status' => 'pending', // pending, approved, rejected
+                    'created_by' => 'felhasználó123',
+                    'created_at' => '2025-06-28',
+                ],
+                [
+                    'id' => 11,
+                    'name' => 'Sült csirkecomb',
+                    'category' => 'Főétel',
+                    'status' => 'pending',
+                    'created_by' => 'szakács456',
+                    'created_at' => '2025-07-01',
+                ]
+            ];
+
+            $total = count($recipes);
+        }
+
+        $totalPages = (int)ceil($total / $perPage);
+
+        $this->render(
+            compact(
+                'recipes',
+                'page',
+                'perPage',
+                'total',
+                'totalPages'
+            ),
+            'Beküldött receptek',
+            'recipes'
+        );
+    }
+
+    /**
+     * POST /admin/recipes/approve - Recept jóváhagyása
+     */
+    public function approveRecipe(): never
+    {
+        // CSRF ellenőrzés
+        if (!isset($_POST['csrf']) || !\WebDevProject\Security\Csrf::check($_POST['csrf'])) {
+            http_response_code(403);
+            die('CSRF token mismatch');
+        }
+
+        $id = (int)($_POST['id'] ?? 0);
+        $ok = $id && Recipe::approveRecipe($this->pdo, $id);
+
+        if ($ok) {
+            $_SESSION['flash'] = 'A recept sikeresen jóváhagyva.';
+        } else {
+            $_SESSION['flash'] = 'Hiba történt a recept jóváhagyása során.';
+        }
+
+        header('Location: /admin/recipes');
+        exit;
+    }
+
+    /**
+     * POST /admin/recipes/reject - Recept elutasítása
+     */
+    public function rejectRecipe(): never
+    {
+        // CSRF ellenőrzés
+        if (!isset($_POST['csrf']) || !\WebDevProject\Security\Csrf::check($_POST['csrf'])) {
+            http_response_code(403);
+            die('CSRF token mismatch');
+        }
+
+        $id = (int)($_POST['id'] ?? 0);
+        $ok = $id && Recipe::rejectRecipe($this->pdo, $id);
+
+        if ($ok) {
+            $_SESSION['flash'] = 'A recept sikeresen elutasítva.';
+        } else {
+            $_SESSION['flash'] = 'Hiba történt a recept elutasítása során.';
+        }
+
+        header('Location: /admin/recipes');
+        exit;
     }
 
     public function usersApi(): never
