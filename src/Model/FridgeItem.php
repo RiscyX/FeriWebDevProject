@@ -42,22 +42,62 @@ class FridgeItem
     }
 
     /**
-     * Új tétel létrehozása
+     * Ellenőrzi, hogy egy felhasználónak van-e már adott összetevőből a hűtőjében
+     * @param PDO $pdo
+     * @param int $userId
+     * @param int $ingredientId
+     * @return array|null Az elem adatai, ha létezik, null ha nem
+     */
+    public static function findByIngredient(PDO $pdo, int $userId, int $ingredientId): ?array
+    {
+        $sql = 'SELECT id, user_id, ingredient_id, quantity
+                FROM fridge_items
+                WHERE user_id = :user_id AND ingredient_id = :ingredient_id
+                LIMIT 1';
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'user_id' => $userId,
+            'ingredient_id' => $ingredientId
+        ]);
+        $item = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $item !== false ? $item : null;
+    }
+
+    /**
+     * Új tétel létrehozása vagy meglévő mennyiségének növelése
      * @param PDO $pdo
      * @param array<string, mixed> $data [user_id, name, quantity, expiry]
-     * @return int új rekord id
+     * @return int új rekord id vagy a frissített rekord id-ja
      */
     public static function create(PDO $pdo, array $data): int
     {
-        $sql = 'INSERT INTO fridge_items (user_id, ingredient_id, quantity)
-            VALUES (:user_id, :ingredient_id, :quantity)';
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            'user_id' => $data['user_id'],
-            'ingredient_id' => $data['ingredient_id'],
-            'quantity' => $data['quantity'],
-        ]);
-        return (int)$pdo->lastInsertId();
+        // Először ellenőrizzük, hogy van-e már ilyen összetevő a felhasználó hűtőjében
+        $existingItem = self::findByIngredient(
+            $pdo,
+            $data['user_id'],
+            $data['ingredient_id']
+        );
+
+        if ($existingItem) {
+            // Ha már létezik, növeljük a mennyiségét
+            $newQuantity = $existingItem['quantity'] + $data['quantity'];
+            self::update($pdo, (int)$existingItem['id'], [
+                'ingredient_id' => $data['ingredient_id'],
+                'quantity' => $newQuantity
+            ]);
+            return (int)$existingItem['id'];
+        } else {
+            // Ha még nem létezik, új rekordot hozunk létre
+            $sql = 'INSERT INTO fridge_items (user_id, ingredient_id, quantity)
+                VALUES (:user_id, :ingredient_id, :quantity)';
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                'user_id' => $data['user_id'],
+                'ingredient_id' => $data['ingredient_id'],
+                'quantity' => $data['quantity'],
+            ]);
+            return (int)$pdo->lastInsertId();
+        }
     }
 
 

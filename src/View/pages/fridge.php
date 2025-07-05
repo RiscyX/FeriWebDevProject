@@ -1,7 +1,7 @@
 <?php
-var_dump($items);
 // src/View/pages/admin/users.php
 ?>
+<link rel="stylesheet" href="/css/fridge.css">
 <div class="container py-4">
     <h1 class="mb-4">Hűtőszekrényem</h1>
 
@@ -90,6 +90,6 @@ var_dump($items);
                 data-bs-toggle="modal" data-bs-target="#addItemModal">
             Új tétel hozzáadása
         </button>
-        <a href="/admin" class="btn btn-secondary rounded-pill shadow-sm">Vissza az adminhoz</a>
     </div>
 </div>
+<script type="module" src="/js/fridgeFunctions.js"></script>

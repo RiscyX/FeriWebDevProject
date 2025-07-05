@@ -22,7 +22,7 @@ $csrf = \WebDevProject\Security\Csrf::token();
     <link rel="stylesheet" href="/css/index.css">
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body<?= isset($_SESSION['user_id']) ? ' class="user-logged-in"' : '' ?>>
 
 <?php require __DIR__ . '/partials/nav.php'; ?>
 <?php if (!empty($_SESSION['flash'])) : ?>
@@ -40,6 +40,6 @@ $csrf = \WebDevProject\Security\Csrf::token();
 
 <script src="/js/bootstrap.bundle.min.js"></script>
 <script src="/js/theme-toggle.js"></script>
-<script type="module" src="/js/fridgeFunctions.js"></script>
+<script src="/js/functions.js"></script>
 </body>
 </html>

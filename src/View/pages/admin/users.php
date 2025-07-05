@@ -11,12 +11,13 @@ $queryBase    = '?per_page=' . urlencode($perPage) . '&page=';
     <?php if (isset($users) && count($users) > 0) : ?>
         <div class="table-responsive shadow-sm rounded-2">
             <table class="table table-striped mb-0">
-                <thead class="table-light">
+                <thead class="table">
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Felhasználónév</th>
                     <th scope="col">E-mail</th>
                     <th scope="col">Szerepkör</th>
+                    <th scope="col">Státusz</th>
                     <th scope="col">Műveletek</th>
                 </tr>
                 </thead>
@@ -34,14 +35,32 @@ $queryBase    = '?per_page=' . urlencode($perPage) . '&page=';
                             <?php endif; ?>
                         </td>
                         <td>
-                            <a href="/admin/users/edit?id=<?= $user['id'] ?>"
-                               class="btn btn-sm btn-outline-primary me-2">Szerkesztés</a>
-                            <form method="post" action="/admin/users/delete" class="d-inline">
-                                <input type="hidden" name="csrf" value="<?= \WebDevProject\Security\Csrf::token() ?>">
-                                <input type="hidden" name="id" value="<?= $user['id'] ?>">
-                                <button type="submit" class="btn btn-sm btn-outline-danger"
-                                        onclick="return confirm('Biztosan törlöd?');">Törlés</button>
-                            </form>
+                            <?php if ((int)($user['is_banned'] ?? 0) === 1) : ?>
+                                <span class="badge bg-danger">Bannolt</span>
+                            <?php else : ?>
+                                <span class="badge bg-success">Aktív</span>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <?php if ((int)($user['is_banned'] ?? 0) === 1) : ?>
+                                <form method="post" action="/admin/users/unban" class="d-inline">
+                                    <input type="hidden" name="csrf"
+                                           value="<?= \WebDevProject\Security\Csrf::token() ?>">
+                                    <input type="hidden" name="id" value="<?= $user['id'] ?>">
+                                    <button type="submit" class="btn btn-sm btn-outline-success me-2"
+                                            onclick="return confirm('Biztosan feloldod a felhasználó bannolását?');">
+                                        Bannolás feloldása</button>
+                                </form>
+                            <?php else : ?>
+                                <form method="post" action="/admin/users/ban" class="d-inline">
+                                    <input type="hidden" name="csrf"
+                                           value="<?= \WebDevProject\Security\Csrf::token() ?>">
+                                    <input type="hidden" name="id" value="<?= $user['id'] ?>">
+                                    <button type="submit" class="btn btn-sm btn-outline-warning me-2"
+                                            onclick="return confirm('Biztosan bannolod a felhasználót?');">
+                                        Felhasználó bannolása</button>
+                                </form>
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -54,10 +73,6 @@ $queryBase    = '?per_page=' . urlencode($perPage) . '&page=';
         </div>
     <?php endif; ?>
 
-    <div class="mt-4">
-        <a href="/admin/users/create" class="btn btn-success rounded-pill shadow-sm">Új felhasználó létrehozása</a>
-        <a href="/admin" class="btn btn-secondary rounded-pill shadow-sm ms-2">Vissza az admin főoldalra</a>
-    </div>
 </div>
 
 

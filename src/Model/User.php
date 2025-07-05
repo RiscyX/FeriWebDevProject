@@ -52,13 +52,18 @@ class User
     public function userLogin(string $email, string $plainPassword): ?array
     {
         $stmt = $this->pdo->prepare("
-            SELECT id, username, email, password_hash, role
+            SELECT id, username, email, password_hash, role, is_banned
             FROM users 
-            WHERE email = :x OR username = :x 
+            WHERE (email = :x OR username = :x) AND email_verified_at is not null 
             LIMIT 1
         ");
         $stmt->execute([':x' => $email]);
         $user = $stmt->fetch();
+
+        // Ellenőrizzük, hogy a felhasználó nincs-e bannolva
+        if ($user && (int)$user['is_banned'] === 1) {
+            return null; // Bannolt felhasználó nem jelentkezhet be
+        }
 
         if ($user && password_verify($plainPassword, $user['password_hash'])) {
             return [
@@ -208,6 +213,36 @@ class User
                 ->execute([':t' => $token]);
         }
         return $ok;
+    }
+
+    /**
+     * Felhasználó bannolása
+     *
+     * @param PDO $pdo
+     * @param int $id Felhasználó azonosítója
+     * @return bool Sikeres volt-e a művelet
+     */
+    public static function ban(PDO $pdo, int $id): bool
+    {
+        $sql = 'UPDATE users SET is_banned = 1 WHERE id = :id LIMIT 1';
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    /**
+     * Felhasználó bannolásának feloldása
+     *
+     * @param PDO $pdo
+     * @param int $id Felhasználó azonosítója
+     * @return bool Sikeres volt-e a művelet
+     */
+    public static function unban(PDO $pdo, int $id): bool
+    {
+        $sql = 'UPDATE users SET is_banned = 0 WHERE id = :id LIMIT 1';
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
     }
 
     public static function count(PDO $pdo): int

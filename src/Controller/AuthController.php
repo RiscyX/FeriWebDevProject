@@ -64,8 +64,12 @@ class AuthController
 
     public function authLogin(): void
     {
-
         $form = new LoginForm($this->pdo);
+
+        // Ha a felhasználó bannolva lett, jelenítsen meg egy hibaüzenetet
+        if (isset($_GET['banned']) && $_GET['banned'] == 1) {
+            $form->addError('A fiókja bannolva lett. Kérjük, vegye fel a kapcsolatot az adminisztrátorral.');
+        }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!Csrf::check($_POST['csrf'] ?? '')) {
@@ -85,7 +89,9 @@ class AuthController
                     exit;
                 }
 
-                $form->addError('Hibás e-mail vagy jelszó.');
+                if (!$form->hasErrors()) {
+                    $form->addError('Hibás e-mail vagy jelszó.');
+                }
             }
         }
 

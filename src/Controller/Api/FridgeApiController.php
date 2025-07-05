@@ -111,7 +111,7 @@ class FridgeApiController
     public function searchIngredients(): never
     {
         $q = trim($_GET['search'] ?? '');
-        if (mb_strlen($q) < 4) {
+        if (mb_strlen($q) < 2) {
             $this->json(['data' => []]);
         }
 

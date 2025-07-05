@@ -12,6 +12,7 @@ require_once __DIR__.'/../vendor/autoload.php';
 use Dotenv\Dotenv;
 use FastRoute\RouteCollector;
 use WebDevProject\Controller\Api\FridgeApiController;
+use WebDevProject\Controller\Api\UserApiController;
 use WebDevProject\Controller\FridgeController;
 use WebDevProject\Controller\HomeController;
 use WebDevProject\Controller\AuthController;
@@ -51,11 +52,14 @@ $dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r) {
         $r->addRoute('GET',    '/user/{userId:\d+}', [FridgeApiController::class, 'getItems']);
     });
     $r->addRoute('GET',  '/api/ingredients', [FridgeApiController::class, 'searchIngredients']);
+    $r->addRoute('GET',  '/api/user/status', [UserApiController::class, 'getStatus']);
 
 
     $r->addGroup('/admin', function (RouteCollector $r) {
         $r->addRoute('GET',  '',          [AdminController::class, 'index']);
         $r->addRoute('GET',  '/users',    [AdminController::class, 'index']);
+        $r->addRoute('POST', '/users/ban', [AdminController::class, 'banUser']);
+        $r->addRoute('POST', '/users/unban', [AdminController::class, 'unbanUser']);
     });
 });
 

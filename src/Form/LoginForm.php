@@ -37,6 +37,23 @@ class LoginForm extends BaseForm
     public function formLogin(): ?array
     {
         $user = new User($this->pdo);
+
+        // Először ellenőrizzük, hogy a felhasználó bannolva van-e
+        $stmt = $this->pdo->prepare("
+            SELECT is_banned
+            FROM users
+            WHERE (email = :email OR username = :email) AND email_verified_at IS NOT NULL
+            LIMIT 1
+        ");
+        $stmt->execute([':email' => $this->data['email']]);
+        $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($userData && (int)($userData['is_banned'] ?? 0) === 1) {
+            $this->addError('Ez a felhasználói fiók bannolva van. Kérjük, vegye
+             fel a kapcsolatot az adminisztrátorral.');
+            return null;
+        }
+
         return $user->userLogin(
             $this->data['email'],
             $this->data['password']

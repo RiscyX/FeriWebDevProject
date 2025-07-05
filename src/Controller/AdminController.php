@@ -6,6 +6,7 @@ namespace WebDevProject\Controller;
 
 use WebDevProject\Core\Auth;
 use WebDevProject\Model\User;
+use WebDevProject\Security\Csrf;
 
 /**
  * Egyetlen, “mindent vivő” AdminController.
@@ -75,9 +76,45 @@ class AdminController
     /** POST /admin/users/ban   (fetch vagy form) */
     public function banUser(): never
     {
+        // CSRF ellenőrzés
+        if (!isset($_POST['csrf']) || !\WebDevProject\Security\Csrf::check($_POST['csrf'])) {
+            http_response_code(403);
+            die('CSRF token mismatch');
+        }
+
         $id = (int)($_POST['id'] ?? 0);
         $ok = $id && User::ban($this->pdo, $id);
-        $this->json(['ok' => $ok]);
+
+        if ($ok) {
+            $_SESSION['flash'] = 'A felhasználó sikeresen bannolva lett.';
+        } else {
+            $_SESSION['flash'] = 'Hiba történt a felhasználó bannolása során.';
+        }
+
+        header('Location: /admin/users');
+        exit;
+    }
+
+    /** POST /admin/users/unban   (fetch vagy form) */
+    public function unbanUser(): never
+    {
+        // CSRF ellenőrzés
+        if (!isset($_POST['csrf']) || !\WebDevProject\Security\Csrf::check($_POST['csrf'])) {
+            http_response_code(403);
+            die('CSRF token mismatch');
+        }
+
+        $id = (int)($_POST['id'] ?? 0);
+        $ok = $id && User::unban($this->pdo, $id);
+
+        if ($ok) {
+            $_SESSION['flash'] = 'A felhasználó bannolása sikeresen feloldva.';
+        } else {
+            $_SESSION['flash'] = 'Hiba történt a felhasználó bannolásának feloldása során.';
+        }
+
+        header('Location: /admin/users');
+        exit;
     }
 
     /** GET /admin/users/delete?id=123  (vagy DELETE metódus REST-esen) */
