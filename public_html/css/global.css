@@ -163,3 +163,21 @@ body {
         height: 45vh;
     }
 }
+
+/* Footer stílusok */
+footer {
+    background-color: var(--secondary-bg);
+    color: var(--navbar-text);
+    border-top: 1px solid var(--divider);
+    font-weight: 500;
+}
+
+footer p {
+    margin-bottom: 0;
+}
+
+/* Sticky footer beállítások */
+html {
+    position: relative;
+    min-height: 100%;
+}

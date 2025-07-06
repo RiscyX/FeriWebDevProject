@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WebDevProject\Controller\Api;
 
 use WebDevProject\Core\Auth;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WebDevProject\Form;
 
 abstract class BaseForm

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WebDevProject\Controller;
 
 use PDO;
@@ -35,7 +37,7 @@ class RecipeController
 
         // Lapozási paraméterek
         $page = isset($_GET['page']) && is_numeric($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
-        $perPage = 20; // 20 recept oldalanként
+        $perPage = 6; // 6 recept oldalanként
 
         try {
             // Receptek és összes találat számának betöltése
@@ -128,7 +130,7 @@ class RecipeController
      * @param int $perPage Az oldalankénti elemszám
      * @return array Az eredmények tömbje: ['recipes' => array, 'total' => int]
      */
-    private function getFilteredRecipes(array $filters, int $page = 1, int $perPage = 20): array
+    private function getFilteredRecipes(array $filters, int $page = 1, int $perPage = 6): array
     {
         $where = [];
         $params = [];

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WebDevProject\Controller;
 
 use JetBrains\PhpStorm\NoReturn;

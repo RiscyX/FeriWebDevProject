@@ -6,7 +6,7 @@ $csrf = \WebDevProject\Security\Csrf::token();
 ?>
 <!-- src/View/layout.php -->
 <!DOCTYPE html>
-<html lang="hu" data-bs-theme="<?= htmlspecialchars($_COOKIE['theme'] ?? 'light') ?>">
+<html lang="hu" data-bs-theme="<?= htmlspecialchars($_COOKIE['theme'] ?? 'light') ?>" class="h-100">
 <head>
     <meta charset="UTF-8">
     <title><?= htmlspecialchars($title ?? 'Hűtőszekrényem') ?></title>
@@ -21,7 +21,8 @@ $csrf = \WebDevProject\Security\Csrf::token();
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
 </head>
-<body<?= isset($_SESSION['user_id']) ? ' class="user-logged-in"' : '' ?>>
+<body<?= isset($_SESSION['user_id']) ?
+    ' class="user-logged-in d-flex flex-column h-100"' : ' class="d-flex flex-column h-100"' ?>>
 
 <?php require __DIR__ . '/partials/nav.php'; ?>
 <?php if (!empty($_SESSION['flash'])) : ?>
@@ -33,9 +34,15 @@ $csrf = \WebDevProject\Security\Csrf::token();
     </div>
     <?php unset($_SESSION['flash']); ?>
 <?php endif; ?>
-<main class="container py-3">
+<main class="container py-3 flex-grow-1">
     <?php echo $content; ?>
 </main>
+
+<footer class="container-fluid py-3 mt-auto text-center">
+    <div class="container">
+        <p>FeRiWebDev - <?= date("Y"); ?></p>
+    </div>
+</footer>
 
 <script src="/js/bootstrap.bundle.min.js"></script>
 <script src="/js/theme-toggle.js"></script>

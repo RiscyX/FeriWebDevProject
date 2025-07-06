@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace WebDevProject\Controller;
@@ -36,11 +37,11 @@ class ErrorController
     private function render(string $view): void
     {
         $title = $view === '404' ? '404 - Oldal nem található' : '405 - Metódus nem engedélyezett';
-        
+
         ob_start();
         include __DIR__ . "/../View/pages/{$view}.php";
         $content = ob_get_clean();
-        
+
         include __DIR__ . '/../View/layout.php';
     }
 }

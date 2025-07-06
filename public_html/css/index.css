@@ -134,6 +134,84 @@ textarea.form-control {
   .card   { padding: 1.2rem .7rem; }
 }
 
+/* ---------- Error Pages (404, 405) ---------- */
+.error-image {
+  opacity: 0.9;
+}
+
+.error-image img {
+  height: auto;
+  object-fit: contain;
+  max-width: 400px;
+}
+
+.error-message h2 {
+  font-weight: 500;
+  margin-top: 2rem;
+}
+
+.error-text {
+  color: var(--navbar-text);
+}
+
+@media (max-width: 768px) {
+  .error-image img {
+    max-width: 280px;
+  }
+}
+
+@media (max-width: 576px) {
+  .error-image img {
+    max-width: 250px;
+  }
+}
+
+@media (max-width: 400px) {
+  .error-image img {
+    max-width: 200px;
+  }
+}
+
+/* ---------- Features Section ---------- */
+.features-section {
+  background: var(--secondary-bg);
+}
+
+.features-title {
+  color: var(--primary-text);
+}
+
+.feature-icon {
+  color: var(--navbar-text);
+}
+
+.feature-title {
+  color: var(--primary-text);
+}
+
+.feature-desc {
+  color: var(--desc-text);
+}
+
+/* ---------- CTA Section ---------- */
+.cta-section {
+  background: var(--hero-bg);
+}
+
+.cta-title {
+  color: var(--primary-text);
+}
+
+.cta-text {
+  color: var(--desc-text);
+}
+
+.cta-btn {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: none;
+}
+
 /* ---------- Legacy dark-mode fallback ---------- */
 [data-theme="dark"] {
   background: var(--primary-bg);
