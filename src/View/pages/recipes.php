@@ -148,31 +148,40 @@
                         </div>
                         <?php endif; ?>
                     </div>
-                    <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between">
-                        <a href="/recipe/<?= $recipe['id'] ?>" class="btn btn-sm btn-outline-primary">
-                            <i class="bi bi-eye"></i> Megtekintés
-                        </a>
+                    <div class="card-footer bg-transparent border-top-0">
+                        <div class="d-flex gap-2 mb-2">
+                            <a href="/recipe/<?= $recipe['id'] ?>" class="btn btn-sm btn-outline-primary flex-grow-1">
+                                <i class="bi bi-eye"></i> Megtekintés
+                            </a>
+                            
+                            <?php if (isset($_SESSION['user_id'])) : ?>
+                                <?php if (isset($recipe['is_favorite']) && $recipe['is_favorite']) : ?>
+                                    <form action="/profile/favorites/remove" method="post" class="flex-grow-1">
+                                        <input type="hidden" name="csrf"
+                                               value="<?= \WebDevProject\Security\Csrf::token() ?>">
+                                        <input type="hidden" name="recipe_id" value="<?= $recipe['id'] ?>">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger w-100">
+                                            <i class="bi bi-heart-fill"></i> Eltávolítás
+                                        </button>
+                                    </form>
+                                <?php else : ?>
+                                    <form action="/profile/favorites/add" method="post" class="flex-grow-1">
+                                        <input type="hidden" name="csrf"
+                                               value="<?= \WebDevProject\Security\Csrf::token() ?>">
+                                        <input type="hidden" name="recipe_id" value="<?= $recipe['id'] ?>">
+                                        <button type="submit" class="btn btn-sm btn-outline-primary w-100">
+                                            <i class="bi bi-heart"></i> Kedvencekhez
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        </div>
                         
                         <?php if (isset($_SESSION['user_id'])) : ?>
-                            <?php if (isset($recipe['is_favorite']) && $recipe['is_favorite']) : ?>
-                                <form action="/profile/favorites/remove" method="post">
-                                    <input type="hidden" name="csrf"
-                                           value="<?= \WebDevProject\Security\Csrf::token() ?>">
-                                    <input type="hidden" name="recipe_id" value="<?= $recipe['id'] ?>">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">
-                                        <i class="bi bi-heart-fill"></i> Eltávolítás
-                                    </button>
-                                </form>
-                            <?php else : ?>
-                                <form action="/profile/favorites/add" method="post">
-                                    <input type="hidden" name="csrf"
-                                           value="<?= \WebDevProject\Security\Csrf::token() ?>">
-                                    <input type="hidden" name="recipe_id" value="<?= $recipe['id'] ?>">
-                                    <button type="submit" class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-heart"></i> Kedvencekhez
-                                    </button>
-                                </form>
-                            <?php endif; ?>
+                            <button type="button" class="btn btn-sm btn-success w-100" 
+                                    data-bs-toggle="modal" data-bs-target="#menuModal<?= $recipe['id'] ?>">
+                                <i class="bi bi-calendar-plus"></i> Hozzáadás a menühöz
+                            </button>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -274,3 +283,59 @@
         <?php endif; ?>
     <?php endif; ?>
 </div>
+
+<!-- Modálok a dokumentum végén -->
+<?php if (isset($_SESSION['user_id']) && !empty($recipes)) : ?>
+    <?php foreach ($recipes as $recipe) : ?>
+        <!-- Menü modal -->
+        <div class="modal fade" id="menuModal<?= $recipe['id'] ?>" tabindex="-1" 
+             aria-labelledby="menuModalLabel<?= $recipe['id'] ?>" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form action="/menus/add" method="post">
+                        <input type="hidden" name="csrf" value="<?= \WebDevProject\Security\Csrf::token() ?>">
+                        <input type="hidden" name="recipe_id" value="<?= $recipe['id'] ?>">
+                        
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="menuModalLabel<?= $recipe['id'] ?>">
+                                Hozzáadás a menühöz - <?= htmlspecialchars($recipe['title']) ?>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Bezárás"></button>
+                        </div>
+                        
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="menuName<?= $recipe['id'] ?>" class="form-label">Menü neve</label>
+                                <input type="text" class="form-control" id="menuName<?= $recipe['id'] ?>" 
+                                       name="menu_name" required maxlength="10" 
+                                       placeholder="Pl. Reggeli, Ebéd, Vacsora">
+                                <div class="form-text">Add meg a menü nevét (max. 10 karakter)</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="dayOfWeek<?= $recipe['id'] ?>" class="form-label">Nap</label>
+                                <select class="form-select" id="dayOfWeek<?= $recipe['id'] ?>" 
+                                        name="day_of_week" required>
+                                    <option value="Monday">Hétfő</option>
+                                    <option value="Tuesday">Kedd</option>
+                                    <option value="Wednesday">Szerda</option>
+                                    <option value="Thursday">Csütörtök</option>
+                                    <option value="Friday">Péntek</option>
+                                    <option value="Saturday">Szombat</option>
+                                    <option value="Sunday">Vasárnap</option>
+                                </select>
+                                <div class="form-text">Válaszd ki, melyik napra szeretnéd hozzáadni</div>
+                            </div>
+                        </div>
+                        
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégsem</button>
+                            <button type="submit" class="btn btn-success">Hozzáadás a menühöz</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    <?php endforeach; ?>
+<?php endif; ?>

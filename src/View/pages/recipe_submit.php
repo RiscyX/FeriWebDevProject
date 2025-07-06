@@ -80,7 +80,9 @@ use WebDevProject\Security\Csrf;
                 <div class="mb-4">
                     <label class="form-label">Hozzávalók *</label>
                     <div id="ingredientsContainer">
+                        <!-- Kezdeti hozzávaló sor -->
                         <div class="row mb-2 ingredient-row">
+                            <label class="form-label ingredient-label">Hozzávaló</label>
                             <div class="col-5">
                                 <input type="text" class="form-control ingredient-name" 
                                        list="ingredientList0" 
@@ -93,7 +95,8 @@ use WebDevProject\Security\Csrf;
                                 <input type="hidden" name="ingredients[0][ingredient_id]" class="ingredient-id"
                                        id="ingredientId0" value="">
                             </div>
-                            <div class="col-3">
+                            <div class="col-4">
+                                <label class="form-label ingredient-label">Mennyiség</label>
                                 <div class="input-group">
                                     <input type="number" class="form-control quantity-input" 
                                           name="ingredients[0][quantity]" 
@@ -109,8 +112,9 @@ use WebDevProject\Security\Csrf;
                                 <input type="hidden" name="ingredients[0][unit]" class="unit-abbr"
                                        id="unitAbbr0" value="">
                             </div>
-                            <div class="col-2">
-                                <button type="button" class="btn btn-danger h-100 w-100 remove-ingredient">
+                            <div class="col-3">
+                                <label class="form-label ingredient-label">&nbsp;</label>
+                                <button type="button" class="btn btn-danger w-100 remove-ingredient">
                                     <i class="bi bi-trash me-2"></i>Törlés
                                 </button>
                             </div>
@@ -128,11 +132,11 @@ use WebDevProject\Security\Csrf;
                     <div class="form-text">Részletes leírás a recept elkészítéséről</div>
                 </div>
                 
-                <div class="d-flex justify-content-between">
-                    <button type="submit" class="btn btn-success">
+                <div class="d-md-flex justify-content-between recipe-form-buttons">
+                    <button type="submit" class="btn btn-success mb-2 mb-md-0 w-100 w-md-auto">
                         <i class="bi bi-check-circle"></i> Recept beküldése
                     </button>
-                    <a href="/recipes" class="btn btn-outline-secondary">Mégsem</a>
+                    <a href="/recipes" class="btn btn-outline-secondary w-100 w-md-auto">Mégsem</a>
                 </div>
             </form>
         </div>

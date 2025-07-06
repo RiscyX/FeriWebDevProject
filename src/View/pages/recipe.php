@@ -20,17 +20,18 @@
             </div>
             <div class="col-md-8">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h1 class="card-title display-5 fw-bold mb-0">
-                            <?= htmlspecialchars($recipe['name'], ENT_QUOTES) ?></h1>
+                    <h1 class="card-title display-5 fw-bold mb-3 text-center text-md-start">
+                        <?= htmlspecialchars($recipe['name'], ENT_QUOTES) ?>
+                    </h1>
                             
-                        <?php if (isset($_SESSION['user_id'])) : ?>
+                    <?php if (isset($_SESSION['user_id'])) : ?>
+                        <div class="d-flex flex-column mb-3 gap-2">
                             <?php if ($recipe['is_favorite']) : ?>
                                 <form action="/profile/favorites/remove" method="post">
                                     <input type="hidden" name="csrf"
                                            value="<?= \WebDevProject\Security\Csrf::token() ?>">
                                     <input type="hidden" name="recipe_id" value="<?= $recipe['id'] ?>">
-                                    <button type="submit" class="btn btn-outline-danger">
+                                    <button type="submit" class="btn btn-outline-danger w-100">
                                         <i class="bi bi-heart-fill"></i> Eltávolítás a kedvencekből
                                     </button>
                                 </form>
@@ -39,12 +40,18 @@
                                     <input type="hidden" name="csrf"
                                            value="<?= \WebDevProject\Security\Csrf::token() ?>">
                                     <input type="hidden" name="recipe_id" value="<?= $recipe['id'] ?>">
-                                    <button type="submit" class="btn btn-outline-primary">
+                                    <button type="submit" class="btn btn-outline-primary w-100">
                                         <i class="bi bi-heart"></i> Hozzáadás a kedvencekhez
                                     </button>
                                 </form>
                             <?php endif; ?>
-                        <?php endif; ?>
+                            
+                            <button type="button" class="btn btn-success w-100" 
+                                    data-bs-toggle="modal" data-bs-target="#menuModal">
+                                <i class="bi bi-calendar-plus"></i> Hozzáadás a menühöz
+                            </button>
+                        </div>
+                    <?php endif; ?>
                     </div>
                     
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
@@ -126,3 +133,55 @@
         </div>
     </div>
 </div>
+
+<!-- Menü modal a dokumentum végén -->
+<?php if (isset($_SESSION['user_id'])) : ?>
+<div class="modal fade" id="menuModal" tabindex="-1" 
+     aria-labelledby="menuModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form action="/menus/add" method="post">
+                <input type="hidden" name="csrf" value="<?= \WebDevProject\Security\Csrf::token() ?>">
+                <input type="hidden" name="recipe_id" value="<?= $recipe['id'] ?>">
+                
+                <div class="modal-header">
+                    <h5 class="modal-title" id="menuModalLabel">
+                        Hozzáadás a menühöz - <?= htmlspecialchars($recipe['name']) ?>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="menuName" class="form-label">Menü neve</label>
+                        <input type="text" class="form-control" id="menuName" 
+                               name="menu_name" required maxlength="10" 
+                               placeholder="Pl. Reggeli, Ebéd, Vacsora">
+                        <div class="form-text">Add meg a menü nevét (max. 10 karakter)</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="dayOfWeek" class="form-label">Nap</label>
+                        <select class="form-select" id="dayOfWeek" 
+                                name="day_of_week" required>
+                            <option value="Monday">Hétfő</option>
+                            <option value="Tuesday">Kedd</option>
+                            <option value="Wednesday">Szerda</option>
+                            <option value="Thursday">Csütörtök</option>
+                            <option value="Friday">Péntek</option>
+                            <option value="Saturday">Szombat</option>
+                            <option value="Sunday">Vasárnap</option>
+                        </select>
+                        <div class="form-text">Válaszd ki, melyik napra szeretnéd hozzáadni</div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégsem</button>
+                    <button type="submit" class="btn btn-success">Hozzáadás a menühöz</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<?php endif; ?>

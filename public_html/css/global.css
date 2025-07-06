@@ -47,6 +47,112 @@ body {
     color: var(--primary-text);
 }
 
+/* Modal styles */
+.modal-open {
+    overflow: hidden;
+    padding-right: 0 !important;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1045;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    outline: 0;
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1040;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-dialog-centered {
+    display: flex;
+    align-items: center;
+    min-height: calc(100% - 3.5rem);
+}
+
+.modal-content {
+    position: relative;
+    background-color: var(--primary-bg);
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    outline: 0;
+}
+
+/* Gombok általános stílusa */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    text-align: center;
+    vertical-align: middle;
+    position: relative;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+}
+
+/* Ikonok igazítása a gombokban */
+.btn i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Responsive gombok */
+@media (max-width: 767.98px) {
+    .btn {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        height: auto;
+        min-height: 38px;
+    }
+    
+    .btn-sm {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.4rem;
+        min-height: 32px;
+    }
+    
+    /* Gombok jobb igazítása mobilon */
+    .d-flex > .btn, .d-flex > form > .btn {
+        flex: 1;
+        justify-content: center;
+        text-align: center;
+    }
+    
+    /* Egymás melletti gombok közötti távolság */
+    .d-flex.gap-2 {
+        gap: 0.5rem !important;
+    }
+    
+    /* Kártyák jobb megjelenítése */
+    .card {
+        overflow: hidden;
+    }
+    
+    /* Fejléc és lábléc igazítás */
+    .card-header, .card-footer {
+        padding: 0.75rem;
+    }
+    
+    /* Űrlapelemek mobilnézeten */
+    input, select, textarea {
+        font-size: 16px !important; /* Megakadályozza a Safari automatikus nagyítását */
+    }
+}
+
 .carousel-item img {
     height: 85vh;
     object-fit: cover;

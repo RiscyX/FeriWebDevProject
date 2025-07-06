@@ -2,10 +2,6 @@
 
 use WebDevProject\Security\Csrf;
 
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
-error_reporting(E_ALL);
-
 $csrf = \WebDevProject\Security\Csrf::token();
 ?>
 <!-- src/View/layout.php -->
@@ -22,7 +18,7 @@ $csrf = \WebDevProject\Security\Csrf::token();
     <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="/css/recipe.css">
     <link rel="stylesheet" href="/css/favorites.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
 </head>
 <body<?= isset($_SESSION['user_id']) ? ' class="user-logged-in"' : '' ?>>
@@ -45,5 +41,6 @@ $csrf = \WebDevProject\Security\Csrf::token();
 <script src="/js/theme-toggle.js"></script>
 <script src="/js/functions.js"></script>
 <script src="/js/form-validation.js"></script>
+<script src="/js/modal-helpers.js"></script>
 </body>
 </html>

@@ -22,7 +22,8 @@ function initIngredientFunctionality() {
         const newRow = document.createElement('div');
         newRow.className = 'row mb-2 ingredient-row';
         newRow.innerHTML = `
-            <div class="col-5">
+            <div class="col-md-5 col-12">
+                <label class="form-label ingredient-label">Hozzávaló</label>
                 <input type="text" class="form-control ingredient-name" 
                        list="ingredientList${ingredientIndex}" 
                        name="ingredients[${ingredientIndex}][name]" 
@@ -33,7 +34,8 @@ function initIngredientFunctionality() {
                 <datalist id="ingredientList${ingredientIndex}"></datalist>
                 <input type="hidden" name="ingredients[${ingredientIndex}][ingredient_id]" class="ingredient-id" id="ingredientId${ingredientIndex}" value="">
             </div>
-            <div class="col-3">
+            <div class="col-md-4 col-8">
+                <label class="form-label ingredient-label">Mennyiség</label>
                 <div class="input-group">
                     <input type="number" class="form-control quantity-input" 
                           name="ingredients[${ingredientIndex}][quantity]" 
@@ -47,8 +49,9 @@ function initIngredientFunctionality() {
                 <input type="hidden" name="ingredients[${ingredientIndex}][unit_id]" class="unit-id" id="unitId${ingredientIndex}" value="">
                 <input type="hidden" name="ingredients[${ingredientIndex}][unit]" class="unit-abbr" id="unitAbbr${ingredientIndex}" value="">
             </div>
-            <div class="col-2">
-                <button type="button" class="btn btn-danger h-100 w-100 remove-ingredient">
+            <div class="col-md-3 col-4">
+                <label class="form-label ingredient-label">&nbsp;</label>
+                <button type="button" class="btn btn-danger w-100 remove-ingredient">
                     <i class="bi bi-trash me-2"></i>Törlés
                 </button>
             </div>
@@ -70,7 +73,7 @@ function initIngredientFunctionality() {
         ingredientIndex++;
     });
     
-    // Kezdeti hozzávaló sor törlő gombja
+    // Kezdeti hozzávaló sor törlő gombja és minden más hozzávalói elem beállítása
     document.querySelectorAll('.remove-ingredient').forEach(btn => {
         btn.addEventListener('click', function() {
             if (ingredientsContainer.querySelectorAll('.ingredient-row').length > 1) {
@@ -80,6 +83,49 @@ function initIngredientFunctionality() {
             }
         });
     });
+    
+    // Korrigáljuk az első hozzávaló sor mobilos megjelenítését is
+    const fixExistingRows = () => {
+        // Megkeressük az első hozzávaló sort
+        const firstRow = document.querySelector('.ingredient-row');
+        if (firstRow) {
+            // Ellenőrizzük, hogy helyesen vannak-e az osztályok beállítva
+            if (!firstRow.classList.contains('mb-2')) firstRow.classList.add('mb-2');
+            
+            // Biztosítsuk, hogy minden elem a megfelelő osztályt használja
+            const labels = firstRow.querySelectorAll('label');
+            labels.forEach(label => {
+                // Minden címkének legyen "ingredient-label" osztálya
+                if (!label.classList.contains('ingredient-label')) {
+                    label.classList.add('ingredient-label');
+                }
+                // Távolítsuk el a d-md-none osztályt, ha van ilyen
+                if (label.classList.contains('d-md-none')) {
+                    label.classList.remove('d-md-none');
+                }
+            });
+            
+            // Ellenőrizzük, hogy a megfelelő oszlop osztályok vannak-e
+            const nameCol = firstRow.querySelector('div:nth-child(1)');
+            const qtyCol = firstRow.querySelector('div:nth-child(2)');
+            const btnCol = firstRow.querySelector('div:nth-child(3)');
+            
+            if (nameCol && !nameCol.classList.contains('col-md-5')) {
+                nameCol.className = 'col-md-5 col-12';
+            }
+            
+            if (qtyCol && !qtyCol.classList.contains('col-md-4')) {
+                qtyCol.className = 'col-md-4 col-8';
+            }
+            
+            if (btnCol && !btnCol.classList.contains('col-md-3')) {
+                btnCol.className = 'col-md-3 col-4';
+            }
+        }
+    };
+    
+    // Oldalbetöltéskor is futtassuk le
+    fixExistingRows();
     
     // Form elküldés előtt validálás
     const recipeForm = document.querySelector('form[action="/recipe/submit"]');

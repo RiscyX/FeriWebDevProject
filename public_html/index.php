@@ -19,6 +19,7 @@ use WebDevProject\Controller\AuthController;
 use WebDevProject\Controller\AdminController;
 use WebDevProject\Controller\RecipeController;
 use WebDevProject\Controller\ProfileController;
+use WebDevProject\Controller\MenuController;
 use WebDevProject\Controller\ErrorController;
 use WebDevProject\Security\Csrf;
 
@@ -61,6 +62,11 @@ $dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('POST', '/profile/favorites/add', [ProfileController::class, 'addToFavorites']);
     $r->addRoute('POST', '/profile/favorites/remove', [ProfileController::class, 'removeFromFavorites']);
 
+    // Menü útvonalak
+    $r->addRoute('GET', '/menus', [MenuController::class, 'index']);
+    $r->addRoute('POST', '/menus/add', [MenuController::class, 'addToMenu']);
+    $r->addRoute('POST', '/menus/remove', [MenuController::class, 'removeFromMenu']);
+
     $r->addGroup('/api/fridge', function(RouteCollector $r) {
         $r->addRoute('GET',   '',             [FridgeApiController::class, 'getItems']);
         $r->addRoute('POST',  '',             [FridgeApiController::class, 'addItem']);
@@ -70,10 +76,6 @@ $dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r) {
     });
     $r->addRoute('GET',  '/api/ingredients', [FridgeApiController::class, 'searchIngredients']);
     $r->addRoute('GET',  '/api/user/status', [UserApiController::class, 'getStatus']);
-
-    // Test útvonalak hibakezeléshez
-    $r->addRoute('GET', '/test-403', [ErrorController::class, 'forbidden']);
-    $r->addRoute('GET', '/test-405', [ErrorController::class, 'methodNotAllowed']);
 
 
     $r->addGroup('/admin', function (RouteCollector $r) {
@@ -117,7 +119,7 @@ switch ($routeInfo[0]) {
             // Egyszerű dependency‑injection; válts DI‑konténerre, ha bővül a projekt
             $controller = new $class($pdo);
             $controller->$method(...array_values($vars));
-            
+
             // Ellenőrizzük a response code-ot a végrehajtás után
             if (http_response_code() === 403) {
                 $errorController = new ErrorController($pdo);

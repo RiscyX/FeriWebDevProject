@@ -20,7 +20,7 @@ class NavHelper
         $userExtra = [
             ['label' => 'Hűtőszekrényem', 'href' => $prefix . '/fridge'],
             ['label' => 'Ajánlott receptek', 'href' => $prefix . '/recipes/recommend'],
-            ['label' => 'Heti menü', 'href' => $prefix . '/menu'],
+            ['label' => 'Heti menü', 'href' => $prefix . '/menus'],
             ['label' => 'Profil', 'href' => $prefix . '/profile'],
             ['label' => 'Kijelentkezés', 'href' => $prefix . '/logout'],
         ];
