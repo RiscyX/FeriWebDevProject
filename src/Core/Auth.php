@@ -44,7 +44,7 @@ class Auth
     {
         if (!self::check() || ($_SESSION['role'] ?? '') !== $role) {
             http_response_code(403);
-            exit('Hozzáférés megtagadva');
+            throw new \Exception('Hozzáférés megtagadva - nincs megfelelő jogosultság');
         }
     }
 }

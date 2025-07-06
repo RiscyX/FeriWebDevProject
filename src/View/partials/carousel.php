@@ -16,22 +16,22 @@
         <div class="carousel-item active">
             <img src="./assets/slide1.png" class="d-block w-100 carousel-img" alt="Slide 1">
             <div class="carousel-caption d-none d-md-block bg-opacity-75 rounded-3 p-3 shadow-lg">
-                <h5 class="fw-bold">Friss alapanyagok</h5>
-                <p>Mindig naprakész lehetsz a hűtőd tartalmával!</p>
+                <h5 class="fw-bold">Add meg az alapanyagokat</h5>
+                <p>Gépeld be a hozzávalókat, mi közben valós időben súgunk a pontos névhez és mértékegységhez.</p>
             </div>
         </div>
         <div class="carousel-item">
             <img src="./assets/slide2.png" class="d-block w-100 carousel-img" alt="Slide 2">
             <div class="carousel-caption d-none d-md-block bg-opacity-75 rounded-3 p-3 shadow-lg">
-                <h5 class="fw-bold">Lejárati figyelmeztetés</h5>
-                <p>Ne hagyd, hogy bármi kárba vesszen – automatikus értesítések!</p>
+                <h5 class="fw-bold">Személyre szabott receptötletek</h5>
+                <p>Ha legfeljebb két hozzávaló hiányzik, jól láthatóan kiemeljük, mire lesz még szükséged.</p>
             </div>
         </div>
         <div class="carousel-item">
             <img src="./assets/slide3.png" class="d-block w-100 carousel-img" alt="Slide 3">
             <div class="carousel-caption d-none d-md-block bg-opacity-75 rounded-3 p-3 shadow-lg">
-                <h5 class="fw-bold">Zöld szemlélet</h5>
-                <p>Környezettudatos megoldások a mindennapokban.</p>
+                <h5 class="fw-bold">Készítsd el & mentsd el</h5>
+                <p>Tedd kedvencnek vagy állítsd be egy hétre szóló menüd részeként.</p>
             </div>
         </div>
     </div>

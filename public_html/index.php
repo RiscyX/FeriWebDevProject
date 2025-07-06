@@ -19,6 +19,7 @@ use WebDevProject\Controller\AuthController;
 use WebDevProject\Controller\AdminController;
 use WebDevProject\Controller\RecipeController;
 use WebDevProject\Controller\ProfileController;
+use WebDevProject\Controller\ErrorController;
 use WebDevProject\Security\Csrf;
 
 $dotenv = Dotenv::createImmutable(dirname(__DIR__));
@@ -70,6 +71,10 @@ $dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('GET',  '/api/ingredients', [FridgeApiController::class, 'searchIngredients']);
     $r->addRoute('GET',  '/api/user/status', [UserApiController::class, 'getStatus']);
 
+    // Test útvonalak hibakezeléshez
+    $r->addRoute('GET', '/test-403', [ErrorController::class, 'forbidden']);
+    $r->addRoute('GET', '/test-405', [ErrorController::class, 'methodNotAllowed']);
+
 
     $r->addGroup('/admin', function (RouteCollector $r) {
         $r->addRoute('GET',  '',          [AdminController::class, 'index']);
@@ -95,21 +100,38 @@ if ($basePath !== '' && str_starts_with($uri, $basePath)) {
 $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
 switch ($routeInfo[0]) {
     case FastRoute\Dispatcher::NOT_FOUND:
-        http_response_code(404);
-        echo '404 – oldal nem található';
+        $errorController = new ErrorController($pdo);
+        $errorController->notFound();
         break;
 
     case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
-        http_response_code(405);
-        echo '405 – HTTP metódus nem engedélyezett';
+        $errorController = new ErrorController($pdo);
+        $errorController->methodNotAllowed();
         break;
 
     case FastRoute\Dispatcher::FOUND:
         [$class, $method] = $routeInfo[1];   // [Controller osztály, metódus]
         $vars = $routeInfo[2];               // útvonal‑paraméterek tömbje
 
-        // Egyszerű dependency‑injection; válts DI‑konténerre, ha bővül a projekt
-        $controller = new $class($pdo);
-        $controller->$method(...array_values($vars));
+        try {
+            // Egyszerű dependency‑injection; válts DI‑konténerre, ha bővül a projekt
+            $controller = new $class($pdo);
+            $controller->$method(...array_values($vars));
+            
+            // Ellenőrizzük a response code-ot a végrehajtás után
+            if (http_response_code() === 403) {
+                $errorController = new ErrorController($pdo);
+                $errorController->forbidden();
+            }
+        } catch (Exception $e) {
+            // Ha 403-as hiba történik, vagy bármilyen access denied típusú hiba
+            if (http_response_code() === 403 || str_contains($e->getMessage(), 'access') || str_contains($e->getMessage(), 'forbidden')) {
+                $errorController = new ErrorController($pdo);
+                $errorController->forbidden();
+            } else {
+                // Egyéb hibák esetén dobja újra
+                throw $e;
+            }
+        }
         break;
 }
