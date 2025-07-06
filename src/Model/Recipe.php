@@ -282,4 +282,222 @@ class Recipe
         $stmt = $pdo->query("SELECT id, name FROM categories ORDER BY name");
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
+
+    /**
+     * Egy recept hozzávalóinak lekérdezése
+     *
+     * @param \PDO $pdo
+     * @param int $recipeId A recept azonosítója
+     * @return array A recept hozzávalói
+     */
+    public static function getIngredients(\PDO $pdo, int $recipeId): array
+    {
+        $stmt = $pdo->prepare("
+            SELECT 
+                ri.ingredient_id,
+                ri.quantity,
+                i.name as ingredient_name,
+                u.name as unit_name,
+                u.abbreviation as unit_abbr
+            FROM recipe_ingredients ri
+            JOIN ingredients i ON i.id = ri.ingredient_id
+            JOIN units u ON u.id = i.unit_id
+            WHERE ri.recipe_id = :recipe_id
+        ");
+
+        $stmt->execute(['recipe_id' => $recipeId]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Összes jóváhagyott recept lekérése a hozzávalókkal együtt
+     *
+     * @param \PDO $pdo
+     * @return array Receptek tömbje hozzávalókkal
+     */
+    public static function getAllWithIngredients(\PDO $pdo): array
+    {
+        // Először lekérjük az összes receptet
+        $recipes = self::getAll($pdo);
+
+        if (empty($recipes)) {
+            return [];
+        }
+
+        // Előfeldolgozzuk a recepteket, hogy legyen name és title mező is
+        foreach ($recipes as &$recipe) {
+            // Előkészítjük a name mezőt, ha még nincs
+            if (!isset($recipe['name']) && isset($recipe['title'])) {
+                $recipe['name'] = $recipe['title'];
+            }
+
+            // Alapértelmezett üres hozzávalók tömböt állítunk be
+            $recipe['ingredients'] = [];
+        }
+
+        // Recept azonosítók kinyerése
+        $recipeIds = array_column($recipes, 'id');
+
+        if (empty($recipeIds)) {
+            return $recipes;
+        }
+
+        $inClause = implode(',', array_fill(0, count($recipeIds), '?'));
+
+        // Hozzávalók lekérdezése az összes recepthez
+        $stmt = $pdo->prepare("
+            SELECT 
+                ri.recipe_id,
+                ri.ingredient_id,
+                ri.quantity,
+                i.name as ingredient_name,
+                u.name as unit_name,
+                u.abbreviation as unit_abbr
+            FROM recipe_ingredients ri
+            JOIN ingredients i ON i.id = ri.ingredient_id
+            JOIN units u ON u.id = i.unit_id
+            WHERE ri.recipe_id IN ($inClause)
+        ");
+
+        // Paraméterek megadása a IN clause-hoz
+        foreach ($recipeIds as $index => $id) {
+            $stmt->bindValue($index + 1, $id, \PDO::PARAM_INT);
+        }
+
+        $stmt->execute();
+        $ingredients = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        // Hozzávalók csoportosítása recept azonosító szerint
+        $ingredientsByRecipe = [];
+        foreach ($ingredients as $ingredient) {
+            $recipeId = $ingredient['recipe_id'];
+            if (!isset($ingredientsByRecipe[$recipeId])) {
+                $ingredientsByRecipe[$recipeId] = [];
+            }
+            $ingredientsByRecipe[$recipeId][] = $ingredient;
+        }
+
+        // Hozzávalók hozzáadása a receptekhez
+        foreach ($recipes as &$recipe) {
+            $recipe['ingredients'] = $ingredientsByRecipe[$recipe['id']] ?? [];
+        }
+
+        return $recipes;
+    }
+
+    /**
+     * Recept hozzáadása a kedvencekhez
+     *
+     * @param \PDO $pdo
+     * @param int $userId A felhasználó azonosítója
+     * @param int $recipeId A recept azonosítója
+     * @return bool Sikeres volt-e a művelet
+     */
+    public static function addToFavorites(\PDO $pdo, int $userId, int $recipeId): bool
+    {
+        try {
+            $stmt = $pdo->prepare("
+                INSERT INTO favorites (user_id, recipe_id)
+                VALUES (:user_id, :recipe_id)
+                ON DUPLICATE KEY UPDATE created_at = CURRENT_TIMESTAMP
+            ");
+
+            return $stmt->execute([
+                'user_id' => $userId,
+                'recipe_id' => $recipeId
+            ]);
+        } catch (\PDOException $e) {
+            error_log('Hiba a kedvencekhez adás során: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Recept eltávolítása a kedvencekből
+     *
+     * @param \PDO $pdo
+     * @param int $userId A felhasználó azonosítója
+     * @param int $recipeId A recept azonosítója
+     * @return bool Sikeres volt-e a művelet
+     */
+    public static function removeFromFavorites(\PDO $pdo, int $userId, int $recipeId): bool
+    {
+        try {
+            $stmt = $pdo->prepare("
+                DELETE FROM favorites
+                WHERE user_id = :user_id AND recipe_id = :recipe_id
+            ");
+
+            return $stmt->execute([
+                'user_id' => $userId,
+                'recipe_id' => $recipeId
+            ]);
+        } catch (\PDOException $e) {
+            error_log('Hiba a kedvencekből törlés során: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Felhasználó kedvenc receptjeinek lekérése
+     *
+     * @param \PDO $pdo
+     * @param int $userId A felhasználó azonosítója
+     * @return array A kedvenc receptek listája
+     */
+    public static function getUserFavorites(\PDO $pdo, int $userId): array
+    {
+        try {
+            $stmt = $pdo->prepare("
+                SELECT 
+                    r.*,
+                    c.name as category,
+                    u.username as created_by,
+                    rp.path as image_path,
+                    f.created_at as favorite_added_at
+                FROM favorites f
+                JOIN recipes r ON r.id = f.recipe_id
+                LEFT JOIN categories c ON c.id = r.category_id
+                LEFT JOIN users u ON u.id = r.user_id
+                LEFT JOIN recipe_picture rp ON rp.recipe_id = r.id
+                WHERE f.user_id = :user_id
+                ORDER BY f.created_at DESC
+            ");
+
+            $stmt->execute(['user_id' => $userId]);
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            error_log('Hiba a kedvenc receptek lekérdezése során: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Ellenőrzi, hogy egy recept a felhasználó kedvence-e
+     *
+     * @param \PDO $pdo
+     * @param int $userId A felhasználó azonosítója
+     * @param int $recipeId A recept azonosítója
+     * @return bool Kedvenc-e a recept
+     */
+    public static function isFavorite(\PDO $pdo, int $userId, int $recipeId): bool
+    {
+        try {
+            $stmt = $pdo->prepare("
+                SELECT COUNT(*) as count
+                FROM favorites
+                WHERE user_id = :user_id AND recipe_id = :recipe_id
+            ");
+
+            $stmt->execute([
+                'user_id' => $userId,
+                'recipe_id' => $recipeId
+            ]);
+
+            return (int)$stmt->fetch(\PDO::FETCH_ASSOC)['count'] > 0;
+        } catch (\PDOException $e) {
+            error_log('Hiba a kedvenc ellenőrzés során: ' . $e->getMessage());
+            return false;
+        }
+    }
 }

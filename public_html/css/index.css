@@ -80,7 +80,6 @@
 }
 .card-title {
   color: var(--primary-text);
-  font-size: .5rem;
   font-weight: 600;
   margin-bottom: .5rem;
 }

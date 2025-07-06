@@ -20,6 +20,9 @@ $csrf = \WebDevProject\Security\Csrf::token();
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="/favicon.png" type="image/png">
     <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/recipe.css">
+    <link rel="stylesheet" href="/css/favorites.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
 </head>
 <body<?= isset($_SESSION['user_id']) ? ' class="user-logged-in"' : '' ?>>

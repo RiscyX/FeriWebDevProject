@@ -27,4 +27,20 @@ final class Csrf
         }
         return hash_equals($_SESSION['csrf_token'], $token);
     }
+
+    /**
+     * CSRF token input mező generálása
+     *
+     * @return string HTML input mező a CSRF tokennel
+     */
+    public static function field(): string
+    {
+        try {
+            $token = self::token();
+            return '<input type="hidden" name="csrf" value="' . htmlspecialchars($token) . '">';
+        } catch (RandomException $e) {
+            error_log('Hiba a CSRF token generálása közben: ' . $e->getMessage());
+            return '<input type="hidden" name="csrf" value="">';
+        }
+    }
 }

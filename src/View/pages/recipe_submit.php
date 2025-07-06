@@ -4,7 +4,6 @@
 use WebDevProject\Security\Csrf;
 
 ?>
-<link rel="stylesheet" href="/css/recipe.css">
 
 <div class="container py-4">
     <nav aria-label="breadcrumb">

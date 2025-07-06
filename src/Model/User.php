@@ -273,4 +273,27 @@ class User
 
         return $stmt->fetchAll();
     }
+
+    /**
+     * Felhasználó lekérése azonosító alapján
+     *
+     * @param PDO $pdo
+     * @param int $id Felhasználó azonosító
+     * @return array|null Felhasználó adatai vagy null, ha nem található
+     */
+    public static function getById(PDO $pdo, int $id): ?array
+    {
+        $sql = 'SELECT id, username, email, role, created_at, email_verified_at, is_banned
+                FROM users 
+                WHERE id = :id
+                LIMIT 1';
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $user ?: null;
+    }
 }

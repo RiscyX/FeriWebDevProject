@@ -18,6 +18,7 @@ use WebDevProject\Controller\HomeController;
 use WebDevProject\Controller\AuthController;
 use WebDevProject\Controller\AdminController;
 use WebDevProject\Controller\RecipeController;
+use WebDevProject\Controller\ProfileController;
 use WebDevProject\Security\Csrf;
 
 $dotenv = Dotenv::createImmutable(dirname(__DIR__));
@@ -47,9 +48,17 @@ $dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r) {
     
     // Recipes
     $r->addRoute('GET',  '/recipes',         [RecipeController::class, 'index']);
+    $r->addRoute('GET',  '/recipes/recommend', [RecipeController::class, 'recommend']);
+    $r->addRoute('GET',  '/recipes/recommend/ai', [RecipeController::class, 'aiRecommend']);
+    $r->addRoute('POST', '/recipes/save-ai-recipe', [RecipeController::class, 'saveAiRecipe']);
     $r->addRoute('GET',  '/recipe/{id:\d+}', [RecipeController::class, 'view']);
     $r->addRoute('GET',  '/recipe/submit',   [RecipeController::class, 'submitForm']);
     $r->addRoute('POST', '/recipe/submit',   [RecipeController::class, 'submitProcess']);
+    
+    // Profil útvonalak
+    $r->addRoute('GET',  '/profile',      [ProfileController::class, 'index']);
+    $r->addRoute('POST', '/profile/favorites/add', [ProfileController::class, 'addToFavorites']);
+    $r->addRoute('POST', '/profile/favorites/remove', [ProfileController::class, 'removeFromFavorites']);
 
     $r->addGroup('/api/fridge', function(RouteCollector $r) {
         $r->addRoute('GET',   '',             [FridgeApiController::class, 'getItems']);

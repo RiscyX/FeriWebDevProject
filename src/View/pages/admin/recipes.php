@@ -80,9 +80,6 @@ $queryBase = '?per_page=' . urlencode($perPage) . '&page=';
                                 <input type="hidden" name="csrf"
                                        value="<?= \WebDevProject\Security\Csrf::token() ?>">
                                 <input type="hidden" name="id" value="<?= $recipe['id'] ?>">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">
-                                    <i class="bi bi-trash"></i> Törlés
-                                </button>
                             </form>
                         </td>
                     </tr>

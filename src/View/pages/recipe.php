@@ -1,7 +1,6 @@
 <?php
-// src/View/pages/recipe_view.php
+// src/View/pages/recipe.php
 ?>
-<link rel="stylesheet" href="/css/recipe.css">
 
 <div class="container py-4 recipe-view">
     <nav aria-label="breadcrumb">
@@ -21,8 +20,33 @@
             </div>
             <div class="col-md-8">
                 <div class="card-body">
-                    <h1 class="recipe-card-title display-5 fw-bold">
-                        <?= htmlspecialchars($recipe['name'], ENT_QUOTES) ?></h1>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h1 class="card-title display-5 fw-bold mb-0">
+                            <?= htmlspecialchars($recipe['name'], ENT_QUOTES) ?></h1>
+                            
+                        <?php if (isset($_SESSION['user_id'])) : ?>
+                            <?php if ($recipe['is_favorite']) : ?>
+                                <form action="/profile/favorites/remove" method="post">
+                                    <input type="hidden" name="csrf"
+                                           value="<?= \WebDevProject\Security\Csrf::token() ?>">
+                                    <input type="hidden" name="recipe_id" value="<?= $recipe['id'] ?>">
+                                    <button type="submit" class="btn btn-outline-danger">
+                                        <i class="bi bi-heart-fill"></i> Eltávolítás a kedvencekből
+                                    </button>
+                                </form>
+                            <?php else : ?>
+                                <form action="/profile/favorites/add" method="post">
+                                    <input type="hidden" name="csrf"
+                                           value="<?= \WebDevProject\Security\Csrf::token() ?>">
+                                    <input type="hidden" name="recipe_id" value="<?= $recipe['id'] ?>">
+                                    <button type="submit" class="btn btn-outline-primary">
+                                        <i class="bi bi-heart"></i> Hozzáadás a kedvencekhez
+                                    </button>
+                                </form>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
+                    
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
                         <span class="badge rounded-pill bg-primary fs-6 py-2 px-3 mb-2 mb-md-0">
                             <?= htmlspecialchars($recipe['category'], ENT_QUOTES) ?></span>
@@ -39,6 +63,29 @@
                         </div>
                     </div>
                     <p class="card-text fs-5"><?= htmlspecialchars($recipe['description'], ENT_QUOTES) ?></p>
+                    
+                    <div class="d-flex flex-wrap mt-3 gap-3">
+                        <?php if (!empty($recipe['prep_time'])) : ?>
+                        <div class="recipe-time-badge">
+                            <i class="bi bi-clock"></i> Előkészítés: 
+                            <span class="fw-bold"><?= htmlspecialchars($recipe['prep_time']) ?> perc</span>
+                        </div>
+                        <?php endif; ?>
+                        
+                        <?php if (!empty($recipe['cook_time'])) : ?>
+                        <div class="recipe-time-badge">
+                            <i class="bi bi-fire"></i> Főzés: 
+                            <span class="fw-bold"><?= htmlspecialchars($recipe['cook_time']) ?> perc</span>
+                        </div>
+                        <?php endif; ?>
+                        
+                        <?php if (!empty($recipe['servings'])) : ?>
+                        <div class="recipe-time-badge">
+                            <i class="bi bi-people"></i> Adagok: 
+                            <span class="fw-bold"><?= htmlspecialchars($recipe['servings']) ?> fő</span>
+                        </div>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
         </div>
@@ -48,7 +95,7 @@
         <div class="col-md-4">
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-primary text-white py-3">
-                    <h3 class="recipe-card-title mb-0 fw-bold">Hozzávalók</h3>
+                    <h3 class="card-title mb-0 fw-bold">Hozzávalók</h3>
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
@@ -69,7 +116,7 @@
         <div class="col-md-8">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white py-3">
-                    <h3 class="recipe-card-title mb-0 fw-bold">Elkészítés</h3>
+                    <h3 class="card-title mb-0 fw-bold">Elkészítés</h3>
                 </div>
                 <div class="card-body">
                     <p class="card-text fs-5">
