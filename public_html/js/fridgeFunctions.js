@@ -10,7 +10,7 @@ export function initFridgeModal() {
 
     console.log('🥶 initFridgeModal loaded');
 
-    // 1) Autocomplete betöltése
+    // 1) Load autocomplete
     itemNameInput.addEventListener('input', async () => {
         const q = itemNameInput.value.trim();
         if (q.length < 2) return;
@@ -31,91 +31,91 @@ export function initFridgeModal() {
                 });
             });
         } catch (err) {
-            console.error('Autocomplete hiba:', err);
+            console.error('Autocomplete error:', err);
         }
     });
 
-    // 1b) Change esemény autocomplete-hoz
+    // 1b) Change event for autocomplete
     itemNameInput.addEventListener('change', () => {
         const key = itemNameInput.value.trim().toLowerCase();
         const ing = ingredientMap.get(key);
         quantityLabel.textContent = ing
-            ? `Mennyiség (${ing.unit_name})`
-            : 'Mennyiség';
+            ? `Quantity (${ing.unit_name})`
+            : 'Quantity';
     });
 
     document.querySelectorAll('.edit-item-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const fridgeItemId   = btn.dataset.id;              // fridge_items.id
-            const ingredientId   = btn.dataset.ingredientId;    // ingredient.id – új
+            const ingredientId   = btn.dataset.ingredientId;    // ingredient.id - new
             const name           = btn.dataset.name;
             const quantity       = btn.dataset.quantity;
             const unitName       = btn.dataset.unitName;
             const unitAbbr       = btn.dataset.unitAbbr;
 
-            // teljesen üresre húzzuk a map-et és a datalist-et
+            // completely clear the map and datalist
             ingredientMap.clear();
             document.getElementById('ingredientList').innerHTML = '';
 
-            // most már helyesen az ingredient ID-t adjuk a map-nek
+            // now correctly add the ingredient ID to the map
             ingredientMap.set(name.toLowerCase(), {
                 id:        parseInt(ingredientId, 10),
                 unit_name: unitName,
                 unit_abbr: unitAbbr
             });
 
-            // hidden input a fridge_item PK-jének
+            // hidden input for the fridge_item PK
             editIdInput.value      = fridgeItemId;
             itemNameInput.value    = name;
             document.getElementById('itemQuantity').value = quantity;
             quantityLabel.textContent = unitName
-                ? `Mennyiség (${unitName})`
-                : 'Mennyiség';
-            modalTitle.textContent = 'Tétel szerkesztése';
+                ? `Quantity (${unitName})`
+                : 'Quantity';
+            modalTitle.textContent = 'Edit Item';
         });
     });
 
-    // 3) Delete gombok kezelése
+    // 3) Handle delete buttons
     document.querySelectorAll('.delete-item-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
-            const id = btn.dataset.id;  // ← ezt tedd be, különben id lesz undefined
-            if (!window.confirm("Biztosan törölni szeretnéd?")) return;
+            const id = btn.dataset.id;  // ← add this, otherwise id will be undefined
+            if (!window.confirm("Are you sure you want to delete?")) return;
 
             const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
             try {
                 const res = await fetch(`/api/fridge/${id}`, {
-                    method: 'DELETE',                 // DELETE metódus
+                    method: 'DELETE',                 // DELETE method
                     headers: {
                         'X-CSRF-Token': csrf || ''
                     }
                 });
                 const data = await res.json();
                 if (res.ok) {
-                    // ha nem akarsz reload-olni:
+                    // if you don't want to reload:
                     btn.closest('tr').remove();
                 } else {
-                    alert('Hiba: ' + (data.error || 'Törlés sikertelen'));
+                    alert('Error: ' + (data.error || 'Deletion failed'));
                 }
             } catch (err) {
-                console.error('Törlés közben hiba:', err);
-                alert('Hálózati hiba történt.');
+                console.error('Error during deletion:', err);
+                alert('A network error occurred.');
             }
         });
     });
 
 
-// 4) Új tétel gomb reset – itt is töröljük a map-et és datalist-et
+// 4) New item button reset - also clear the map and datalist here
     document.querySelector('button[data-bs-target="#addItemModal"]:not(.edit-item-btn)')
         .addEventListener('click', () => {
             editIdInput.value = '';
             form.reset();
-            quantityLabel.textContent = 'Mennyiség';
-            modalTitle.textContent = 'Új hűtőelem hozzáadása';
+            quantityLabel.textContent = 'Quantity';
+            modalTitle.textContent = 'Add New Fridge Item';
 
             ingredientMap.clear();
             document.getElementById('ingredientList').innerHTML = '';
         });
-    // 5) Submit: POST vagy PUT
+    // 5) Submit: POST or PUT
     form.addEventListener('submit', async e => {
         e.preventDefault();
         const raw    = itemNameInput.value.trim().toLowerCase();
@@ -124,7 +124,7 @@ export function initFridgeModal() {
         const csrf   = document.querySelector('meta[name="csrf-token"]').content;
         const editId = editIdInput.value;
         if (!ing || !ing.id || qty < 1) {
-            alert('Kérlek válassz érvényes hozzávalót és adj meg mennyiséget.');
+            alert('Please select a valid ingredient and specify a quantity.');
             return;
         }
         const url    = editId ? `/api/fridge/${editId}` : '/api/fridge';
@@ -141,15 +141,14 @@ export function initFridgeModal() {
             });
             const data = await res.json();
             if (res.ok) location.reload();
-            else        alert('Hiba: ' + (data.error || 'Ismeretlen hiba'));
+            else        alert('Error: ' + (data.error || 'Unknown error'));
         } catch (err) {
             console.error('submit threw', err);
-            alert('Hálózati hiba történt.');
+            alert('A network error occurred.');
         }
     });
 }
 
-// Automatikus init
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initFridgeModal);
 } else {

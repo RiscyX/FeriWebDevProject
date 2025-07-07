@@ -13,11 +13,11 @@
 
     --btn-bg: #689f38;
     --btn-text: #ffffff;
-    --btn-active: #cddc39; /* <<< új */
+    --btn-active: #cddc39;
 
-    --divider: #BDBDBD; /* <<< új */
-    --desc-text: #757575; /* <<< új */
-    --card-border: #BDBDBD; /* <<< új */
+    --divider: #BDBDBD; 
+    --desc-text: #757575; 
+    --card-border: #BDBDBD; 
 }
 
 [data-bs-theme="dark"] {
@@ -34,11 +34,11 @@
 
     --btn-bg: #8bc34a;
     --btn-text: #23272b;
-    --btn-active: #a4c639; /* sötétben diszkrétebb árnyalat */
+    --btn-active: #a4c639; 
 
-    --divider: #4a4d4e; /* halvány szürke csík */
-    --desc-text: #9ea7aa; /* kicsit tompított leíró szöveg */
-    --card-border: #374046; /* enyhe keret a sötét kártyákhoz */
+    --divider: #4a4d4e;
+    --desc-text: #9ea7aa;
+    --card-border: #374046;
 }
 
 
@@ -89,8 +89,6 @@ body {
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
     outline: 0;
 }
-
-/* Gombok általános stílusa */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -103,14 +101,12 @@ body {
     padding: 0.6rem 1rem;
 }
 
-/* Ikonok igazítása a gombokban */
 .btn i {
     display: inline-flex;
     align-items: center;
     justify-content: center;
 }
 
-/* Responsive gombok */
 @media (max-width: 767.98px) {
     .btn {
         padding-left: 0.5rem;
@@ -124,32 +120,27 @@ body {
         padding: 0.25rem 0.4rem;
         min-height: 32px;
     }
-    
-    /* Gombok jobb igazítása mobilon */
-    .d-flex > .btn, .d-flex > form > .btn {
+
+        .d-flex > .btn, .d-flex > form > .btn {
         flex: 1;
         justify-content: center;
         text-align: center;
     }
     
-    /* Egymás melletti gombok közötti távolság */
     .d-flex.gap-2 {
         gap: 0.5rem !important;
     }
     
-    /* Kártyák jobb megjelenítése */
     .card {
         overflow: hidden;
     }
     
-    /* Fejléc és lábléc igazítás */
     .card-header, .card-footer {
         padding: 0.75rem;
     }
     
-    /* Űrlapelemek mobilnézeten */
     input, select, textarea {
-        font-size: 16px !important; /* Megakadályozza a Safari automatikus nagyítását */
+        font-size: 16px !important;
     }
 }
 
@@ -164,7 +155,6 @@ body {
     }
 }
 
-/* Footer stílusok */
 footer {
     background-color: var(--secondary-bg);
     color: var(--navbar-text);
@@ -176,7 +166,7 @@ footer p {
     margin-bottom: 0;
 }
 
-/* Sticky footer beállítások */
+/* Sticky footer settings */
 html {
     position: relative;
     min-height: 100%;

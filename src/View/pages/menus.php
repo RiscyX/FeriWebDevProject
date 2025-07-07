@@ -21,10 +21,8 @@
         </p>
     </div>
     <?php else : ?>
-    <!-- Heti nézet -->
     <div class="row mb-4">
         <?php
-        // Receptek csoportosítása napok szerint
         $menusByDay = [];
         foreach ($menus as $menu) {
             if (!isset($menusByDay[$menu['day_of_week']])) {
@@ -33,7 +31,6 @@
             $menusByDay[$menu['day_of_week']][] = $menu;
         }
 
-        // Napok sorrendje
         $dayOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
         foreach ($dayOrder as $day) :
@@ -98,5 +95,4 @@
     <?php endif; ?>
 </div>
 
-<!-- CSS-t külön fájlba helyeztük át -->
 <link rel="stylesheet" href="/css/menus.css">

@@ -9,7 +9,7 @@ $csrf = \WebDevProject\Security\Csrf::token();
 <html lang="hu" data-bs-theme="<?= htmlspecialchars($_COOKIE['theme'] ?? 'light') ?>" class="h-100">
 <head>
     <meta charset="UTF-8">
-    <title><?= htmlspecialchars($title ?? 'Hűtőszekrényem') ?></title>
+    <title><?= htmlspecialchars($title ?? 'My Fridge') ?></title>
     <meta name="csrf-token" content="<?= \WebDevProject\Security\Csrf::token() ?>">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/global.css">
@@ -29,7 +29,7 @@ $csrf = \WebDevProject\Security\Csrf::token();
     <div class="container mt-3">
         <div class="alert alert-info alert-dismissible fade show" role="alert">
             <?= htmlspecialchars($_SESSION['flash']) ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Bezárás"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </div>
     <?php unset($_SESSION['flash']); ?>

@@ -10,12 +10,20 @@ class UserApiController
 {
     private \PDO $pdo;
 
+    /**
+     * @param \PDO $pdo
+     */
     public function __construct(\PDO $pdo)
     {
         $this->pdo = $pdo;
     }
 
-    /** JSON választ küld, kilép a végén */
+    /**
+     * Sends the data in json.
+     * @param mixed $data
+     * @param int $code
+     * @return never
+     */
     private function json(mixed $data, int $code = 200): never
     {
         http_response_code($code);
@@ -25,8 +33,8 @@ class UserApiController
     }
 
     /**
+     * Returns the currents users status.
      * GET /api/user/status
-     * Visszaadja a bejelentkezett felhasználó állapotát
      */
     public function getStatus(): never
     {

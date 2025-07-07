@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebDevProject\Controller;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use PDO;
 use WebDevProject\Config\Config;
 use WebDevProject\Core\Auth;
@@ -26,7 +27,8 @@ class FridgeController
     }
 
     /**
-     * GET /fridge – a bejelentkezett felhasználó hűtője
+     * GET /fridge – the logged in user's fridge.
+     * @return void
      */
     public function index(): void
     {
@@ -36,19 +38,21 @@ class FridgeController
     }
 
     /**
-     * POST /fridge/delete - Hűtő elem törlése
+     * POST /fridge/delete - Delete fridge item.
+     * @return void
+     * @throws GuzzleException
      */
     public function delete(): void
     {
-        // CSRF ellenőrzés
+        // CSRF verification
         if (!isset($_POST['csrf']) || !Csrf::check($_POST['csrf'])) {
             http_response_code(403);
             die('CSRF token mismatch');
         }
 
-        // Ellenőrizd, hogy van-e ID
+        // Check if ID exists
         if (!isset($_POST['id']) || !is_numeric($_POST['id'])) {
-            $_SESSION['flash'] = 'Hiányzó vagy érvénytelen elem azonosító.';
+            $_SESSION['flash'] = 'Missing or invalid item ID.';
             header('Location: /fridge');
             exit;
         }
@@ -56,16 +60,16 @@ class FridgeController
         $id = (int)$_POST['id'];
 
         try {
-            // API hívás az elem törlésére
+            // API call to delete the item
             $response = $this->http->delete("/api/fridge/$id", [
                 'headers' => [
                     'Accept' => 'application/json',
                 ],
             ]);
 
-            $_SESSION['flash'] = 'A tétel sikeresen törölve lett.';
+            $_SESSION['flash'] = 'The item has been successfully deleted.';
         } catch (\Exception $e) {
-            $_SESSION['flash'] = 'Hiba történt a törlés során: ' . $e->getMessage();
+            $_SESSION['flash'] = 'An error occurred during deletion: ' . $e->getMessage();
         }
 
         header('Location: /fridge');
@@ -73,7 +77,9 @@ class FridgeController
     }
 
     /**
-     * Egyszerű nézet-render hívó
+     * Simple view-render caller
+     * @param array $vars
+     * @return void
      */
     private function render(array $vars = []): void
     {

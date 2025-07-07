@@ -1,7 +1,7 @@
 <?php
 
-/** @var string $message  – a controller állítja be
- *  @var string $type     – alert osztály: success | warning | danger
+/** @var string $message
+ *  @var string $type
  */
 $title ??= 'E-mail megerősítése';
 ?>

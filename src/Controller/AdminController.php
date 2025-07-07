@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Single, "all-in-one" AdminController.
+ * - Admin permission check in constructor
+ * - Common helper: render(), json(), paging()
+ * - Tabs: index()  → user list
+ *          recipes() → recipe list
+ *          banUser()/deleteUser(), createRecipe()/deleteRecipe() etc.
+ */
+
 declare(strict_types=1);
 
 namespace WebDevProject\Controller;
@@ -21,6 +30,9 @@ class AdminController
 {
     private \PDO $pdo;
 
+    /**
+     * @throws \Exception
+     */
     public function __construct(\PDO $pdo)
     {
         $this->pdo = $pdo;
@@ -65,7 +77,7 @@ class AdminController
         $this->render(
             compact(
                 'users',
-                'page',          // ha kell, át is nevezheted currentPage-re
+                'page',          // if needed, you can rename it to currentPage
                 'perPage',
                 'total',
                 'totalPages'     // ← új!
@@ -89,7 +101,7 @@ class AdminController
         if ($ok) {
             $_SESSION['flash'] = 'A felhasználó sikeresen bannolva lett.';
         } else {
-            $_SESSION['flash'] = 'Hiba történt a felhasználó bannolása során.';
+            $_SESSION['flash'] = 'An error occurred while banning the user.';
         }
 
         header('Location: /admin/users');
@@ -111,22 +123,18 @@ class AdminController
         if ($ok) {
             $_SESSION['flash'] = 'A felhasználó bannolása sikeresen feloldva.';
         } else {
-            $_SESSION['flash'] = 'Hiba történt a felhasználó bannolásának feloldása során.';
+            $_SESSION['flash'] = 'An error occurred while unbanning the user.';
         }
 
         header('Location: /admin/users');
         exit;
     }
 
-    /** GET /admin/users/delete?id=123  (vagy DELETE metódus REST-esen) */
-    public function deleteUser(): never
-    {
-        $id = (int)($_GET['id'] ?? 0);
-        $ok = $id && User::delete($this->pdo, $id);
-        $this->json(['ok' => $ok]);
-    }
 
-    /** GET /admin/recipes - Beküldött receptek kezelése */
+    /**
+     * GET /admin/recipes.
+     * @return void
+     */
     public function recipes(): void
     {
         [$page, $perPage, $offset] = $this->paging();
@@ -138,7 +146,7 @@ class AdminController
                 'offset' => $offset
             ]);
 
-            // Átalakítás a nézethez
+            // Transform for the view
             foreach ($recipes as &$recipe) {
                 $recipe['name'] = $recipe['title'];
                 $recipe['status'] = 'pending';
@@ -155,7 +163,7 @@ class AdminController
             $stmt = $this->pdo->query("SELECT COUNT(*) as total FROM recipes WHERE verified_at IS NULL");
             $total = $stmt->fetch(\PDO::FETCH_ASSOC)['total'] ?? 0;
         } catch (\Exception $e) {
-            // Hiba esetén használjuk az alapértelmezett demo recepteket
+            // In case of error, use the default demo recipes
             $recipes = [
                 [
                     'id' => 10,
@@ -194,7 +202,8 @@ class AdminController
     }
 
     /**
-     * POST /admin/recipes/approve - Recept jóváhagyása
+     * POST /admin/recipes/approve.
+     * @return never
      */
     public function approveRecipe(): never
     {
@@ -210,7 +219,7 @@ class AdminController
         if ($ok) {
             $_SESSION['flash'] = 'A recept sikeresen jóváhagyva.';
         } else {
-            $_SESSION['flash'] = 'Hiba történt a recept jóváhagyása során.';
+            $_SESSION['flash'] = 'An error occurred while approving the recipe.';
         }
 
         header('Location: /admin/recipes');
@@ -218,7 +227,8 @@ class AdminController
     }
 
     /**
-     * POST /admin/recipes/reject - Recept elutasítása
+     * POST /admin/recipes/reject.
+     * @return never
      */
     public function rejectRecipe(): never
     {
@@ -234,29 +244,10 @@ class AdminController
         if ($ok) {
             $_SESSION['flash'] = 'A recept sikeresen elutasítva.';
         } else {
-            $_SESSION['flash'] = 'Hiba történt a recept elutasítása során.';
+            $_SESSION['flash'] = 'An error occurred while rejecting the recipe.';
         }
 
         header('Location: /admin/recipes');
         exit;
-    }
-
-    public function usersApi(): never
-    {
-        // paging helper a Base-ben
-        [$page, $perPage, $offset] = $this->paging();
-
-        $total = User::count($this->pdo);
-        $users = User::paginated($this->pdo, $perPage, $offset);
-
-        $this->json([
-            'data'       => $users,
-            'pagination' => [
-                'page'        => $page,
-                'per_page'    => $perPage,
-                'total'       => $total,
-                'total_pages' => (int)ceil($total / $perPage),
-            ],
-        ]);
     }
 }

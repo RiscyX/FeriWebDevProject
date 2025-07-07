@@ -4,7 +4,6 @@ require __DIR__ . '/../partials/carousel.php';
 
 ?>
 
-<!-- Kulcsfunkciók szekció -->
 <section class="features py-5 mb-5 features-section">
     <div class="container">
         <h2 class="text-center mb-5 fw-bold features-title">
@@ -18,7 +17,7 @@ require __DIR__ . '/../partials/carousel.php';
                     </div>
                     <div>
                         <h5 class="fw-bold mb-2 feature-title">Villámgyors keresés</h5>
-                        <p class="feature-desc">Szűrés receptkategóriák és kulcsszavak szerint.</p>
+                        <p class="feature-desc">Szűrés receptkategóriák szerint.</p>
                     </div>
                 </div>
             </div>
@@ -61,7 +60,6 @@ require __DIR__ . '/../partials/carousel.php';
     </div>
 </section>
 
-<!-- CTA szekció -->
 <section class="cta-section py-5 text-center">
     <div class="container">
         <div class="row justify-content-center">

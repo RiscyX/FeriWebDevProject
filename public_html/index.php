@@ -57,12 +57,12 @@ $dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('GET',  '/recipe/submit',   [RecipeController::class, 'submitForm']);
     $r->addRoute('POST', '/recipe/submit',   [RecipeController::class, 'submitProcess']);
     
-    // Profil útvonalak
+    // Profile routes
     $r->addRoute('GET',  '/profile',      [ProfileController::class, 'index']);
     $r->addRoute('POST', '/profile/favorites/add', [ProfileController::class, 'addToFavorites']);
     $r->addRoute('POST', '/profile/favorites/remove', [ProfileController::class, 'removeFromFavorites']);
 
-    // Menü útvonalak
+    // Menu routes
     $r->addRoute('GET', '/menus', [MenuController::class, 'index']);
     $r->addRoute('POST', '/menus/add', [MenuController::class, 'addToMenu']);
     $r->addRoute('POST', '/menus/remove', [MenuController::class, 'removeFromMenu']);
@@ -84,7 +84,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r) {
         $r->addRoute('POST', '/users/ban', [AdminController::class, 'banUser']);
         $r->addRoute('POST', '/users/unban', [AdminController::class, 'unbanUser']);
         
-        // Recept admin útvonalak
+        // Recipe admin routes
         $r->addRoute('GET',  '/recipes',    [AdminController::class, 'recipes']);
         $r->addRoute('POST', '/recipes/approve', [AdminController::class, 'approveRecipe']);
         $r->addRoute('POST', '/recipes/reject', [AdminController::class, 'rejectRecipe']);
@@ -112,26 +112,26 @@ switch ($routeInfo[0]) {
         break;
 
     case FastRoute\Dispatcher::FOUND:
-        [$class, $method] = $routeInfo[1];   // [Controller osztály, metódus]
-        $vars = $routeInfo[2];               // útvonal‑paraméterek tömbje
+        [$class, $method] = $routeInfo[1];   // [Controller class, method]
+        $vars = $routeInfo[2];               // route parameters array
 
         try {
-            // Egyszerű dependency‑injection; válts DI‑konténerre, ha bővül a projekt
+            // Simple dependency injection; switch to a DI container if the project grows
             $controller = new $class($pdo);
             $controller->$method(...array_values($vars));
 
-            // Ellenőrizzük a response code-ot a végrehajtás után
+            // Check response code after execution
             if (http_response_code() === 403) {
                 $errorController = new ErrorController($pdo);
                 $errorController->forbidden();
             }
         } catch (Exception $e) {
-            // Ha 403-as hiba történik, vagy bármilyen access denied típusú hiba
+            // If a 403 error occurs, or any access denied type error
             if (http_response_code() === 403 || str_contains($e->getMessage(), 'access') || str_contains($e->getMessage(), 'forbidden')) {
                 $errorController = new ErrorController($pdo);
                 $errorController->forbidden();
             } else {
-                // Egyéb hibák esetén dobja újra
+                // For other errors, rethrow
                 throw $e;
             }
         }

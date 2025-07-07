@@ -1,47 +1,47 @@
 /**
- * Űrlapvalidációs segédfüggvények
+ * Form validation helper functions
  * FeriWebDevProject - 2025
  */
 
 /**
- * A hibaüzenet megjelenítéséért felelős függvény
- * @param {HTMLElement} inputElement - Az input elem, amelyhez a hibaüzenetet kapcsoljuk
- * @param {string} message - A hibaüzenet szövege
+ * Function responsible for displaying the error message
+ * @param {HTMLElement} inputElement - The input element to which we attach the error message
+ * @param {string} message - The error message text
  */
 function showError(inputElement, message) {
-    // Töröljük a korábbi hibaüzenetet, ha van
+    // Delete the previous error message, if any
     removeError(inputElement);
     
-    // Adjuk hozzá a hibaosztályt az input elemhez
+    // Add the error class to the input element
     inputElement.classList.add('is-invalid');
     
-    // Hozzuk létre a hibaüzenet elemet
+    // Create the error message element
     const errorDiv = document.createElement('div');
     errorDiv.className = 'invalid-feedback';
     errorDiv.innerHTML = message;
     
-    // Helyezzük el az input után a hibaüzenetet
+    // Place the error message after the input
     if (inputElement.parentElement.classList.contains('input-group')) {
-        // Input group esetén a szülő után helyezzük el
+        // For input groups, place after the parent
         inputElement.parentElement.parentElement.appendChild(errorDiv);
     } else {
-        // Egyébként közvetlenül az input után
+        // Otherwise directly after the input
         inputElement.parentElement.appendChild(errorDiv);
     }
 }
 
 /**
- * Eltávolítja a hibaüzenetet egy input elemről
- * @param {HTMLElement} inputElement - Az input elem, amelyről a hibaüzenetet eltávolítjuk
+ * Removes the error message from an input element
+ * @param {HTMLElement} inputElement - The input element from which to remove the error message
  */
 function removeError(inputElement) {
     inputElement.classList.remove('is-invalid');
     
-    // Megkeressük és eltávolítjuk a kapcsolódó hibaüzenetet
+    // Find and remove the associated error message
     const parent = inputElement.parentElement;
     const grandparent = parent.parentElement;
     
-    // Ellenőrizzük mindkét lehetséges helyet a hibaüzenethez
+    // Check both possible locations for the error message
     [parent, grandparent].forEach(element => {
         const errorDiv = element.querySelector('.invalid-feedback');
         if (errorDiv) {
@@ -51,8 +51,8 @@ function removeError(inputElement) {
 }
 
 /**
- * Sikeres validáció esetén hozzáadja a sikeres osztályt
- * @param {HTMLElement} inputElement - Az input elem, amelyet sikeresnek jelölünk
+ * Adds the success class on successful validation
+ * @param {HTMLElement} inputElement - The input element to mark as valid
  */
 function markValid(inputElement) {
     removeError(inputElement);
@@ -60,9 +60,9 @@ function markValid(inputElement) {
 }
 
 /**
- * E-mail cím formátum ellenőrzése
- * @param {string} email - Az ellenőrizendő e-mail cím
- * @returns {boolean} Érvényes-e az e-mail cím
+ * Email address format validation
+ * @param {string} email - The email address to validate
+ * @returns {boolean} Whether the email address is valid
  */
 function isValidEmail(email) {
     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -70,17 +70,17 @@ function isValidEmail(email) {
 }
 
 /**
- * Jelszó erősség ellenőrzése
- * @param {string} password - Az ellenőrizendő jelszó
- * @returns {boolean} Elég erős-e a jelszó
+ * Password strength validation
+ * @param {string} password - The password to validate
+ * @returns {boolean} Whether the password is strong enough
  */
 function isStrongPassword(password) {
-    // Minimum 6 karakter, legalább egy szám és egy betű
+    // Minimum 6 characters, at least one number and one letter
     return password.length >= 6 && /[0-9]/.test(password) && /[a-zA-Z]/.test(password);
 }
 
 // ============================
-// Bejelentkezési űrlap validáció
+// Login form validation
 // ============================
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.querySelector('form[action="/login"]');
@@ -89,13 +89,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
         
-        // Input eseményfigyelők
+        // Input event listeners
         if (emailInput) {
             emailInput.addEventListener('input', function() {
                 if (this.value.trim() === '') {
-                    showError(this, 'Az e-mail cím megadása kötelező');
+                    showError(this, 'Email address is required');
                 } else if (!isValidEmail(this.value)) {
-                    showError(this, 'Érvénytelen e-mail cím formátum');
+                    showError(this, 'Invalid email address format');
                 } else {
                     markValid(this);
                 }
@@ -105,24 +105,24 @@ document.addEventListener('DOMContentLoaded', function() {
         if (passwordInput) {
             passwordInput.addEventListener('input', function() {
                 if (this.value.trim() === '') {
-                    showError(this, 'A jelszó megadása kötelező');
+                    showError(this, 'Password is required');
                 } else {
                     markValid(this);
                 }
             });
         }
         
-        // Form elküldés validálása
+        // Form submission validation
         loginForm.addEventListener('submit', function(event) {
             let isValid = true;
             
             if (emailInput && (emailInput.value.trim() === '' || !isValidEmail(emailInput.value))) {
-                showError(emailInput, 'Érvényes e-mail cím megadása kötelező');
+                showError(emailInput, 'Valid email address is required');
                 isValid = false;
             }
             
             if (passwordInput && passwordInput.value.trim() === '') {
-                showError(passwordInput, 'A jelszó megadása kötelező');
+                showError(passwordInput, 'Password is required');
                 isValid = false;
             }
             
@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ============================
-// Regisztrációs űrlap validáció
+// Registration form validation
 // ============================
 document.addEventListener('DOMContentLoaded', function() {
     const registerForm = document.querySelector('form[action="/register"]');
@@ -145,15 +145,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const passwordInput = document.getElementById('password');
         const passwordConfirmInput = document.getElementById('password_confirm');
         
-        // Input eseményfigyelők
+        // Input event listeners
         if (usernameInput) {
             usernameInput.addEventListener('input', function() {
                 if (this.value.trim() === '') {
-                    showError(this, 'A felhasználónév megadása kötelező');
+                    showError(this, 'Username is required');
                 } else if (this.value.length < 3) {
-                    showError(this, 'A felhasználónév legalább 3 karakter hosszú legyen');
+                    showError(this, 'Username must be at least 3 characters long');
                 } else if (this.value.length > 50) {
-                    showError(this, 'A felhasználónév legfeljebb 50 karakter lehet');
+                    showError(this, 'Username cannot be longer than 50 characters');
                 } else {
                     markValid(this);
                 }
@@ -175,19 +175,19 @@ document.addEventListener('DOMContentLoaded', function() {
         if (passwordInput) {
             passwordInput.addEventListener('input', function() {
                 if (this.value.trim() === '') {
-                    showError(this, 'A jelszó megadása kötelező');
+                    showError(this, 'Password is required');
                 } else if (this.value.length < 6) {
-                    showError(this, 'A jelszónak legalább 6 karakter hosszúnak kell lennie');
+                    showError(this, 'Password must be at least 6 characters long');
                 } else if (!isStrongPassword(this.value)) {
-                    showError(this, 'A jelszónak tartalmaznia kell legalább egy betűt és egy számot');
+                    showError(this, 'Password must contain at least one letter and one number');
                 } else {
                     markValid(this);
                 }
                 
-                // Ellenőrizzük a jelszó megerősítést is, ha már van benne érték
+                // Check password confirmation as well, if it already has a value
                 if (passwordConfirmInput && passwordConfirmInput.value) {
                     if (this.value !== passwordConfirmInput.value) {
-                        showError(passwordConfirmInput, 'A két jelszó nem egyezik');
+                        showError(passwordConfirmInput, 'The two passwords do not match');
                     } else {
                         markValid(passwordConfirmInput);
                     }
@@ -198,56 +198,56 @@ document.addEventListener('DOMContentLoaded', function() {
         if (passwordConfirmInput) {
             passwordConfirmInput.addEventListener('input', function() {
                 if (this.value.trim() === '') {
-                    showError(this, 'A jelszó megerősítése kötelező');
+                    showError(this, 'Password confirmation is required');
                 } else if (passwordInput && this.value !== passwordInput.value) {
-                    showError(this, 'A két jelszó nem egyezik');
+                    showError(this, 'The two passwords do not match');
                 } else {
                     markValid(this);
                 }
             });
         }
         
-        // Form elküldés validálása
+        // Form submission validation
         registerForm.addEventListener('submit', function(event) {
             let isValid = true;
             
             if (usernameInput) {
                 if (usernameInput.value.trim() === '') {
-                    showError(usernameInput, 'A felhasználónév megadása kötelező');
+                    showError(usernameInput, 'Username is required');
                     isValid = false;
                 } else if (usernameInput.value.length < 3) {
-                    showError(usernameInput, 'A felhasználónév legalább 3 karakter hosszú legyen');
+                    showError(usernameInput, 'Username must be at least 3 characters long');
                     isValid = false;
                 } else if (usernameInput.value.length > 50) {
-                    showError(usernameInput, 'A felhasználónév legfeljebb 50 karakter lehet');
+                    showError(usernameInput, 'Username cannot be longer than 50 characters');
                     isValid = false;
                 }
             }
             
             if (emailInput && (emailInput.value.trim() === '' || !isValidEmail(emailInput.value))) {
-                showError(emailInput, 'Érvényes e-mail cím megadása kötelező');
+                showError(emailInput, 'Valid email address is required');
                 isValid = false;
             }
             
             if (passwordInput) {
                 if (passwordInput.value.trim() === '') {
-                    showError(passwordInput, 'A jelszó megadása kötelező');
+                    showError(passwordInput, 'Password is required');
                     isValid = false;
                 } else if (passwordInput.value.length < 6) {
-                    showError(passwordInput, 'A jelszónak legalább 6 karakter hosszúnak kell lennie');
+                    showError(passwordInput, 'Password must be at least 6 characters long');
                     isValid = false;
                 } else if (!isStrongPassword(passwordInput.value)) {
-                    showError(passwordInput, 'A jelszónak tartalmaznia kell legalább egy betűt és egy számot');
+                    showError(passwordInput, 'Password must contain at least one letter and one number');
                     isValid = false;
                 }
             }
             
             if (passwordConfirmInput) {
                 if (passwordConfirmInput.value.trim() === '') {
-                    showError(passwordConfirmInput, 'A jelszó megerősítése kötelező');
+                    showError(passwordConfirmInput, 'Password confirmation is required');
                     isValid = false;
                 } else if (passwordInput && passwordConfirmInput.value !== passwordInput.value) {
-                    showError(passwordConfirmInput, 'A két jelszó nem egyezik');
+                    showError(passwordConfirmInput, 'The two passwords do not match');
                     isValid = false;
                 }
             }
@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ============================
-// Jelszó-visszaállítás űrlap validáció
+// Password reset form validation
 // ============================
 document.addEventListener('DOMContentLoaded', function() {
     const resetForm = document.querySelector('form[action="/reset"]');
@@ -282,7 +282,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         resetForm.addEventListener('submit', function(event) {
             if (emailInput && (emailInput.value.trim() === '' || !isValidEmail(emailInput.value))) {
-                showError(emailInput, 'Érvényes e-mail cím megadása kötelező');
+                showError(emailInput, 'Valid email address is required');
                 event.preventDefault();
             }
         });
@@ -290,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ============================
-// Recept beküldési űrlap validáció
+// Recipe submission form validation
 // ============================
 document.addEventListener('DOMContentLoaded', function() {
     const recipeForm = document.querySelector('form[action="/recipe/submit"]');
@@ -305,22 +305,22 @@ document.addEventListener('DOMContentLoaded', function() {
         const descriptionTextarea = document.getElementById('recipeDescription');
         const instructionsTextarea = document.getElementById('recipeInstructions');
         
-        // Név validálás
+        // Name validation
         if (recipeNameInput) {
             recipeNameInput.addEventListener('input', function() {
                 if (this.value.trim() === '') {
-                    showError(this, 'A recept nevének megadása kötelező');
+                    showError(this, 'Recipe name is required');
                 } else if (this.value.length < 3) {
-                    showError(this, 'A recept neve legalább 3 karakter legyen');
+                    showError(this, 'Recipe name must be at least 3 characters');
                 } else if (this.value.length > 255) {
-                    showError(this, 'A recept neve túl hosszú (max. 255 karakter)');
+                    showError(this, 'Recipe name is too long (max. 255 characters)');
                 } else {
                     markValid(this);
                 }
             });
         }
         
-        // Kategória validálás
+        // Catergory validation
         if (categorySelect) {
             categorySelect.addEventListener('change', function() {
                 if (this.value === '') {
@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Kép validálás
+        // Image validation
         if (imageInput) {
             imageInput.addEventListener('change', function() {
                 if (this.files.length > 0) {
@@ -347,13 +347,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         markValid(this);
                     }
                 } else {
-                    // Ha nincs kiválasztva kép, az is rendben van
+                    // If no image is selected, that's also fine
                     removeError(this);
                 }
             });
         }
         
-        // Idő és adag validálás
+        // Time and quantity validation
         [prepTimeInput, cookTimeInput, servingsInput].forEach(input => {
             if (input) {
                 input.addEventListener('input', function() {
@@ -366,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Leírás validálás
+        // Description validation
         if (descriptionTextarea) {
             descriptionTextarea.addEventListener('input', function() {
                 if (this.value.trim() === '') {
@@ -379,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Elkészítési útmutató validálás
+        // Instruction validation
         if (instructionsTextarea) {
             instructionsTextarea.addEventListener('input', function() {
                 if (this.value.trim() === '') {
@@ -392,7 +392,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Hozzávalók validálás - dinamikusan generált elemek
+        // Ingredient validation
         document.addEventListener('input', function(e) {
             if (e.target.classList.contains('ingredient-name')) {
                 if (e.target.value.trim() === '') {
@@ -413,11 +413,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Form elküldés validálása
+        // Form validation
         recipeForm.addEventListener('submit', function(event) {
             let isValid = true;
             
-            // Név ellenőrzés
+            // Name validation
             if (recipeNameInput) {
                 if (recipeNameInput.value.trim() === '') {
                     showError(recipeNameInput, 'A recept nevének megadása kötelező');
@@ -428,13 +428,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            // Kategória ellenőrzés
+            // Category check
             if (categorySelect && categorySelect.value === '') {
                 showError(categorySelect, 'Kategória választása kötelező');
                 isValid = false;
             }
             
-            // Kép ellenőrzés (ha van fájl kiválasztva)
+            // Image check (if uploaded)
             if (imageInput && imageInput.files.length > 0) {
                 const file = imageInput.files[0];
                 const acceptedFormats = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
@@ -449,7 +449,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            // Leírás ellenőrzés
+            // Description validation
             if (descriptionTextarea) {
                 if (descriptionTextarea.value.trim() === '') {
                     showError(descriptionTextarea, 'A recept rövid leírása kötelező');
@@ -460,7 +460,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            // Útmutató ellenőrzés
+            // Instructions validation
             if (instructionsTextarea) {
                 if (instructionsTextarea.value.trim() === '') {
                     showError(instructionsTextarea, 'Az elkészítési útmutató megadása kötelező');
@@ -471,12 +471,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            // Hozzávalók ellenőrzése
+            // Igredients check
             const ingredientNameInputs = document.querySelectorAll('.ingredient-name');
             const quantityInputs = document.querySelectorAll('.quantity-input');
             
             if (ingredientNameInputs.length === 0) {
-                // Ha nincs hozzávaló, hibaüzenetet kell mutatnunk
+                // If there are no ingredients, we must show an error message
                 const ingredientsContainer = document.getElementById('ingredientsContainer');
                 if (ingredientsContainer) {
                     if (!ingredientsContainer.querySelector('.invalid-feedback')) {
@@ -488,7 +488,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     isValid = false;
                 }
             } else {
-                // Ellenőrizzük az összes hozzávalót
+                // Validate all ingredients
                 ingredientNameInputs.forEach((input, index) => {
                     if (input.value.trim() === '') {
                         showError(input, 'A hozzávaló neve kötelező');
@@ -510,7 +510,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!isValid) {
                 event.preventDefault();
                 
-                // Görgetés az első hibához
+                // Scroll to first error
                 const firstError = document.querySelector('.is-invalid');
                 if (firstError) {
                     firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -521,7 +521,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ============================
-// Hűtőszekrény űrlap validáció
+// Frigde form validation
 // ============================
 document.addEventListener('DOMContentLoaded', function() {
     const fridgeForm = document.getElementById('addItemForm');
@@ -530,7 +530,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const itemNameInput = document.getElementById('itemName');
         const quantityInput = document.getElementById('itemQuantity');
         
-        // Tétel neve validálás
+        // Ingredient validation
         if (itemNameInput) {
             itemNameInput.addEventListener('input', function() {
                 if (this.value.trim() === '') {
@@ -541,7 +541,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Mennyiség validálás
+        // Quantity validation
         if (quantityInput) {
             quantityInput.addEventListener('input', function() {
                 if (this.value.trim() === '') {
@@ -554,7 +554,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Form elküldés validálása
+        // Form submit validation
         fridgeForm.addEventListener('submit', function(event) {
             let isValid = true;
             
@@ -580,9 +580,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Validáljuk az űrlapokat amikor betöltődik az oldal
+// Validate forms when page is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // CSS hozzáadása a hibaüzenetekhez
     const style = document.createElement('style');
     style.innerHTML = `
         .invalid-feedback {

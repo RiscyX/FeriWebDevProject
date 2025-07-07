@@ -108,8 +108,7 @@
         padding: 0.375rem 0.75rem;
         width: 100%;
     }
-    
-    /* Fejléc gombok teljes szélességű mobilnézetben */
+
     .flex-column .btn {
         width: 100%;
         text-align: center;
@@ -124,13 +123,12 @@
     padding: 0 0.5rem;
 }
 
-/* Recipe view címsorok speciális méretezése */
 .recipe-view h1.recipe-card-title, .recipe-view h1.card-title {
-    font-size: 2rem !important; /* Főcím mérete */
+    font-size: 2rem !important;
 }
 
 .recipe-view h3.recipe-card-title, .recipe-view h3.card-title {
-    font-size: 1.35rem !important; /* Szekcióheadingek mérete */
+    font-size: 1.35rem !important;
     padding: 3px 0 !important;
 }
 
@@ -156,12 +154,11 @@
 
 .card-header.bg-primary .recipe-card-title, .card-header.bg-primary .card-title {
     color: var(--navbar-text);
-    margin: 0.25rem 0 !important; /* Mérsékelt margó a címsornak */
+    margin: 0.25rem 0 !important;
 }
 
-/* Szövegtartalmak a recept nézetben */
 .recipe-view .fs-5 {
-    font-size: 1.1rem !important; /* Kisebb szövegméret */
+    font-size: 1.1rem !important;
 }
 
 .recipe-view .list-group-item {
@@ -192,7 +189,6 @@
     padding: 0.5rem;
 }
 
-/* Címek a recept nézetben */
 .recipe-view .card-header {
     min-height: 3rem;
     display: flex;
@@ -206,7 +202,6 @@
     margin-bottom: 1.5rem;
 }
 
-/* Recept nézet, nagyobb padding a főoldalon */
 .recipe-view .card-body {
     padding: 1.5rem;
 }
@@ -239,7 +234,6 @@
     background-color: color-mix(in srgb, var(--navbar-hover) 8%, transparent);
 }
 
-/* Mobilnézet a hozzávalók soraihoz */
 @media (max-width: 767.98px) {
     .ingredient-row {
         display: flex;
@@ -271,7 +265,7 @@
     }
 }
 
-/* Badge másodlagos */
+/* Badge secondary */
 .badge.bg-secondary {
     background-color: var(--navbar-text) !important;
     color: var(--btn-text);
@@ -323,20 +317,17 @@
     }
 }
 
-/* List group elemek sötét témában */
 [data-bs-theme="dark"] .list-group-item {
     background-color: var(--secondary-bg);
     border-color: var(--card-border);
     color: var(--primary-text);
 }
 
-/* Recept űrlap elemek */
 .form-control:focus {
     border-color: var(--navbar-hover);
     box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--navbar-hover) 25%, transparent);
 }
 
-/* Recept gomb kiemelés */
 .btn-success {
     background-color: var(--btn-bg);
     border-color: var(--btn-bg);
@@ -349,7 +340,7 @@
     border-color: var(--btn-bg);
 }
 
-/* Általános gombok kerekítése */
+/* General button rounding */
 .btn {
     border-radius: 8px;
     padding: 0.6rem 1rem;
@@ -360,7 +351,6 @@
     padding: 0.4rem 0.8rem;
 }
 
-/* Hozzávalók blokk szépítése */
 #ingredientsContainer {
     background-color: color-mix(in srgb, var(--primary-bg) 98%, var(--navbar-bg) 2%);
     padding: 15px;
@@ -373,7 +363,6 @@
     text-align: center;
 }
 
-/* Fix minden hozzávaló sorra */
 .ingredient-row {
     padding: 12px;
     display: flex;
@@ -386,23 +375,19 @@
     padding: 0 10px;
 }
 
-/* Egységes megjelenés érdekében */
 .ingredient-row .form-label {
     margin-bottom: 0.5rem;
 }
 
-/* Responsive minden sorra */
 @media (min-width: 768px) {
     .ingredient-row {
         flex-direction: row !important;
     }
-    
-    /* Címkék desktop nézetben */
+
     .ingredient-label {
-        display: none !important; /* Desktop nézetben elrejtjük a címkéket */
+        display: none !important;
     }
-    
-    /* Biztosítjuk, hogy a bootstrap oszlopok megfelelően működjenek */
+
     .ingredient-row .col-md-5 {
         width: 41.66666667% !important;
         flex: 0 0 auto !important;
@@ -422,32 +407,27 @@
     }
 }
 
-/* Legyen szép a jobb/bal padding */
 .ingredient-row .row {
     margin: 0;
 }
 
-/* Mobilos stílus javítások a hozzávaló címkékhez */
 @media (max-width: 767.98px) {
     #ingredientsContainer {
         padding: 10px;
     }
-    
-    /* Címke stílusok mobilnézetben */
+
     .ingredient-label {
         font-size: 0.85rem;
         margin-bottom: 0.25rem;
         font-weight: 600;
         color: var(--primary-text);
-        display: block !important; /* Biztosítjuk a megjelenést */
+        display: block !important;
     }
-    
-    /* Az első hozzávaló sor is megfelelően jelenjen meg */
+
     .ingredient-row {
         flex-wrap: wrap !important;
     }
-    
-    /* Biztosítjuk az egységes megjelenést minden oszlop számára - specifikusabb szelektorokkal */
+
     .ingredient-row > div,
     .ingredient-row > [class*="col-"] {
         width: 100% !important;
@@ -456,8 +436,7 @@
         margin-bottom: 10px !important;
         padding: 5px 10px !important;
     }
-    
-    /* Recept beküldés/mégsem gombok mobilnézet */
+
     .recipe-form-buttons {
         flex-direction: column;
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WebDevProject\Form;
 
+use Random\RandomException;
 use WebDevProject\Model\User;
 use WebDevProject\Security\Csrf;
 
@@ -15,6 +16,10 @@ class PasswordResetForm extends BaseForm
     ) {
     }
 
+    /**
+     * @param array $post
+     * @return void
+     */
     public function formLoad(array $post): void
     {
         if ($this->token) {
@@ -25,6 +30,9 @@ class PasswordResetForm extends BaseForm
         }
     }
 
+    /**
+     * @return bool
+     */
     public function formValidate(): bool
     {
         if ($this->token) {
@@ -47,6 +55,9 @@ class PasswordResetForm extends BaseForm
         return !$this->hasErrors();
     }
 
+    /**
+     * @return bool
+     */
     public function formSubmit(): bool
     {
         $user = new User($this->pdo);
@@ -56,6 +67,10 @@ class PasswordResetForm extends BaseForm
         return $user->requestPasswordReset($this->getValue('email'));
     }
 
+    /**
+     * @return string
+     * @throws RandomException
+     */
     public function formRender(): string
     {
         $html = '';

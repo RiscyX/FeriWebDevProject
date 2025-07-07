@@ -2,7 +2,6 @@
 // src/View/pages/profile.php
 ?>
 <div class="row">
-    <!-- Felhasználói adatok szekció -->
     <div class="col-md-4 mb-4">
         <div class="card">
             <div class="card-header bg-primary text-white">
@@ -24,7 +23,6 @@
         </div>
     </div>
 
-    <!-- Kedvenc receptek szekció -->
     <div class="col-md-8">
         <div class="card">
             <div class="card-header bg-primary text-white">

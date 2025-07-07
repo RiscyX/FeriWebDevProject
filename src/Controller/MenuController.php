@@ -12,19 +12,18 @@ class MenuController
     public function __construct(
         private PDO $pdo
     ) {
-        // Csak bejelentkezett felhasználók férhetnek hozzá a menühöz
         Auth::requireLogin();
     }
 
     /**
-     * GET /menus - Menü kezelő oldal
+     * GET /menus - Menus page.
+     * @return void
      */
     public function index(): void
     {
         $userId = (int)$_SESSION['user_id'];
         $menus = $this->getMenus($userId);
 
-        // Napok nevei magyarul a rendezéshez és a megjelenítéshez
         $dayOrder = [
             'Monday' => 1,
             'Tuesday' => 2,
@@ -45,7 +44,6 @@ class MenuController
             'Sunday' => 'Vasárnap'
         ];
 
-        // Rendezés napok szerint
         usort($menus, function ($a, $b) use ($dayOrder) {
             return $dayOrder[$a['day_of_week']] <=> $dayOrder[$b['day_of_week']];
         });
@@ -57,11 +55,11 @@ class MenuController
     }
 
     /**
-     * POST /menus/add - Recept hozzáadása a menühöz
+     * POST /menus/add - Add recipe to menu.
+     * @return void
      */
     public function addToMenu(): void
     {
-        // CSRF ellenőrzés
         if (!isset($_POST['csrf']) || !\WebDevProject\Security\Csrf::check($_POST['csrf'])) {
             $_SESSION['flash_error'] = 'Érvénytelen CSRF token. Kérjük, próbálja újra.';
             header('Location: ' . $_SERVER['HTTP_REFERER'] ?? '/recipes');
@@ -73,14 +71,12 @@ class MenuController
         $menuName = isset($_POST['menu_name']) ? trim($_POST['menu_name']) : '';
         $dayOfWeek = isset($_POST['day_of_week']) ? trim($_POST['day_of_week']) : '';
 
-        // Validálás
         if (!$recipeId || !$menuName || !$dayOfWeek) {
             $_SESSION['flash_error'] = 'Minden mezőt ki kell tölteni!';
             header('Location: ' . $_SERVER['HTTP_REFERER'] ?? '/recipes');
             exit;
         }
 
-        // Ellenőrizzük, hogy a recept létezik-e
         $recipeStmt = $this->pdo->prepare("SELECT id FROM recipes WHERE id = ?");
         $recipeStmt->execute([$recipeId]);
 
@@ -90,7 +86,6 @@ class MenuController
             exit;
         }
 
-        // Ellenőrizzük, hogy a nap érvényes-e
         $validDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         if (!in_array($dayOfWeek, $validDays)) {
             $_SESSION['flash_error'] = 'Érvénytelen nap!';
@@ -99,7 +94,6 @@ class MenuController
         }
 
         try {
-            // Recept hozzáadása a menühöz
             $stmt = $this->pdo->prepare("
                 INSERT INTO menus (user_id, name, recipe_id, day_of_week)
                 VALUES (?, ?, ?, ?)
@@ -117,11 +111,11 @@ class MenuController
     }
 
     /**
-     * POST /menus/remove - Recept eltávolítása a menüből
+     * POST /menus/remove - Remove recipe from menus.
+     * @return void
      */
     public function removeFromMenu(): void
     {
-        // CSRF ellenőrzés
         if (!isset($_POST['csrf']) || !\WebDevProject\Security\Csrf::check($_POST['csrf'])) {
             $_SESSION['flash_error'] = 'Érvénytelen CSRF token. Kérjük, próbálja újra.';
             header('Location: /menus');
@@ -138,7 +132,6 @@ class MenuController
         }
 
         try {
-            // Ellenőrizzük, hogy a felhasználó tulajdonosa-e a menünek
             $checkStmt = $this->pdo->prepare("
                 SELECT id FROM menus WHERE id = ? AND user_id = ?
             ");
@@ -150,7 +143,6 @@ class MenuController
                 exit;
             }
 
-            // Menü törlése
             $stmt = $this->pdo->prepare("DELETE FROM menus WHERE id = ? AND user_id = ?");
             $stmt->execute([$menuId, $userId]);
 
@@ -165,10 +157,10 @@ class MenuController
     }
 
     /**
-     * Felhasználó menüinek lekérdezése
+     * Return the menus of the current user.
      *
-     * @param int $userId A felhasználó azonosítója
-     * @return array A felhasználó menüi
+     * @param int $userId
+     * @return array
      */
     private function getMenus(int $userId): array
     {
@@ -189,9 +181,8 @@ class MenuController
         $stmt->execute([$userId]);
         $menus = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Képek elérési útját alakítsuk át a view-nak megfelelően
         foreach ($menus as &$menu) {
-            // Ha nincs kép, használjunk alapértelmezett képet
+            // If there's no image, use a default image
             $menu['image'] = $menu['image_path'] ?? '/assets/slide' . (($menu['recipe_id'] % 3) + 1) . '.png';
         }
 
@@ -199,11 +190,11 @@ class MenuController
     }
 
     /**
-     * Nézet-render hívó
+     * @param array $vars
+     * @return void
      */
     private function render(array $vars = []): void
     {
-        // Beállítjuk az oldal címét
         $vars['title'] = 'Menük';
 
         extract($vars, EXTR_SKIP);

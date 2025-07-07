@@ -1,8 +1,8 @@
 RewriteEngine On
 
-# statikus fájlok (css, js, képek) → NEM rewrite
+# static files (css, js, images) → NO rewrite
 RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule ^ - [L]
 
-# minden más -> index.php
+# everything else -> index.php
 RewriteRule ^ index.php [L]

@@ -134,7 +134,6 @@
     </div>
 </div>
 
-<!-- Menü modal a dokumentum végén -->
 <?php if (isset($_SESSION['user_id'])) : ?>
 <div class="modal fade" id="menuModal" tabindex="-1" 
      aria-labelledby="menuModalLabel" aria-hidden="true">

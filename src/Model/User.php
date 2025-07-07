@@ -16,6 +16,11 @@ class User
     ) {
     }
 
+    /**
+     * @param string $username
+     * @param string $email
+     * @return bool
+     */
     public function userExists(string $username, string $email): bool
     {
         $stmt = $this->pdo->prepare("
@@ -31,6 +36,12 @@ class User
         return (bool)$stmt->fetch();
     }
 
+    /**
+     * @param string $username
+     * @param string $email
+     * @param string $plainPassword
+     * @return int|null
+     */
     public function userRegister(string $username, string $email, string $plainPassword): ?int
     {
         $hash = password_hash($plainPassword, PASSWORD_DEFAULT);
@@ -52,6 +63,11 @@ class User
         return (int)$this->pdo->lastInsertId();
     }
 
+    /**
+     * @param string $email
+     * @param string $plainPassword
+     * @return array|null
+     */
     public function userLogin(string $email, string $plainPassword): ?array
     {
         $stmt = $this->pdo->prepare("
@@ -63,9 +79,9 @@ class User
         $stmt->execute([':x' => $email]);
         $user = $stmt->fetch();
 
-        // Ellenőrizzük, hogy a felhasználó nincs-e bannolva
+        // Check if the user is not banned
         if ($user && (int)$user['is_banned'] === 1) {
-            return null; // Bannolt felhasználó nem jelentkezhet be
+            return null; // Banned user cannot log in
         }
 
         if ($user && password_verify($plainPassword, $user['password_hash'])) {
@@ -80,6 +96,7 @@ class User
     }
 
     /**
+     * Sends a verification email.
      * @param int $userId
      * @param string $email
      * @return bool
@@ -114,7 +131,7 @@ class User
         try {
             $mail = EmailConfig::createMailer();
         } catch (Exception $e) {
-            error_log("Email küldés hiba createMailer: " . $e->getMessage());
+            error_log("Email sending error createMailer: " . $e->getMessage());
             return false;
         }
 
@@ -133,7 +150,7 @@ class User
             $mail->send();
             return true;
         } catch (Exception $e) {
-            error_log("Email küldés hiba beállítás: " . $e->getMessage());
+            error_log("Email sending error configuration: " . $e->getMessage());
             return false;
         }
     }
@@ -216,11 +233,11 @@ class User
     }
 
     /**
-     * Felhasználó bannolása
+     * Ban user.
      *
      * @param PDO $pdo
-     * @param int $id Felhasználó azonosítója
-     * @return bool Sikeres volt-e a művelet
+     * @param int $id
+     * @return bool
      */
     public static function ban(PDO $pdo, int $id): bool
     {
@@ -231,11 +248,11 @@ class User
     }
 
     /**
-     * Felhasználó bannolásának feloldása
+     * Unban user.
      *
      * @param PDO $pdo
-     * @param int $id Felhasználó azonosítója
-     * @return bool Sikeres volt-e a művelet
+     * @param int $id
+     * @return bool
      */
     public static function unban(PDO $pdo, int $id): bool
     {
@@ -254,7 +271,7 @@ class User
     }
 
     /**
-     * Lapozott lekérdezés – csak a verifikált fiókok.
+     * Pages query, only verified users.
      *
      * @return array<array{
      *     id:int, username:string, email:string, role:string,
@@ -277,11 +294,11 @@ class User
     }
 
     /**
-     * Felhasználó lekérése azonosító alapján
+     * Gets the user by id.
      *
      * @param PDO $pdo
-     * @param int $id Felhasználó azonosító
-     * @return array|null Felhasználó adatai vagy null, ha nem található
+     * @param int $id
+     * @return array|null
      */
     public static function getById(PDO $pdo, int $id): ?array
     {

@@ -31,7 +31,7 @@ class ErrorController
     public function forbidden(): void
     {
         http_response_code(403);
-        $this->render('405'); // 403-nál is a 405-ös oldalt jelenítjük meg
+        $this->render('405');
     }
 
     private function render(string $view): void

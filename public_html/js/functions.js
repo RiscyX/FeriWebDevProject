@@ -1,65 +1,65 @@
 /**
  * FeriWebDevProject - User functions and utilities
  * 
- * Általános funkciók a weboldal működéséhez
+ * General functions for website operation
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Csak akkor futtassuk az ellenőrzést, ha a felhasználó be van jelentkezve
+    // Only run the check if the user is logged in
     if (document.body.classList.contains('user-logged-in')) {
-        // Kezdeti ellenőrzés
+        // Initial check
         checkUserStatus();
         
-        // Rendszeres ellenőrzés (30 másodpercenként)
+        // Regular check (every 30 seconds)
         setInterval(checkUserStatus, 30000);
     }
 
-    // Fridge - Új elem hozzáadása funkció
+    // Fridge - Add new item function
     setupFridgeItemForm();
 });
 
 /**
- * Felhasználói státusz ellenőrzése
- * Ha a felhasználó bannolva lett, kijelentkezteti és átirányítja
+ * Check user status
+ * If the user has been banned, logs them out and redirects
  */
 function checkUserStatus() {
     fetch('/api/user/status')
         .then(response => {
             if (!response.ok) {
-                throw new Error('Hálózati hiba történt');
+                throw new Error('A network error occurred');
             }
             return response.json();
         })
         .then(data => {
             if (data && data.is_banned) {
-                // Felhasználó bannolva lett, kijelentkeztetés
+                // User has been banned, log them out
                 window.location.href = '/login?banned=1';
             }
         })
         .catch(error => {
-            console.error('Hiba a felhasználói státusz ellenőrzésekor:', error);
+            console.error('Error checking user status:', error);
         });
 }
 
 /**
- * Hűtőszekrény - form kezelése
- * Ellenőrzi, hogy az oldal tartalmaz-e hűtőszekrény kezelő űrlapot, és ha igen,
- * meghívja a fridgeFunctions.js-ben található inicializáló függvényt
+ * Refrigerator - form handling
+ * Checks if the page contains a refrigerator management form, and if so,
+ * calls the initializing function in fridgeFunctions.js
  */
 function setupFridgeItemForm() {
-    // Ellenőrizzük, hogy a fridge oldalon vagyunk-e
+    // Check if we're on the fridge page
     if (document.getElementById('addItemForm')) {
-        // Ellenőrizzük, hogy a fridgeFunctions.js betöltődött-e
+        // Check if fridgeFunctions.js has been loaded
         if (typeof initFridgeModal === 'undefined') {
-            // Ha a fridgeFunctions.js még nem töltődött be, akkor importáljuk dinamikusan
+            // If fridgeFunctions.js hasn't been loaded yet, import it dynamically
             import('./fridgeFunctions.js')
                 .then(module => {
-                    // A modul betöltődött, de nem szükséges meghívni az initFridgeModal-t,
-                    // mivel a fridgeFunctions.js automatikusan inicializálódik a betöltődéskor
-                    console.log('fridgeFunctions.js sikeresen betöltődött');
+                    // The module has loaded, but no need to call initFridgeModal,
+                    // as fridgeFunctions.js initializes automatically when loaded
+                    console.log('fridgeFunctions.js successfully loaded');
                 })
                 .catch(error => {
-                    console.error('Hiba a fridgeFunctions.js betöltésekor:', error);
+                    console.error('Error loading fridgeFunctions.js:', error);
                 });
         }
     }

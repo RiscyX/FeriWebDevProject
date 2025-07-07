@@ -13,7 +13,6 @@ $navItems = NavHelper::getNavItems();
     <div class="container-fluid">
         <a class="navbar-brand fs-3 px-2" href="/">Hűtőszekrényem</a>
 
-        <!-- hamburger gomb minden eszközön, de collapse-olja a #mainNav-ot -->
         <button class="navbar-toggler"
                 type="button"
                 data-bs-toggle="collapse"
@@ -24,7 +23,6 @@ $navItems = NavHelper::getNavItems();
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- EZ a blokk töltődik be desktopon és mobilon egyaránt -->
         <div class="collapse navbar-collapse" id="mainNav">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <?php foreach ($navItems as $item) : ?>

@@ -80,7 +80,6 @@ use WebDevProject\Security\Csrf;
                 <div class="mb-4">
                     <label class="form-label">Hozzávalók *</label>
                     <div id="ingredientsContainer">
-                        <!-- Kezdeti hozzávaló sor -->
                         <div class="row mb-2 ingredient-row">
                             <label class="form-label ingredient-label">Hozzávaló</label>
                             <div class="col-5">

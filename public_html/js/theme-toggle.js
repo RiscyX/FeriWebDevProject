@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const toggle = document.getElementById('themeToggle');
-    if (!toggle) return; // nincs gomb → kilépünk
+    if (!toggle) return; // no button → exit
 
     const html  = document.documentElement;
     const saved = localStorage.getItem('theme');

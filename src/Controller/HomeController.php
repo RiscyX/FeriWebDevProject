@@ -11,6 +11,9 @@ class HomeController
     ) {
     }
 
+    /**
+     * @return void
+     */
     public function index(): void
     {
 

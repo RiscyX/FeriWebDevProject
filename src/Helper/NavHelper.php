@@ -6,6 +6,10 @@ namespace WebDevProject\Helper;
 
 class NavHelper
 {
+    /**
+     * Return the navbar depending on the user's role.
+     * @return array
+     */
     public static function getNavItems(): array
     {
         $prefix = "";

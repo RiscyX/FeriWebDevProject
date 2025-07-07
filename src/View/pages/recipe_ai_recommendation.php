@@ -84,16 +84,14 @@ $title = 'AI Recept Ajánlás';
                         <h5>Elkészítés</h5>
                         <?php
                         $instructions = $aiRecommendation['instructions'] ?? '';
-                        // Megpróbáljuk lépésekre bontani, ha nem lista
                         if (!empty($instructions) && !is_array($instructions)) {
-                            // Ha számok vagy pontok vannak a szövegben, akkor valószínűleg lépésekre van bontva
+                            // If there are numbers or dots in the text, it's likely divided into steps
                             $steps = preg_split('/\r?\n|\r/', $instructions);
 
                             echo '<ol class="instructions-list">';
                             foreach ($steps as $step) {
                                 $step = trim($step);
                                 if (!empty($step)) {
-                                    // Távolítsuk el a kezdő számokat vagy pontokat
                                     $step = preg_replace('/^(\d+[\.\)]|\-)\s*/', '', $step);
                                     echo '<li>' . htmlspecialchars($step) . '</li>';
                                 }
@@ -133,8 +131,7 @@ $title = 'AI Recept Ajánlás';
                     </div>
                 </div>
             </div>
-            
-            <!-- Recept mentése Modal -->
+
             <div class="modal fade" id="saveRecipeModal" tabindex="-1" aria-labelledby="saveRecipeModalLabel"
                  aria-hidden="true">
                 <div class="modal-dialog">

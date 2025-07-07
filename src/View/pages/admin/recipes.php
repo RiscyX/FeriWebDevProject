@@ -2,7 +2,7 @@
 // src/View/pages/admin/recipes.php
 
 $currentPage = $page  ?? 1;
-$baseUrl = strtok($_SERVER['REQUEST_URI'], '?');        // pl. /admin/recipes
+$baseUrl = strtok($_SERVER['REQUEST_URI'], '?');        // ex. /admin/recipes
 $queryBase = '?per_page=' . urlencode($perPage) . '&page=';
 ?>
 <div class="container py-4">
@@ -96,14 +96,14 @@ $queryBase = '?per_page=' . urlencode($perPage) . '&page=';
     <?php if (($totalPages ?? 0) > 1) : ?>
         <nav aria-label="Oldalak közti navigáció" class="mt-4">
             <ul class="pagination justify-content-center">
-                <!-- Előző -->
+                <!-- Previous -->
                 <li class="page-item<?= $currentPage <= 1 ? ' disabled' : '' ?>">
                     <a class="page-link"
                        href="<?= $baseUrl . $queryBase . max(1, $currentPage - 1) ?>"
                        tabindex="-1">Előző</a>
                 </li>
 
-                <!-- Oldalszámok -->
+                <!-- Page numbers -->
                 <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
                     <li class="page-item<?= $i === $currentPage ? ' active' : '' ?>">
                         <a class="page-link"
@@ -111,7 +111,7 @@ $queryBase = '?per_page=' . urlencode($perPage) . '&page=';
                     </li>
                 <?php endfor; ?>
 
-                <!-- Következő -->
+                <!-- Next -->
                 <li class="page-item<?= $currentPage >= $totalPages ? ' disabled' : '' ?>">
                     <a class="page-link"
                        href="<?= $baseUrl . $queryBase . min($totalPages, $currentPage + 1) ?>">

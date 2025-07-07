@@ -9,7 +9,7 @@ use WebDevProject\Model\Recipe;
 use WebDevProject\Model\User;
 
 /**
- * ProfileController - Felhasználói profil kezelése
+ * ProfileController
  */
 class ProfileController
 {
@@ -21,26 +21,22 @@ class ProfileController
     }
 
     /**
-     * GET /profile - Felhasználói profil megjelenítése
+     * GET /profile - User profile
+     * @return void
      */
     public function index(): void
     {
-        // Csak bejelentkezett felhasználók számára
         Auth::requireLogin();
         $userId = (int)($_SESSION['user_id'] ?? 0);
 
-        // Felhasználói adatok betöltése
         $user = User::getById($this->pdo, $userId);
 
-        // Kedvenc receptek betöltése
         $favoriteRecipes = Recipe::getUserFavorites($this->pdo, $userId);
 
-        // Képek elérési útját és egyéb mezőket alakítsunk át a view-nak megfelelően
         foreach ($favoriteRecipes as &$recipe) {
             $recipe['name'] = $recipe['title'];
             $recipe['image'] = $recipe['image_path'] ?? '/assets/slide' . (($recipe['id'] % 3) + 1) . '.png';
 
-            // Létrehoz egy rövidített változatot a leírásból
             if (mb_strlen($recipe['description']) > 100) {
                 $recipe['short_description'] = mb_substr($recipe['description'], 0, 100) . '...';
             } else {
@@ -55,14 +51,13 @@ class ProfileController
     }
 
     /**
-     * POST /profile/favorites/add - Recept hozzáadása a kedvencekhez
+     * POST /profile/favorites/add - Add recipe to favorites
+     * @return void
      */
     public function addToFavorites(): void
     {
-        // Csak bejelentkezett felhasználók számára
         Auth::requireLogin();
 
-        // CSRF ellenőrzés
         if (!isset($_POST['csrf']) || !\WebDevProject\Security\Csrf::check($_POST['csrf'])) {
             $_SESSION['flash_error'] = 'Érvénytelen kérés. Próbáld újra!';
             header('Location: /recipes');
@@ -86,21 +81,19 @@ class ProfileController
             $_SESSION['flash_error'] = 'Hiba történt a recept kedvencekhez adásakor.';
         }
 
-        // Visszatérés az előző oldalra, vagy ha nincs ilyen, akkor a receptek oldalra
         $referer = $_SERVER['HTTP_REFERER'] ?? '/recipes';
         header('Location: ' . $referer);
         exit;
     }
 
     /**
-     * POST /profile/favorites/remove - Recept eltávolítása a kedvencekből
+     * POST /profile/favorites/remove - Remove recipe from favorites
+     * @return void
      */
     public function removeFromFavorites(): void
     {
-        // Csak bejelentkezett felhasználók számára
         Auth::requireLogin();
 
-        // CSRF ellenőrzés
         if (!isset($_POST['csrf']) || !\WebDevProject\Security\Csrf::check($_POST['csrf'])) {
             $_SESSION['flash_error'] = 'Érvénytelen kérés. Próbáld újra!';
             header('Location: /profile');
@@ -124,14 +117,15 @@ class ProfileController
             $_SESSION['flash_error'] = 'Hiba történt a recept kedvencekből való eltávolításakor.';
         }
 
-        // Visszatérés az előző oldalra, vagy ha nincs ilyen, akkor a profil oldalra
         $referer = $_SERVER['HTTP_REFERER'] ?? '/profile';
         header('Location: ' . $referer);
         exit;
     }
 
+
     /**
-     * Egyszerű nézet-render hívó
+     * @param array $vars
+     * @return void
      */
     private function render(array $vars = []): void
     {

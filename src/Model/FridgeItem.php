@@ -9,7 +9,7 @@ use PDO;
 class FridgeItem
 {
     /**
-     * Lekéri a felhasználó összes elemét
+     * Get all items for a user
      * @param PDO $pdo
      * @param int $userId
      * @return array<string, mixed>[]
@@ -27,7 +27,7 @@ class FridgeItem
     }
 
     /**
-     * Lekéri egy tétel adatait id alapján
+     * Get item data by id
      * @param PDO $pdo
      * @param int $id
      * @return array<string, mixed>|null
@@ -44,11 +44,11 @@ class FridgeItem
     }
 
     /**
-     * Ellenőrzi, hogy egy felhasználónak van-e már adott összetevőből a hűtőjében
+     * Check if a user already has a specific ingredient in their fridge
      * @param PDO $pdo
      * @param int $userId
      * @param int $ingredientId
-     * @return array|null Az elem adatai, ha létezik, null ha nem
+     * @return array|null Item data if it exists, null if not
      */
     public static function findByIngredient(PDO $pdo, int $userId, int $ingredientId): ?array
     {
@@ -66,14 +66,18 @@ class FridgeItem
     }
 
     /**
-     * Új tétel létrehozása vagy meglévő mennyiségének növelése
+     * Create a new item or increase the quantity of an existing one
      * @param PDO $pdo
      * @param array<string, mixed> $data [user_id, name, quantity, expiry]
-     * @return int új rekord id vagy a frissített rekord id-ja
+     * @return int new record id or updated record id
+     * @throws \InvalidArgumentException if the data is invalid
      */
     public static function create(PDO $pdo, array $data): int
     {
-        // Először ellenőrizzük, hogy van-e már ilyen összetevő a felhasználó hűtőjében
+        // Validate input data
+        self::validateInputData($data);
+
+        // First check if this ingredient already exists in the user's fridge
         $existingItem = self::findByIngredient(
             $pdo,
             $data['user_id'],
@@ -81,7 +85,7 @@ class FridgeItem
         );
 
         if ($existingItem) {
-            // Ha már létezik, növeljük a mennyiségét
+            // If it already exists, increase the quantity
             $newQuantity = $existingItem['quantity'] + $data['quantity'];
             self::update($pdo, (int)$existingItem['id'], [
                 'ingredient_id' => $data['ingredient_id'],
@@ -89,7 +93,7 @@ class FridgeItem
             ]);
             return (int)$existingItem['id'];
         } else {
-            // Ha még nem létezik, új rekordot hozunk létre
+            // If it doesn't exist yet, create a new record
             $sql = 'INSERT INTO fridge_items (user_id, ingredient_id, quantity)
                 VALUES (:user_id, :ingredient_id, :quantity)';
             $stmt = $pdo->prepare($sql);
@@ -104,14 +108,18 @@ class FridgeItem
 
 
     /**
-     * Tétel frissítése
+     * Update an item
      * @param PDO $pdo
      * @param int $id
      * @param array<string, mixed> $data [name, quantity, expiry]
      * @return bool
+     * @throws \InvalidArgumentException if the data is invalid
      */
     public static function update(PDO $pdo, int $id, array $data): bool
     {
+        // Validate input data
+        self::validateInputData($data);
+
         $sql = 'UPDATE fridge_items
                 SET ingredient_id = :ingredient_id,
                     quantity = :quantity
@@ -125,7 +133,7 @@ class FridgeItem
     }
 
     /**
-     * Tétel törlése
+     * Delete an item
      * @param PDO $pdo
      * @param int $id
      * @return bool
@@ -135,5 +143,40 @@ class FridgeItem
         $sql = 'DELETE FROM fridge_items WHERE id = :id';
         $stmt = $pdo->prepare($sql);
         return $stmt->execute(['id' => $id]);
+    }
+
+    /**
+     * Validate input data for create and update operations
+     *
+     * @param array<string, mixed> $data The data to validate
+     * @throws \InvalidArgumentException If the data is invalid
+     */
+    private static function validateInputData(array $data): void
+    {
+        // Validate user_id if present
+        if (isset($data['user_id'])) {
+            if (!is_numeric($data['user_id']) || (int)$data['user_id'] <= 0) {
+                throw new \InvalidArgumentException("Invalid user ID");
+            }
+        }
+
+        // Validate ingredient_id
+        if (!isset($data['ingredient_id']) || !is_numeric($data['ingredient_id']) || (int)$data['ingredient_id'] <= 0) {
+            throw new \InvalidArgumentException("Invalid ingredient ID");
+        }
+
+        // Validate quantity
+        if (!isset($data['quantity']) || !is_numeric($data['quantity'])) {
+            throw new \InvalidArgumentException("Quantity must be a number");
+        }
+
+        $quantity = (float)$data['quantity'];
+        if ($quantity <= 0) {
+            throw new \InvalidArgumentException("Quantity must be greater than 0");
+        }
+
+        if ($quantity > 10000) {
+            throw new \InvalidArgumentException("Quantity is too large (max: 10000)");
+        }
     }
 }

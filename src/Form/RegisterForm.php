@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WebDevProject\Form;
 
+use Random\RandomException;
 use WebDevProject\Model\User;
 use WebDevProject\Security\Csrf;
 
@@ -13,6 +14,10 @@ class RegisterForm extends BaseForm
     {
     }
 
+    /**
+     * @param array $post
+     * @return void
+     */
     public function formLoad(array $post): void
     {
         $this->data['username']         = trim($post['username'] ?? '');
@@ -21,6 +26,9 @@ class RegisterForm extends BaseForm
         $this->data['password_confirm'] = trim($post['password_confirm'] ?? '');
     }
 
+    /**
+     * @return bool
+     */
     public function formValidate(): bool
     {
         if (
@@ -54,6 +62,9 @@ class RegisterForm extends BaseForm
         return !$this->hasErrors();
     }
 
+    /**
+     * @return int|null
+     */
     public function formRegister(): ?int
     {
         return (new User($this->pdo))->userRegister(
@@ -63,6 +74,10 @@ class RegisterForm extends BaseForm
         );
     }
 
+    /**
+     * @return string
+     * @throws RandomException
+     */
     public function formRender(): string
     {
         $html = '';

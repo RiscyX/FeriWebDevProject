@@ -2,13 +2,17 @@
 
 declare(strict_types=1);
 
-namespace WebDevProject\Config;
+namespace WebDevProject\config;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 class EmailConfig
 {
+    /**
+     * @return PHPMailer
+     * @throws Exception
+     */
     public static function createMailer(): PHPMailer
     {
         $mail = new PHPMailer(true);

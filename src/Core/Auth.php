@@ -6,11 +6,18 @@ namespace WebDevProject\Core;
 
 class Auth
 {
+    /**
+     * @return bool
+     */
     public static function check(): bool
     {
         return !empty($_SESSION['user_id']);
     }
 
+    /**
+     * @param \PDO $pdo
+     * @return bool
+     */
     public static function checkBanned(\PDO $pdo): bool
     {
         if (!self::check()) {
@@ -25,6 +32,9 @@ class Auth
         return $user && (int)($user['is_banned'] ?? 0) === 1;
     }
 
+    /**
+     * @return void
+     */
     public static function requireLogin(): void
     {
         global $pdo;
@@ -34,7 +44,7 @@ class Auth
             exit('Bejelentkezés szükséges');
         }
 
-        // Ha a felhasználó bannolva van, akkor kiléptetjük
+        // If the user is banned, log them out
         if (self::checkBanned($pdo)) {
             session_destroy();
             header('Location: /login?banned=1');
@@ -42,6 +52,11 @@ class Auth
         }
     }
 
+    /**
+     * @param int $role
+     * @return void
+     * @throws \Exception
+     */
     public static function requireRole(int $role): void
     {
         if (!self::check() || ($_SESSION['role'] ?? '') !== $role) {

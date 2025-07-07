@@ -19,21 +19,25 @@ final class Csrf
         return $_SESSION['csrf_token'];
     }
 
+    /**
+     * @param $token
+     * @return bool
+     */
     public static function check($token): bool
     {
         if (!isset($_SESSION['csrf_token'])) {
             return false;
         }
         if (!is_string($token) || $token === '') {
-            return false; // nincs beküldött token → hiba
+            return false;
         }
         return hash_equals($_SESSION['csrf_token'], $token);
     }
 
     /**
-     * CSRF token input mező generálása
+     * CSRF token input field generation.
      *
-     * @return string HTML input mező a CSRF tokennel
+     * @return string
      */
     public static function field(): string
     {

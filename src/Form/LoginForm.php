@@ -40,7 +40,6 @@ class LoginForm extends BaseForm
     {
         $user = new User($this->pdo);
 
-        // Először ellenőrizzük, hogy a felhasználó bannolva van-e
         $stmt = $this->pdo->prepare("
             SELECT is_banned
             FROM users

@@ -17,8 +17,6 @@
             </a>
         </div>
     </div>
-    
-    <!-- Szűrési lehetőségek -->
     <div class="card mb-4 shadow-sm">
         <div class="card-header">
             <h5 class="mb-0">
@@ -27,7 +25,6 @@
         </div>
         <div class="card-body">
             <form id="recipe-filter-form" class="row g-3" method="GET" action="/recipes">
-                <!-- Elkészítési idő szerinti szűrés -->
                 <div class="col-md-4">
                     <label for="prep_time" class="form-label">Max. előkészítési idő (perc)</label>
                     <select class="form-select" id="prep_time" name="prep_time">
@@ -42,8 +39,7 @@
                             : '' ?>>Max. 1 óra</option>
                     </select>
                 </div>
-                
-                <!-- Főzési idő szerinti szűrés -->
+
                 <div class="col-md-4">
                     <label for="cook_time" class="form-label">Max. főzési idő (perc)</label>
                     <select class="form-select" id="cook_time" name="cook_time">
@@ -60,8 +56,7 @@
                             'selected' : '' ?>>Max. 2 óra</option>
                     </select>
                 </div>
-                
-                <!-- Kategória szerinti szűrés -->
+
                 <div class="col-md-4">
                     <label for="category" class="form-label">Kategória</label>
                     <select class="form-select" id="category" name="category">
@@ -75,7 +70,6 @@
                                 </option>
                             <?php endforeach; ?>
                         <?php else : ?>
-                            <!-- Fallback opciók, ha nem sikerült betölteni a kategóriákat -->
                             <option value="Főétel" <?= isset($filters['category']) &&
                             $filters['category'] == 'Főétel' ? 'selected' : '' ?>>Főétel</option>
                             <option value="Leves" <?= isset($filters['category']) &&
@@ -189,7 +183,6 @@
         <?php endforeach; ?>
     </div>
 
-    <!-- Lapozás -->
     <?php if (isset($totalPages) && $totalPages > 1) : ?>
     <div class="d-flex justify-content-center mt-5">
         <nav aria-label="Receptek lapozása">
@@ -214,11 +207,10 @@
                 <?php endif; ?>
                 
                 <?php
-                // Korlátozzuk a lapozási linkek számát
                 $startPage = max(1, $page - 2);
                 $endPage = min($totalPages, $page + 2);
 
-                // Ha az elejéről vagy végéről vannak oldalak, amelyek kiesnek a tartományból, akkor kompenzálunk
+                // If there are pages from the beginning or end that fall outside the range, we compensate
                 if ($startPage > 1) {
                     echo '<li class="page-item"><a class="page-link" href="?page=1' .
                         (!empty($filters['prep_time']) ? '&prep_time=' . $filters['prep_time'] : '') .
@@ -284,7 +276,6 @@
     <?php endif; ?>
 </div>
 
-<!-- Modálok a dokumentum végén -->
 <?php if (isset($_SESSION['user_id']) && !empty($recipes)) : ?>
     <?php foreach ($recipes as $recipe) : ?>
         <!-- Menü modal -->

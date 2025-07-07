@@ -2,7 +2,7 @@
 // src/View/pages/admin/users.php
 
 $currentPage  = $page  ?? 1;
-$baseUrl      = strtok($_SERVER['REQUEST_URI'], '?');        // pl. /admin/users
+$baseUrl      = strtok($_SERVER['REQUEST_URI'], '?');        // ex. /admin/users
 $queryBase    = '?per_page=' . urlencode($perPage) . '&page=';
 ?>
 <div class="container py-4">
@@ -80,7 +80,6 @@ $queryBase    = '?per_page=' . urlencode($perPage) . '&page=';
         <div class="d-flex justify-content-center mt-5">
             <nav aria-label="Oldalak közti navigáció">
                 <ul class="pagination">
-                    <!-- Előző -->
                     <li class="page-item<?= $currentPage <= 1 ? ' disabled' : '' ?>">
                         <a class="page-link"
                            href="<?= $baseUrl . $queryBase . max(1, $currentPage - 1) ?>"
@@ -90,13 +89,11 @@ $queryBase    = '?per_page=' . urlencode($perPage) . '&page=';
                         </a>
                     </li>
 
-                    <!-- Oldalszámok -->
                     <?php
-                    // Korlátozzuk a lapozási linkek számát
                     $startPage = max(1, $currentPage - 2);
                     $endPage = min($totalPages, $currentPage + 2);
 
-                    // Ha az elejéről vagy végéről vannak oldalak, amelyek kiesnek a tartományból, akkor kompenzálunk
+                    // If there are pages from the beginning or end that fall outside the range, we compensate
                     if ($startPage > 1) {
                         echo '<li class="page-item">
                                 <a class="page-link" href="' . $baseUrl . $queryBase . '1">1</a></li>';
@@ -122,7 +119,6 @@ $queryBase    = '?per_page=' . urlencode($perPage) . '&page=';
                     }
                     ?>
 
-                    <!-- Következő -->
                     <li class="page-item<?= $currentPage >= $totalPages ? ' disabled' : '' ?>">
                         <a class="page-link"
                            href="<?= $baseUrl . $queryBase . min($totalPages, $currentPage + 1) ?>"

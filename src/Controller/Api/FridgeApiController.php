@@ -9,14 +9,25 @@ use WebDevProject\Model\FridgeItem;
 
 class FridgeApiController
 {
+    /**
+     * @var \PDO
+     */
     private \PDO $pdo;
 
+    /**
+     * @param \PDO $pdo
+     */
     public function __construct(\PDO $pdo)
     {
         $this->pdo = $pdo;
     }
 
-    /** JSON választ küld, kilép a végén */
+    /**
+     * Send the items back in json format.
+     * @param mixed $data
+     * @param int $code
+     * @return never
+     */
     private function json(mixed $data, int $code = 200): never
     {
         http_response_code($code);
@@ -27,7 +38,7 @@ class FridgeApiController
 
     /**
      * GET /api/fridge
-     * Visszaadja a bejelentkezett user hűtőelemeit
+     * Gets the current users fridge items
      */
     public function getItems(int $userId): never
     {
@@ -69,6 +80,11 @@ class FridgeApiController
         $this->json(['id' => $newId], 201);
     }
 
+    /**
+     * Updates the items.
+     * @param string $id
+     * @return never
+     */
     public function updateItem(string $id): never
     {
         $id = (int)$id;
@@ -93,6 +109,7 @@ class FridgeApiController
     }
 
     /**
+     * Deletes the selected item.
      * DELETE /api/fridge/{id}
      */
     public function deleteItem(string $id): never
@@ -108,7 +125,7 @@ class FridgeApiController
     }
 
     /**
-     * GET /api/ingredients?search=tej
+     * GET /api/ingredients?search=csirke
      */
     public function searchIngredients(): never
     {
@@ -129,14 +146,5 @@ class FridgeApiController
         $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
         $this->json(['data' => $results]);
-    }
-
-
-    public function getUnits(): never
-    {
-        $stmt = $this->pdo->query("SELECT id, abbreviation FROM units ORDER BY abbreviation");
-        $units = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
-        $this->json(['data' => $units]);
     }
 }

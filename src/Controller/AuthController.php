@@ -51,7 +51,7 @@ class AuthController
                     exit;
                 }
 
-                $form->addError('Ismeretlen hiba a regisztráció során.');
+                $form->addError('Unknown error during registration.');
             }
         }
         $formHtml = $form->formRender();
@@ -68,7 +68,7 @@ class AuthController
     {
         $form = new LoginForm($this->pdo);
 
-        // Ha a felhasználó bannolva lett, jelenítsen meg egy hibaüzenetet
+        // If the user is banned, display an error message
         if (isset($_GET['banned']) && $_GET['banned'] == 1) {
             $form->addError('A fiókja bannolva lett. Kérjük, vegye fel a kapcsolatot az adminisztrátorral.');
         }
@@ -160,7 +160,7 @@ class AuthController
         } catch (\PDOException $e) {
             http_response_code(500);
             $type    = 'danger';
-            $message = 'Adatbázis-hiba: ' . $e->getMessage();
+            $message = 'Database error: ' . $e->getMessage();
             $this->renderVerify($type, $message);
             return false;
         }
@@ -194,6 +194,11 @@ class AuthController
         return true;
     }
 
+    /**
+     * @param string $type
+     * @param string $message
+     * @return void
+     */
     private function renderVerify(string $type, string $message): void
     {
         $title = 'E-mail megerősítése';
@@ -226,7 +231,7 @@ class AuthController
                 ? ($token
                     ? 'Sikeres jelszófrissítés! Most már bejelentkezhetsz.'
                     : 'Ha létezik ilyen fiók, elküldtük a visszaállító linket.')
-                : 'Valami hiba történt. Próbáld újra.';
+                : 'Something went wrong. Please try again.';
 
             header('Location: ' . ($token ? '/login' : '/reset'), true, 303);
             exit;
