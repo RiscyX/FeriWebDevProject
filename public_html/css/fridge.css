@@ -1,0 +1,8 @@
+@media (max-width: 600px) {
+    .table-responsive {
+        overflow-x: auto;
+    }
+    .table-responsive table {
+        min-width: 600px;
+    }
+}

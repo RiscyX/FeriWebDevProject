@@ -1,0 +1,220 @@
+
+/* ---------- Navigation ---------- */
+.navbar {
+  background: var(--navbar-bg);
+  border-bottom: 1px solid var(--divider);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--navbar-hover) 20%, transparent);
+}
+.navbar-brand,
+.nav-link {
+  color: var(--navbar-text) !important;
+  font-weight: 600;
+  letter-spacing: .5px;
+}
+.nav-link.active,
+.nav-link:hover {
+  color: var(--navbar-hover) !important;
+}
+
+/* ---------- Hero section ---------- */
+.hero {
+  background: var(--hero-bg);
+  border-radius: 1.5rem;
+  padding: 3rem 2rem 2rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 4px 24px color-mix(in srgb, var(--navbar-hover) 15%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.hero-title {
+  color: var(--primary-text);
+  font-family: 'Roboto', 'Open Sans', Arial, sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: .5rem;
+}
+.hero-desc {
+  color: var(--desc-text);
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.btn-primary {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: none;
+  border-radius: 2rem;
+  padding: .75rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: background .2s;
+}
+.btn-primary:hover {
+  background: var(--navbar-hover);
+}
+.btn-primary:active {
+  background: var(--btn-active, #cddc39);
+  color: var(--primary-text);
+}
+
+/* ---------- Cards ---------- */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+}
+.card {
+  background: var(--primary-bg);
+  border-radius: 1rem;
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--navbar-hover) 10%, transparent);
+  border: 1px solid var(--card-border, var(--divider));
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow .2s, background .3s, color .3s;
+  color: var(--primary-text);
+}
+.card:hover {
+  box-shadow: 0 6px 24px color-mix(in srgb, var(--navbar-hover) 20%, transparent);
+}
+.card-title {
+  color: var(--primary-text);
+  font-weight: 600;
+  margin-bottom: .5rem;
+}
+.card-desc {
+  color: var(--desc-text);
+  font-size: 1rem;
+}
+
+/* ---------- Links ---------- */
+a {
+  color: var(--navbar-hover);
+  text-decoration: none;
+  transition: color .2s;
+}
+a:hover {
+  color: var(--navbar-text) !important;
+}
+
+/* ---------- Divider ---------- */
+.divider {
+  border-top: 1px solid var(--divider);
+  margin: 2.5rem 0;
+}
+/* ---------- Form controls ---------- */
+input.form-control,
+textarea.form-control {
+  color: var(--primary-text);
+  background: var(--primary-bg);
+}
+
+[data-bs-theme="dark"] input.form-control,
+[data-bs-theme="dark"] textarea.form-control,
+[data-bs-theme="dark"] .form-control.bg-light {
+  color: var(--primary-text);
+  background: var(--secondary-bg) !important;
+  border-color: var(--card-border);
+}
+[data-bs-theme="dark"] label.form-label {
+  color: var(--primary-text) !important;
+}
+[data-bs-theme="dark"] input.form-control::placeholder,
+[data-bs-theme="dark"] textarea.form-control::placeholder {
+  color: var(--desc-text);
+  opacity: 0.7;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 600px) {
+  .hero   { padding: 2rem 1rem 1.5rem; }
+  .cards  { gap: 1rem; }
+  .card   { padding: 1.2rem .7rem; }
+}
+
+/* ---------- Error Pages (404, 405) ---------- */
+.error-image {
+  opacity: 0.9;
+}
+
+.error-image img {
+  height: auto;
+  object-fit: contain;
+  max-width: 400px;
+}
+
+.error-message h2 {
+  font-weight: 500;
+  margin-top: 2rem;
+}
+
+.error-text {
+  color: var(--navbar-text);
+}
+
+@media (max-width: 768px) {
+  .error-image img {
+    max-width: 280px;
+  }
+}
+
+@media (max-width: 576px) {
+  .error-image img {
+    max-width: 250px;
+  }
+}
+
+@media (max-width: 400px) {
+  .error-image img {
+    max-width: 200px;
+  }
+}
+
+/* ---------- Features Section ---------- */
+.features-section {
+  background: var(--secondary-bg);
+}
+
+.features-title {
+  color: var(--primary-text);
+}
+
+.feature-icon {
+  color: var(--navbar-text);
+}
+
+.feature-title {
+  color: var(--primary-text);
+}
+
+.feature-desc {
+  color: var(--desc-text);
+}
+
+/* ---------- CTA Section ---------- */
+.cta-section {
+  background: var(--hero-bg);
+}
+
+.cta-title {
+  color: var(--primary-text);
+}
+
+.cta-text {
+  color: var(--desc-text);
+}
+
+.cta-btn {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: none;
+}
+
+/* ---------- Legacy dark-mode fallback ---------- */
+[data-theme="dark"] {
+  background: var(--primary-bg);
+  color: var(--secondary-bg);
+}
+[data-theme="dark"] .navbar { background: var(--navbar-bg); }
+[data-theme="dark"] .hero   { background: var(--hero-bg); }
+[data-theme="dark"] .card   { background: var(--secondary-bg); }

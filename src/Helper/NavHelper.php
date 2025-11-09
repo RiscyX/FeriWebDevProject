@@ -1,45 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WebDevProject\Helper;
 
 class NavHelper
 {
+    /**
+     * Return the navbar depending on the user's role.
+     * @return array
+     */
     public static function getNavItems(): array
     {
-        $anon_nav = [
-            ['label' => 'Kezdőlap',    'href' => '/index.php'],
-            ['label' => 'Receptek',    'href' => '/recipes.php'],
-            ['label' => 'Bejelentkezés','href' => '/login.php'],
-            ['label' => 'Regisztráció', 'href' => '/register.php'],
+        $prefix = "";
+
+        $common = [
+            ['label' => 'Receptek', 'href' => $prefix . '/recipes'],
         ];
-        $user_nav = [
-            ['label' => 'Kezdőlap',       'href' => '/index.php'],
-            ['label' => 'Receptek',       'href' => '/recipes.php'],
-            ['label' => 'Hűtőszekrényem','href' => '/fridge.php'],
-            ['label' => 'Heti menü',      'href' => '/menu.php'],
-            ['label' => 'Profil',         'href' => '/profile.php'],
-            ['label' => 'Kijelentkezés',  'href' => '/logout.php'],
+
+        $anonExtra = [
+            ['label' => 'Bejelentkezés', 'href' => $prefix . '/login'],
+            ['label' => 'Regisztráció', 'href' => $prefix . '/register'],
         ];
-        $admin_nav = [
-            ['label' => 'Kezdőlap',         'href' => '/index.php'],
-            ['label' => 'Receptek',         'href' => '/recipes.php'],
-            ['label' => 'Hűtőszekrényem',  'href' => '/fridge.php'],
-            ['label' => 'Heti menü',        'href' => '/menu.php'],
-            ['label' => 'Admin Dashboard',  'href' => '/admin/dashboard.php'],
-            ['label' => 'Kategóriák',       'href' => '/admin/categories.php'],
-            ['label' => 'Hozzávalók',       'href' => '/admin/ingredients.php'],
-            ['label' => 'Felhasználók',     'href' => '/admin/users.php'],
-            ['label' => 'Profil',           'href' => '/profile.php'],
-            ['label' => 'Kijelentkezés',    'href' => '/logout.php'],
+
+        $userExtra = [
+            ['label' => 'Hűtőszekrényem', 'href' => $prefix . '/fridge'],
+            ['label' => 'Ajánlott receptek', 'href' => $prefix . '/recipes/recommend'],
+            ['label' => 'Heti menü', 'href' => $prefix . '/menus'],
+            ['label' => 'Profil', 'href' => $prefix . '/profile'],
+            ['label' => 'Kijelentkezés', 'href' => $prefix . '/logout'],
         ];
-        if (!empty($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-            return $admin_nav;
+
+        $adminExtra = [
+            ['label' => 'Felhasználók', 'href' => $prefix . '/admin/users'],
+        ];
+
+        if (!empty($_SESSION['role']) && $_SESSION['role'] === 1) {
+            return array_merge($adminExtra, $common, $userExtra);
         }
 
         if (!empty($_SESSION['user_id'])) {
-            return $user_nav;
+            return array_merge($common, $userExtra);
         }
 
-        return $anon_nav;
+        return array_merge($common, $anonExtra);
     }
 }
