@@ -67,7 +67,7 @@ class Config
      */
     public static function mailPass(): string
     {
-        return $_ENV['MAIL_PASSWORD'] ?? 'itqc tbnx zlup ynpj';
+        return $_ENV['MAIL_PASSWORD'] ?? '';
     }
 
     /**
